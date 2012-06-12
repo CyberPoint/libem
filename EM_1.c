@@ -14,12 +14,15 @@ This algorithm uses K means to seed the EM iteration, providing it with centroid
    sd = standard deviation */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 
 /* Picking starting parameters */
 
-void start_em(int n, double * data, int k, double * prob, double * mean, double * sd)
+void start_em(int i, int j, int n, double *data, int k, double *prob, double *mean, double *sd)
 {
-	int i, j; double mean1 = 0.0, sd1 = 0.0;
+	double mean1 = 0.0, sd1 = 0.0;
 
 	for (i = 0; i < n; i++)
 		mean1 += data[i];
@@ -38,10 +41,8 @@ void start_em(int n, double * data, int k, double * prob, double * mean, double 
 
 /* Update group memberships (which data belong to which group) */
 
-void update_class_prob(int n, double * data, int k, double * prob, double * mean, double * sd, double ** class_prob)
+void update_class_prob(int i, int j, int n, int k, double *data, double *prob, double *mean, double *sd, double **class_prob)
 {
-	int i, j;
-
 	for (i = 0; i < n; i++)
 		for (j = 0; j < k; j++)
 			class_prob[i][j] =
@@ -51,15 +52,13 @@ void update_class_prob(int n, double * data, int k, double * prob, double * mean
 
 /* Update mixture proportions */
 
-void update_prob(int n, double * data, int k, double * prob, double ** class_prob)
+void update_prob(int i, int j, int n, int k, double *prob, double **class_prob)
 {
-	int i, j;
-		
-	for (int j = 0; j < k; j++)
+	for (j = 0; j < k; j++)
 		{
 			prob[j] = 0.0;
 
-			for (int i = 0; i < n; i++)
+			for (i = 0; i < n; i++)
 				prob[j] += class_prob[i][j];
 
 			prob[j] /= n;
@@ -68,66 +67,62 @@ void update_prob(int n, double * data, int k, double * prob, double ** class_pro
 
 /* Update component means (shift the means around in the clusters) */
 
-void update_mean(int n, double * data, int k, double * prob, double * mean, double ** class_prob)
+void update_mean(int i, int j, int n, int k, double *data, double *prob, double *mean, double **class_prob)
 {
-	int i, j;
-
-	for (int j = 0; j < k; j++)
+	for (j = 0; j < k; j++)
 		{
 			mean[j] = 0.0;
 			
-			for (int i = 0; i < n; i++)
+			for (i = 0; i < n; i++)
 				mean[j] += data[i] * class_prob[i][j];
 
-			mean[j] /= n * prob[j] + TINY;
+			mean[j] /= n * prob[j];
 		}
 }
 
 /* Update component standard deviations */
 
-void update_std(int n, double * data, int k, double * prob, double * mean, double * std, double ** class_prob)
+void update_std(int i, int j, int n, int k, double *data, double *prob, double *mean, double *sd, double **class_prob)
 {
-	int i, j;
-		
-	for (int j = 0, j < k; j++)
+	for (j = 0; j < k; j++)
 	{
 		sd[j] = 0.0;
 	
-		for (int i = 0; i < n; i++)
+		for (i = 0; i < n; i++)
 			sd[j] += square(data[i] - mean[j]) * class_prob[i][j];
 
-		sd[j] /= (n * prob[j] + TINY);
+		sd[j] /= (n * prob[j]);
 		sd[j] = sqrt(sd[j]);
 	}
 }
 
 /* Update the mixture */
 
-void update_parameters(int n, double * data, int k, double_prob, double * mean, double * sd, double ** class_prob)
+void update_parameters(int i, int j, int n, int k, double *data, double *prob, double *mean, double *sd, double **class_prob)
 {
 	/* update mixture proportions */
-	update_prob(n, data, k, prob, class_prob);
+	update_prob(i, j, n, k, prob, class_prob);
 
 	/* update mean for each component */
-	update_mean(n, data, k, prob, mean, class_prob);
+	update_mean(i, j, n, data, k, prob, mean, class_prob);
 
 	/* update the standard deviation */
-	update_sd(n, data, k, prob, mean, sd, class_prob);
+	update_sd(i, j, n, data, k, prob, mean, sd, class_prob);
 }
 
 /* The EM algorithm */
 
-double em (int n, double * data, int k, double * prob, double * mean, double * sd, double eps)
+double em(int i, int j, int n, int k, double *data, double *prob, double *mean, double *sd, double *eps)
 {
 	double theta = 0, theta_old = 0;
-	double ** class_prob = alloc_matrix(n, k);
+	double **class_prob = alloc_matrix(n, k);
 
-	start_em(n, data, k, prob, mean, sd);
+	start_em(i, j, n, data, k, prob, mean, sd);
 	do 
 	{
 		theta_old = theta;
-		update_class_prob(n, data, k, prob, mean, sd, class_prob);
-		update_parameters(n, data, k, prob, mean, sd, class_prob);
+		update_class_prob(i, j, n, data, k, prob, mean, sd, class_prob);
+		update_parameters(i, j, n, data, k, prob, mean, sd, class_prob);
 		theta = mixTHETA(n, data, k, prob, mean, sd);
 	}
 	while ( !check_tol(theta, theta_old, eps) );
@@ -135,5 +130,16 @@ double em (int n, double * data, int k, double * prob, double * mean, double * s
 return theta;
 }
 
+int main()
+{
+
+int i, j, n, k;
+
+/* read in data */
+/* call routines above to set up and optimize model */
+/* write output */
+
+
+}
 
 
