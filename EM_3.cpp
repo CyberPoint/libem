@@ -67,9 +67,20 @@ int Kmeans()
 }
 
 
-int main()
+int main(int theta_last, int J, int i, int I, )
 {
+	int theta_last;
+	int I = 20; // this is the number of iterations; can be modified from a static number to a 			    condition of convergence
+	
 	using std::cout;
+
+	for (i = 1; i < I; i++)
+	{
+		J = Estep(U, theta_last)
+		theta = Mstep(U, J)
+		cout << " log-likelihood is: " << theta << endl;
+	}
+return 0;
 }
 
 /* E step
@@ -105,8 +116,6 @@ end
 return theta to the plus one = (theta to the plus one, mu ", sigma ")
 
 **EM algorithm
-
-
 
 Data: U, theta not
 for i in {i .. I}
