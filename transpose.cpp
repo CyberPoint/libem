@@ -75,7 +75,7 @@ int main()
 	cout << "using vectors" << endl << endl;
 	vector<double> vdbl;
 	vdbl.resize(R*C);
-	for(int j = 0; j < R*C; j++_
+	for(int j = 0; j < R*C; j++)
 		vdbl[j] = 10+(double)j; // elements assigned sequential values for now
 	vectorout(vdbl, R, C); // show as R rows, C columns
 	transposev(vdbl, R, C); // transpose elements
@@ -93,22 +93,6 @@ int main()
 	arrayout(p_dbl, C, R);
 	delete [] p_dbl;
 
-	system("PAUSE");
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
