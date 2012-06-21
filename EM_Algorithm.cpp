@@ -4,23 +4,19 @@
 #include <string>
 #include <cmath>
 #include <vector>
-#include <iterator>
+
 #define I 1000
 // define the number of iterations
 
 using namespace std;
 
-
 int main()
 {
-	// initiate a vector U of unspecified numbers of elements to store the data (gaussian mixtures)		
-	//vector <float> U;
-	// input data into into the newly created vector U
-	cout << "Make sure you've added your csv file in the header of this program. \n"; 
+	cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n"; 
 	// reading and parsing the CSV data
 	ifstream in("test_data.txt");
 	string line, field;
-	vector < vector<string> > array; // the 2 D array
+	vector < vector<string> > array; // the 2D array
 	vector<string> v; // array of values for one line only
 
 	while(getline(in, line)) // get next line in file
@@ -29,9 +25,9 @@ int main()
 		stringstream ss(line);
 		while(getline(ss, field, ',')) // break line into comma delimitted fields
 		{
-			v.push_back(field); // add each field to the 1 D array
+			v.push_back(field); // add each field to the 1D array
 		}
-		array.push_back(v); // add the 1 D array to the 2 D array
+		array.push_back(v); // add the 1D array to the 2D array
 	}
 	/*//print out what was read in
 	for (size_t i = 0; i<array.size(); ++i)
@@ -47,7 +43,7 @@ int main()
 	char answer;
 	char C;
 	// give the user options as to how the algorithm chooses initial guesses for the cluster means
-	cout << "Would you like to input the initial cluster means (y=Yes/n=No)? ";
+	cout << "\n Would you like to input the initial cluster means (y=Yes/n=No)? ";
 	cin >> answer;
 
 	if(answer == 'y')
@@ -55,10 +51,13 @@ int main()
 		// now the user chooses the initial guesses for the means 
 		cout << "\n Please enter the number of desired cluster means: ";
 		cin >> C;
-		int * mu;
-		mu = new int [C];
-		cout << "\n Please input the values for your chosen cluster means: \n";
-		
+		char * mu;
+		mu = new char[C];
+		char input_means;
+		cout << "\n Please input the values for your chosen cluster means, separated by spaces: ";
+		cin >> input_means;
+		cin.getline(mu, C);		
+		cout << mu << endl;
 		
 	}
 	else
