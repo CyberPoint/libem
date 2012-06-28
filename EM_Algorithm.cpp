@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	// needs to be changed for specific use
 	int dim = 1;
 	// this too
-	int k = 3;
+	int k = 5;
 	double *cluster_centroid = new double[k];
 	int *cluster_assignment_final = new int[n];
 
@@ -346,7 +346,7 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 	int batch_iteration = 0;
 	while (batch_iteration < I)
 	{
-		cout << "batch iteration \n" << batch_iteration << endl;
+		printf("batch iteration %d \n", batch_iteration);
 		cluster_diag(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
 		// update cluster centroids
 		calc_cluster_centroids(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
@@ -361,7 +361,7 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 				copy_assignment_array(n, cluster_assignment_prev, cluster_assignment_cur);
 				// recalculate centroids
 				calc_cluster_centroids(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
-				cout << "Negative progress on this step - iteration complete. \n" << endl;	
+				printf(" negative progress made on this step - iteration completed (%.2f) \n", totD-prev_totD);
 				// done with this phase
 				break;
 			}
@@ -371,7 +371,7 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 		all_distances(dim, n, k, X, cluster_centroid, dist);
 		choose_all_clusters_from_distances(dim, n, k, dist, X, cluster_assignment_cur);
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
-		cout << " " << batch_iteration << " " << change_count << " \n" << totD << " \n" << (totD - prev_totD);
+		printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
 		fflush(stdout);
 
 		// done with this phase if nothing has changed
@@ -393,7 +393,6 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 }
 
 /*
-InitKMeans
 InitEM
 Expect
 Max
