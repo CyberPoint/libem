@@ -1,3 +1,25 @@
+/*********************************************************************************************************
+        EXPECTATION MAXIMIZATION ALGORITHM
+	CYBERPOINT INTERNATIONAL, LLC
+	Written by Elizabeth Garbee, Summer 2012
+**********************************************************************************************************/
+
+/* Gaussian Mixture Models are some of the simplest examples of classification for unsupervised learning - they are also some of the simplest examples where a solution by an Expectation Maximization algorithm is very successful. Here's the setup: you have N data points in an M dimensional space, usually with 1 < M < a few. You want to fit this data (and if you don't, you might as well stop reading now), but in a special sense - find a set of K multivariate Gaussian distributions that best represents the observed distribution of data points. K is fixed in advance but the means and covariances are unknown. What makes this "unsupervised" learning is that you have "unknown" data, which in this case are the individual data points' cluster memberships. One of the desired outputs of this algorithm is for each data point n, an estimate of the probability that it came from distribution number k. Thus, given the data points, there are three parameters we're interested in approximating:
+
+	mu - the K means, each a vector of length M
+	sigma - the K covariance matrices, each of size MxM
+	P - the K probabilities for each of N data points
+
+We also get some fun stuff as by-products: the probability density of finding a data point at a certain position x, where x is the M dimensional position vector; and L denotes the overall likelihood of your estimated parameter set. L is actually the key to the whole problem, because you find the best values for the parameters by maximizing the likelihood of L. This particular implementation of EM actually first implements a Kmeans approximation to provide an initial guess for cluster centroids, in an attempt to improve the precision and efficiency of the EM approximation.
+
+Here's the procedure:
+	-run a kmeans approximation on your data to give yourself a good starting point for your cluster centroids
+	-guess starting values for mu's, sigmas, and P(k)'s
+	-repeat: an Estep to get new p's and a new L, then an Mstep to get new mu's, sigmas and P(k)'s
+	-stop when L converges (i.e. when the value of L stops changing
+*/
+
+// brick o' header files - don't forget the algorithm-specific one, please
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -6,19 +28,19 @@
 #include <cmath>
 #include <vector>
 #include <istream>
+#include <list>
+#include <numeric>
+#include <functional>
+#include <algorithm>
+#include "EM_Algorithm.h"
 
-#define I 1000
 // define the number of iterations
+#define I 1000
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 16
 #define BIG_double (INFINITY)
 
 using namespace std;
-
-// function that reads and parses a comma (or tab) delineated file
-void ReadCSV(vector<string> &record, const string& line, char delimiter);
-void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final);
-vector<double> * ParseCSV(int argc, char *argv[]);
 
 /*************************************************************************************************************/
 /** MAIN **
@@ -27,63 +49,39 @@ int main(int argc, char *argv[])
 {
 	int i;
 
-	vector<double> csv_data = *ParseCSV(argc, argv);
+	vector<double> csv_data = *ReadCSV();
 	int n = csv_data.size();
 	double * stored_data = new double[n];
 	for (i = 0; i < n; i++)
 	{
 		stored_data[i] = csv_data[i];
-	}
+	} 
 	// needs to be changed for specific use
 	int dim = 1;
-	// this too
-	int k = 5;
+	// number of centroids you want it to use
+	int K = 3;
 	double *cluster_centroid = new double[k];
 	int *cluster_assignment_final = new int[n];
 
 	// perfom a KMeans analysis to determine initial cluster means for the EM algorithm to use
 	kmeans(dim, stored_data, n, k, cluster_centroid, cluster_assignment_final);
-
+	//for (i = 1; i < I; i++)
+	//{
+		//estep();
+		//mstep();
+	//}
+	// if loglikelihood - old loglikelihood = small or unchanging, we've converged
+	// figure out some way to return the parameters to the user -> mu's, sigmas and p's
+	// also print out the final cluster centroids
 	delete[] stored_data;
 	delete[] cluster_centroid;
 	delete[] cluster_assignment_final;
 }
 
 /*************************************************************************************************************/
-/** FUNCTIONS **
+/** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
-vector<double> * ParseCSV(int argc, char *argv[])
-{
-	// read and parse the CSV data
-		cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n";
-		vector<string> row;
-		vector<double> *data = new vector<double>();
-		int line_number = 0;
-		string line;
-		ifstream in("test_data.txt");
-		if (in.fail())
-		{
-			cout << "File not found" << endl;
-			return 0;
-		}
-		while (getline(in, line) && in.good())
-		{
-			ReadCSV(row, line, ',');
-			// only looking at row[0] now because of an assumption of 1D data
-			// count through line_number
-			const char* s = row[0].c_str();
-			data->push_back(atof(s));
-			// now the data is stored in a vector of doubles called data
-			//for (int i = 0, leng = row.size(); i < leng; i++)
-			//{
-				//cout << row[i] << "\t";
-			//}
-			//cout << endl;
-		}
-		in.close();
-		return data;
-}
-
+// a function that reads in data from a comma deliniated file
 void ReadCSV(vector<string> &record, const string& line, char delimiter)
 {
 	int linepos = 0;
@@ -134,9 +132,38 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 	return;
 }
 
-/**********************************************************************************************************************************************
-** K MEANS **
-**********************************************************************************************************************************************/
+// a function that parses the data you just read in and returns a vector of doubles (which is the input format necessary for the kmeans function)
+vector<double> * ParseCSV(int argc, char *argv[])
+{
+	// read and parse the CSV data
+		cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n";
+		vector<string> row;
+		vector<double> *data = new vector<double>();
+		int line_number = 0;
+		string line;
+		ifstream in("test_data.txt");
+		if (in.fail())
+		{
+			cout << "File not found" << endl;
+			return 0;
+		}
+		while (getline(in, line) && in.good())
+		{
+			ReadCSV(row, line, ',');
+			// only looking at row[0] now because of an assumption of 1D data
+			// count through line_number
+			const char* s = row[0].c_str();
+			data->push_back(atof(s));
+			// now the data is stored in a vector of doubles called data
+			//for (int i = 0, leng = row.size(); i < leng; i++)
+			//{
+				//cout << row[i] << "\t";
+			//}
+			//cout << endl;
+		}
+		in.close();
+		return data;
+}
 
 // define failure
 void fail(char *str)
@@ -318,6 +345,9 @@ int assignment_change_count (int n, int a[], int b[])
 	return change_count;
 }
 
+/******************************************************************************************************************
+** K MEANS **
+*******************************************************************************************************************/
 void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final)
 // dim = dimension of data
 // double *X = pointer to data
@@ -386,16 +416,74 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 	}
 	// write to output array
 	copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_final);
+	// clean up
 	free(dist);
 	free(cluster_assignment_cur);
 	free(cluster_assignment_prev);
 	free(point_move_score);
 }
 
-/*
-InitEM
-Expect
-Max
+/*****************************************************************************************************************
+** EM ALGORITHM **
+*****************************************************************************************************************/
 
-*/
+void EM() //don't forget to add signature to .h file
+{
+	PSEUDOCODE 
+
+	variable defs:
+		Y = [Y1 ... Yd]^T is a d-dimensional random variable //INCOMPLETE data, what's missing are cluster assignments
+			the missing set is a set of n labels Z = {z1 ... zn} associated with the n samples //including which component produced which variable
+			Y follows a k-component finite mix dist
+		y = [y1 ... yd]^T represents one outcome of Y
+		p(y|theta) is Y's probability density function
+		alphas are the mixing probabilities 
+		each theta_m is the set of parameters defining the mth component
+		theta == {theta1 ... thetak, alpha1 ... alphak}	
+		argmaxlog etc is the maximum likelihood estimate
+		u_m is the probability distribution function
+		
+
+	inputs: kmin, kmax, epsilon, initial parameters theta_0 = {theta_1 ... theta_kmax, alpha_1 ... alpha_kmax} //maybe cluster_centroids?
+	output: mixture model in theta_best
+
+	t <- 0, k_nz <- kmax, L_min <- +infinity //initialize these parameters: start the count t at zero, define the dimension of k, and set L_min to infinity
+	u_m <- p(y|theta_m), for m = 1 ... kmax, and i = 1 ... n
+
+	while k_nz > or = kmin do //as long as you haven't reached a global min/max
+		repeat //iterate
+			t <- t+1 //increment
+			for m = 1 to kmax do //go through all the components
+				for i = 1 ... n //iteration variable
+					mu_m <- alpha_m mu_m (sum from j = 1 to kmax of alpha_j u_j)^-1, //update the means
+					alpha_m <- max{0, (sum from i = 1 to n of w_m) - N/2} (sum from j = 1 to k max{0, (sum from i = 1 to n of w_j) - N/2})^-1 //update probabilities
+					{alpha_1 ... alpha_kmax} <- {alpha_1 ... alpha_kmax}(sum from m = 1 to kmax of alpha_m)^-1 //update probability matrix
+				if alpha_m > 0 then //if the probability is greater than zero (it would be stupid to do this for stuff that isn't probable)
+					theta_m <- argmaxlogp(Y,W|theta) //do the maximum likelihood estimate and stuff that into theta, your parameter array
+					for i = 1 ... n //iteration variable
+						u_m <- p(y|theta_m), //update the probabilities with the new approximation taking into account the max likelihood you just computed
+				else //if the probabilty isn't > 0
+					k_nz <- k_nz - 1 //go back one
+				end if
+			end for
+			theta_t <- {theta_1 ... theta_kmax, alpha_1 ... alpha_kmax}, //stuff your parameters and probabilities into the theta array
+			L[theta(t),Y] <- N/2 (sum log n*alpha_m/12 + k_nz/2 log n/12 + k_nzN + k_nz /2 - sum from i = 1 to n of log sum from m = 1 to k of alpha_m u_m 
+			//super gnarly log likelihood computation - can't really be avoided
+			
+		until L[theta(t-1),Y] - L[theta(t),Y] < epsilon * | L[theta(t-1),Y] | //do all the above until convergence ... epsilon = 0.001? the smaller it is, theoretically the more 												precise the convergence
+			OR L[theta(t-1),Y] = L[theta(t),Y] //or you could just ignore the epsilon altogether
+		if L[theta(t),Y] < or = to L_min then //test to see whether converged to a global min/max etc
+			L_min <- L[theta(t),Y] // if it's converged, set that L as L_min
+			theta_best <- theta(t) // return these parameters as the best
+		end if
+		clean up //probably will have to do some malloc'ing, don't want to forget
+	end while
+	return theta_best; //so we can see the best fit we've worked so hard for
+
+	STILL HAVE TO FIGURE OUT HOW INIT WITH KMEANS CLUSTERS
+	
+}
+
+
+
 
