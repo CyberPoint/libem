@@ -2,9 +2,13 @@
         EXPECTATION MAXIMIZATION ALGORITHM
 	CYBERPOINT INTERNATIONAL, LLC
 	Written by Elizabeth Garbee, Summer 2012
-**********************************************************************************************************/
+**********************************************************************************************************
 
-/* Gaussian Mixture Models are some of the simplest examples of classification for unsupervised learning - they are also some of the simplest examples where a solution by an Expectation Maximization algorithm is very successful. Here's the setup: you have N data points in an M dimensional space, usually with 1 < M < a few. You want to fit this data (and if you don't, you might as well stop reading now), but in a special sense - find a set of K multivariate Gaussian distributions that best represents the observed distribution of data points. K is fixed in advance but the means and covariances are unknown. What makes this "unsupervised" learning is that you have "unknown" data, which in this case are the individual data points' cluster memberships. One of the desired outputs of this algorithm is for each data point n, an estimate of the probability that it came from distribution number k. Thus, given the data points, there are three parameters we're interested in approximating:
+Reference Numerical Recipes 3rd Edition: The Art of Scientific Computing 3 
+Cambridge University Press New York, NY, USA ©2007 
+ISBN:0521880688 9780521880688
+
+Gaussian Mixture Models are some of the simplest examples of classification for unsupervised learning - they are also some of the simplest examples where a solution by an Expectation Maximization algorithm is very successful. Here's the setup: you have N data points in an M dimensional space, usually with 1 < M < a few. You want to fit this data (and if you don't, you might as well stop reading now), but in a special sense - find a set of K multivariate Gaussian distributions that best represents the observed distribution of data points. K is fixed in advance but the means and covariances are unknown. What makes this "unsupervised" learning is that you have "unknown" data, which in this case are the individual data points' cluster memberships. One of the desired outputs of this algorithm is for each data point n, an estimate of the probability that it came from distribution number k. Thus, given the data points, there are three parameters we're interested in approximating:
 
 	mu - the K means, each a vector of length M
 	sigma - the K covariance matrices, each of size MxM
@@ -32,7 +36,6 @@ Here's the procedure:
 #include <numeric>
 #include <functional>
 #include <algorithm>
-#include "EM_Algorithm.h"
 
 // define the number of iterations
 #define I 1000
@@ -42,26 +45,54 @@ Here's the procedure:
 
 using namespace std;
 
+void ReadCSV(vector<string> &record, const string& line, char delimiter);
+vector<double> ParseCSV(void);
+void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final);
+vector<double> * ParseCSV(int argc, char *argv[]);
+double euclid_distance(int dim, double *pl, double *p2);
+void all_distances(int dim, int n, int k, double *X, double *centroid, double *distance_out);
+double calc_total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index);
+void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double *distance_array, int *cluster_assignment_index);
+void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid);
+void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *cluster_member_count);
+void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count,       double*point_move_score_table, int cc);
+void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster);
+void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid);
+void copy_assignment_array(int n, int *src, int *tgt);
+int assignment_change_count (int n, int a[], int b[]);
+
+
 /*************************************************************************************************************/
 /** MAIN **
+
+In Main, we call the function that parses data from a comma delineated file, store that data in a double*, then
+give values for initial cluster centroids and allocate space for final cluster assignments. Once those
+preliminaries are out of the way, we execute a kmeans analysis followed by an EM approximation, returning 
+the "best" set of parameters to describe your mixture of gaussians.
+
 **************************************************************************************************************/
 int main(int argc, char *argv[])
 {
 	int i;
 
-	vector<double> csv_data = *ReadCSV();
+	vector<double> csv_data = ParseCSV();
 	int n = csv_data.size();
-	double * stored_data = new double[n];
+	printf("n: %d\n", n);
+	double pre[23];
+	double * stored_data = pre;
 	for (i = 0; i < n; i++)
 	{
 		stored_data[i] = csv_data[i];
+		printf("%f |", stored_data[i]);
 	} 
-	// needs to be changed for specific use
+	// this section is hard coded for now - values need to be changed for specific use
 	int dim = 1;
+	int k = 3;
 	// number of centroids you want it to use
-	int K = 3;
-	double *cluster_centroid = new double[k];
-	int *cluster_assignment_final = new int[n];
+	double pre_c_c[3] = {0, 0, 0};
+	double *cluster_centroid = pre_c_c;
+	int pre_c_a_f[23];
+	int *cluster_assignment_final = pre_c_a_f;
 
 	// perfom a KMeans analysis to determine initial cluster means for the EM algorithm to use
 	kmeans(dim, stored_data, n, k, cluster_centroid, cluster_assignment_final);
@@ -70,18 +101,20 @@ int main(int argc, char *argv[])
 		//estep();
 		//mstep();
 	//}
-	// if loglikelihood - old loglikelihood = small or unchanging, we've converged
-	// figure out some way to return the parameters to the user -> mu's, sigmas and p's
-	// also print out the final cluster centroids
-	delete[] stored_data;
-	delete[] cluster_centroid;
-	delete[] cluster_assignment_final;
 }
 
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
-// a function that reads in data from a comma deliniated file
+
+/* 
+
+ReadCSV is a function that simply reads in data from a comma delineated file and stores it in a string
+for immediate use by ParseCSV.
+	input - CSV data as a vector of strings
+	output - void
+*/
+
 void ReadCSV(vector<string> &record, const string& line, char delimiter)
 {
 	int linepos = 0;
@@ -132,20 +165,27 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 	return;
 }
 
-// a function that parses the data you just read in and returns a vector of doubles (which is the input format necessary for the kmeans function)
-vector<double> * ParseCSV(int argc, char *argv[])
+/* 
+
+ParseCSV a function that parses the data you just read in from ReadCSV and returns a vector of doubles 
+(which is the input format necessary for the kmeans function).
+	input - string from ReadCSV
+	output - vector of doubles containing your data
+*/
+
+vector<double> ParseCSV(void)
 {
 	// read and parse the CSV data
 		cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n";
 		vector<string> row;
-		vector<double> *data = new vector<double>();
+		vector<double> data;
+		
 		int line_number = 0;
 		string line;
-		ifstream in("test_data.txt");
+		ifstream in("littledata.csv"); // changed from test_data.csv
 		if (in.fail())
 		{
 			cout << "File not found" << endl;
-			return 0;
 		}
 		while (getline(in, line) && in.good())
 		{
@@ -153,7 +193,7 @@ vector<double> * ParseCSV(int argc, char *argv[])
 			// only looking at row[0] now because of an assumption of 1D data
 			// count through line_number
 			const char* s = row[0].c_str();
-			data->push_back(atof(s));
+			data.push_back(atof(s));
 			// now the data is stored in a vector of doubles called data
 			//for (int i = 0, leng = row.size(); i < leng; i++)
 			//{
@@ -163,24 +203,33 @@ vector<double> * ParseCSV(int argc, char *argv[])
 		}
 		in.close();
 		return data;
+		
 }
 
-// define failure
-void fail(char *str)
-{
-	printf(str);
-	exit(-1);
-}
+/*
 
-// calculates the euclidean distance between points	
-double euclid_distance(int dim, double *pl, double *p2)
+euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
+is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster
+centroid.
+	input - two double*s representing point one and point 2
+	output - double which stores the distance
+
+*/
+
+double euclid_distance(int dim, double *p1, double *p2)
 {	
 	double distance_sq_sum = 0;
 	for (int ii = 0; ii < dim; ii++)
-		distance_sq_sum += sqr(pl[ii] - p2[ii]);
+		distance_sq_sum += sqr(p1[ii] - p2[ii]);
 	return distance_sq_sum;
 }
-// calculates all distances
+/*
+
+all_distances calculates distances from the centroids you initialized in main to every data point.
+	input - double*s containing your data, initial centroids
+	output - void
+
+*/
 void all_distances(int dim, int n, int k, double *X, double *centroid, double *distance_out)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
@@ -190,20 +239,15 @@ void all_distances(int dim, int n, int k, double *X, double *centroid, double *d
 		}
 }
 
-// calculate total distance
-double total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
-// point with a cluster assignment of -1 is ignored
-{
-	double tot_D = 0;
-	for (int ii = 0; ii < n; ii++) // for each data point
-	{
-		int active_cluster = cluster_assignment_index[ii]; // which cluster it's in
-		// sum distance
-		if (active_cluster != -1) 
-			tot_D += euclid_distance(dim, &X[ii*dim], &centroids[active_cluster*dim]);
-	}
-	return tot_D;
-}
+/*
+
+calc_total_distance computes the total distance from all their respective data points for all the clusters
+you initialized. This function also initializes the array that serves as the index of cluster assignments 
+for each point (i.e. which cluster each point "belongs" to on this iteration).
+	input - double*s containing your data, initial centroids
+	output - double 
+
+*/
 
 double calc_total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
 {
@@ -217,13 +261,21 @@ double calc_total_distance(int dim, int n, int k, double *X, double *centroids, 
 	}
 	return tot_D;
 }
+/*
+
+choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points - this
+is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data.
+	input - data, the array that holds the distances, and the assignment index
+	output - void
+
+*/
 
 void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
 	{
 		int best_index = -1;
-		double closest_distance = BIG_double;
+		double closest_distance = 100000;
 
 		// for each cluster
 		for (int jj = 0; jj < k; jj++)
@@ -241,23 +293,36 @@ void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double
 	}
 }
 
+/*
+
+calc_cluster_centroids is the function that actually recalculates the values for centroids based on their reassignment, in order
+to ensure that the cluster centroids are still the means of the data that belong to them. This is also where the double* that
+holds the new cluster centroids is assigned and filled in.
+	input - data, assignment index
+	output - void
+
+*/
+
 void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
 {
-	int cluster_member_count[MAX_CLUSTERS];
+	for (int b = 0; b < k; b++)
+		printf("\n%f\n", new_cluster_centroid[b]);
+	int carray[3];
+	int * cluster_member_count = carray;
 	// initialize cluster centroid coordinate sums to zero
 	for (int ii = 0; ii < k; ii++)
 	{
-		cluster_member_count[ii] = 0;
-		for (int jj = 0; jj < dim; jj++)
-			new_cluster_centroid[ii*dim + jj] = 0;
+		// cluster_member_count[ii] = 0;
+		// for (int jj = 0; jj < dim; jj++)
+		new_cluster_centroid[dim*k] = 0;
 	}
 	// sum all points for every point
-	for (int ii = 0; ii < k; ii++)
+	for (int ii = 0; ii < n; ii++)
 	{
 		// which cluster it's in
 		int active_cluster = cluster_assignment_index[ii];
 		// update member count in that cluster
-		cluster_member_count[active_cluster]++;
+		// cluster_member_count[active_cluster]++;
 		// sum point coordinates for finding centroid
 		for (int jj = 0; jj < dim; jj++)
 			new_cluster_centroid[active_cluster*dim + jj] += X[ii*dim + jj];
@@ -265,6 +330,7 @@ void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assig
 	// divide each coordinate sum by number of members to find mean(centroid) for each cluster
 	for (int ii = 0; ii < k; ii++)
 	{
+		get_cluster_member_count(n, k, cluster_assignment_index, cluster_member_count);
 		if (cluster_member_count[ii] == 0)
 			cout << "Warning! Empty cluster. \n" << ii << endl;
 		// for each dimension
@@ -274,16 +340,34 @@ void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assig
 	}
 }
 
-void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *cluster_member_count)
+/*
+
+get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how
+many points belong to each cluster. This is where the int* representing the number of data points for 
+every cluster is initialized and filled in.
+	input - assignment index
+	output - void
+*/
+
+void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int * cluster_member_count)
 {
 	// initialize cluster member counts
 	for (int ii = 0; ii < k; ii++)
 		cluster_member_count[ii] = 0;
 	// count members of each cluster
-	for (int ii = 0; ii < k; ii++)
+	for (int ii = 0; ii < n; ii++)
 		cluster_member_count[cluster_assignment_index[ii]]++;
 
 }
+
+/*
+
+update_delta_score_table is the first step in reassigning points to the clusters that are now closest to them - it basically
+creates a table of which clusters need to be moved and fills in that table. Not all points will need to be reassigned after
+each iteration, so this function keeps track of the ones that do. 
+	input - data, current cluster assignment, current cluster centroids, member count
+	output - void
+*/
 
 void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double *point_move_score_table, int cc)
 {
@@ -300,6 +384,13 @@ void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_ass
 		point_move_score_table[ii*dim + cc] = dist_sum * mult;
 	}
 }
+
+/*
+
+perform_move is the piece that actually smooshes around the clusters. 
+	input - data, cluster assignments, cluster centroids, and member counts
+	output - void
+*/
 
 void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster)
 {
@@ -321,6 +412,14 @@ void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, do
 	}
 }
 
+/* 
+
+cluster_diag gets the current cluster member count and centroids and prints them out for the user after each iteration.
+	input - data, assignment index, centroids
+	output - void
+
+*/
+
 void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
 {
 	int cluster_member_count[MAX_CLUSTERS];
@@ -330,12 +429,26 @@ void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_inde
 		printf("   cluster %d:       members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*dim + 0]/*, cluster_centroid[ii*dim  + 1]*/);
 } 
 
+/*
+
+copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster)
+so you can use it for the next iteration
+	input - source and target
+	output - void
+*/ 
+
 void copy_assignment_array(int n, int *src, int *tgt)
 {
 	for (int ii = 0; ii < n; ii++)
 		tgt[ii] = src[ii];
 }
 
+/*
+
+assignment_change_count keeps track of the count of how many points have been reassigned for each iteration.
+	input - arrays a and b
+	output - an integer representing how many points have "moved" (been reassigned)
+*/
 int assignment_change_count (int n, int a[], int b[])
 {
 	int change_count = 0;
@@ -347,6 +460,19 @@ int assignment_change_count (int n, int a[], int b[])
 
 /******************************************************************************************************************
 ** K MEANS **
+
+Kmeans is a clustering algorithm which takes in a pile of data and separates it into clusters - it will keep shifting 
+the means of these clusters ("cluster centroids") until they stop moving, i.e. when the algorithm converges. Like the
+EM algorithm, it works in two steps:
+
+	- assign each data point to the component whose mean it is closest to, by Euclidean distance
+	- for all components, re-estimate the mean as the average of data points assigned to that component
+
+With Kmeans, convergence is guaranteed: you can't get stuck in an infinite loop of shifting a point back and forth
+between two centroids. This algorithm is relatively fast and converges rapidly. Its main advantage is that it can
+easily reduce a huge pile of data to a much smaller number of "centers," which can then be used as the starting points
+for more sophisticated methods (like Expectation Maximization).
+
 *******************************************************************************************************************/
 void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final)
 // dim = dimension of data
@@ -365,25 +491,39 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score)
 		cout << "Error allocating arrays. \n" << endl;
 
+			
+	// give the initial cluster centroids some values
+	double array [3] = {0, 5, 10};
+
+	cluster_centroid = array;
 	
 	// initial setup
 	all_distances(dim, n, k, X, cluster_centroid, dist);
-	choose_all_clusters_from_distances(dim, n, k, dist, X, cluster_assignment_cur);
+	choose_all_clusters_from_distances(dim, n, k, X, dist, cluster_assignment_cur);
 	copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
 
 	// batch update
-	double prev_totD = BIG_double;
+	double prev_totD = 10000.0;
+	printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
 	while (batch_iteration < I)
 	{
 		printf("batch iteration %d \n", batch_iteration);
+		printf("2: \n%lf\n", prev_totD);
+		
 		cluster_diag(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
+		printf("2.5: \n%lf\n", prev_totD);
 		// update cluster centroids
 		calc_cluster_centroids(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
+
 		// deal with empty clusters
 		// see if we've failed to improve
+		
+		printf("3: \n%lf\n", prev_totD);
 
 		double totD = calc_total_distance(dim, n, k, X, cluster_centroid, cluster_assignment_cur);
+		printf("4: \n%lf\n", prev_totD);
+		printf("totD: %lf, prev_totD: %lf\n", totD, prev_totD);
 		if (totD > prev_totD)
 			// failed to improve - this solution is worse than the last one
 			{
@@ -400,6 +540,7 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 		// smoosh points around to nearest cluster
 		all_distances(dim, n, k, X, cluster_centroid, dist);
 		choose_all_clusters_from_distances(dim, n, k, dist, X, cluster_assignment_cur);
+
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
 		printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
 		fflush(stdout);
@@ -425,11 +566,45 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 
 /*****************************************************************************************************************
 ** EM ALGORITHM **
-*****************************************************************************************************************/
+*****************************************************************************************************************
 
 void EM() //don't forget to add signature to .h file
 {
 	PSEUDOCODE 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	variable defs:
 		Y = [Y1 ... Yd]^T is a d-dimensional random variable //INCOMPLETE data, what's missing are cluster assignments
@@ -483,6 +658,9 @@ void EM() //don't forget to add signature to .h file
 	STILL HAVE TO FIGURE OUT HOW INIT WITH KMEANS CLUSTERS
 	
 }
+
+
+*/
 
 
 
