@@ -566,97 +566,68 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 
 /*****************************************************************************************************************
 ** EM ALGORITHM **
-*****************************************************************************************************************
 
-void EM() //don't forget to add signature to .h file
+(The EM algorithm owes its effectiveness to the Jensen inequality, which states that if you have a concave-down function,
+and you want to interpolate between two points on that function, then the function(interpolation) >= interpolation(function).)
+
+This algorithm's main function is find the parameters (theta) that maximize the likelihood of your set of data (usually a 
+mixture of gaussians). It does this by calculating a likelihood L(theta), which is equal to the log of the probability of 
+the data x given a set of parameters theta:
+
+	L(theta) = lnP(x|theta)
+
+For a more detailed explanation of the procedure for the algorithm, see the comment block at the top of this code.
+For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Recipes 3 (citation above). 
+*******************************************************************************************************************/
+/*
+mu_k = the K number of means, each with a vector of length M
+sigma_k = the K number of covariance matrices, each of size M x M
+P(k) = the fraction of all data pointsat some position x, where x is the m-dimensional position vector
+p_nk = the K number of probabilities for each of the N data points
+N = number of gaussians
+
+double estep(mu, sigma, P(k), likelihood)
 {
-	PSEUDOCODE 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	variable defs:
-		Y = [Y1 ... Yd]^T is a d-dimensional random variable //INCOMPLETE data, what's missing are cluster assignments
-			the missing set is a set of n labels Z = {z1 ... zn} associated with the n samples //including which component produced which variable
-			Y follows a k-component finite mix dist
-		y = [y1 ... yd]^T represents one outcome of Y
-		p(y|theta) is Y's probability density function
-		alphas are the mixing probabilities 
-		each theta_m is the set of parameters defining the mth component
-		theta == {theta1 ... thetak, alpha1 ... alphak}	
-		argmaxlog etc is the maximum likelihood estimate
-		u_m is the probability distribution function
-		
-
-	inputs: kmin, kmax, epsilon, initial parameters theta_0 = {theta_1 ... theta_kmax, alpha_1 ... alpha_kmax} //maybe cluster_centroids?
-	output: mixture model in theta_best
-
-	t <- 0, k_nz <- kmax, L_min <- +infinity //initialize these parameters: start the count t at zero, define the dimension of k, and set L_min to infinity
-	u_m <- p(y|theta_m), for m = 1 ... kmax, and i = 1 ... n
-
-	while k_nz > or = kmin do //as long as you haven't reached a global min/max
-		repeat //iterate
-			t <- t+1 //increment
-			for m = 1 to kmax do //go through all the components
-				for i = 1 ... n //iteration variable
-					mu_m <- alpha_m mu_m (sum from j = 1 to kmax of alpha_j u_j)^-1, //update the means
-					alpha_m <- max{0, (sum from i = 1 to n of w_m) - N/2} (sum from j = 1 to k max{0, (sum from i = 1 to n of w_j) - N/2})^-1 //update probabilities
-					{alpha_1 ... alpha_kmax} <- {alpha_1 ... alpha_kmax}(sum from m = 1 to kmax of alpha_m)^-1 //update probability matrix
-				if alpha_m > 0 then //if the probability is greater than zero (it would be stupid to do this for stuff that isn't probable)
-					theta_m <- argmaxlogp(Y,W|theta) //do the maximum likelihood estimate and stuff that into theta, your parameter array
-					for i = 1 ... n //iteration variable
-						u_m <- p(y|theta_m), //update the probabilities with the new approximation taking into account the max likelihood you just computed
-				else //if the probabilty isn't > 0
-					k_nz <- k_nz - 1 //go back one
-				end if
-			end for
-			theta_t <- {theta_1 ... theta_kmax, alpha_1 ... alpha_kmax}, //stuff your parameters and probabilities into the theta array
-			L[theta(t),Y] <- N/2 (sum log n*alpha_m/12 + k_nz/2 log n/12 + k_nzN + k_nz /2 - sum from i = 1 to n of log sum from m = 1 to k of alpha_m u_m 
-			//super gnarly log likelihood computation - can't really be avoided
-			
-		until L[theta(t-1),Y] - L[theta(t),Y] < epsilon * | L[theta(t-1),Y] | //do all the above until convergence ... epsilon = 0.001? the smaller it is, theoretically the more 												precise the convergence
-			OR L[theta(t-1),Y] = L[theta(t),Y] //or you could just ignore the epsilon altogether
-		if L[theta(t),Y] < or = to L_min then //test to see whether converged to a global min/max etc
-			L_min <- L[theta(t),Y] // if it's converged, set that L as L_min
-			theta_best <- theta(t) // return these parameters as the best
-		end if
-		clean up //probably will have to do some malloc'ing, don't want to forget
-	end while
-	return theta_best; //so we can see the best fit we've worked so hard for
-
-	STILL HAVE TO FIGURE OUT HOW INIT WITH KMEANS CLUSTERS
+	probability of finding a point at position x_n = sum over k of (multivariate gaussian density)(P(k));
+	double likelihood = product over n of (probability of finding a point at position x_n);
+	return likelihood;
 	
+}
+
+vector<double> mstep(theta)
+{
+	mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
+	sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
+	P(k) = (1 / N)(sum over n of p_nk);
+	vector<double> theta = (mu, sigma, P(k));
+	return theta;
+}
+
+
+void EM(int n, int k, int epsilon, double *cluster_centroid) //don't forget to add signature to .h file
+{
+	int epsilon = 0.001;
+	kmeans_mu = cluster centroids;
+	initial_sigma = 
+	initial_P(k) = 
+
+	old_likelihood = 0;
+	new_likelihood = Estep(initial_mu, initial_sigma, initial_P(k));
+	current_mu = kmeans_mu;
+	current_sigma = initial_sigma;
+	current_P(k) = initial_P(k);
+	while
+		old_likelihood and abs(new_likelihood - old_likelihood) > epsilon 
+		and iterations < max_iterations
+		{
+			old_likelihood = new_likelihood;
+			new_likelihood = Estep(current_mu, current_sigma, current_P(k))
+			Mstep(current_mu, current_sigma, current_P(k)) = (new_mu, new_sigma, new_P(k))
+			theta = (new_mu, new_sigma, new_P(k))
+		}
+	end while
+	cout << "The best parameters for this mixture of Gaussians is   \n" << theta << endl;
+
 }
 
 
