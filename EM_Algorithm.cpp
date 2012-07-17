@@ -37,8 +37,6 @@ Here's the procedure:
 #include <functional>
 #include <algorithm>
 
-// define the number of iterations
-#define I 1000
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 16
 #define BIG_double (INFINITY)
@@ -77,10 +75,10 @@ int main(int argc, char *argv[])
 
 	vector<double> csv_data = ParseCSV();
 	int n = csv_data.size();
-	printf("n: %d\n", n);
+	printf("n: %d\n", N);
 	double pre[23];
 	double * stored_data = pre;
-	for (i = 0; i < n; i++)
+	for (i = 0; i < N; i++)
 	{
 		stored_data[i] = csv_data[i];
 		printf("%f |", stored_data[i]);
@@ -96,11 +94,7 @@ int main(int argc, char *argv[])
 
 	// perfom a KMeans analysis to determine initial cluster means for the EM algorithm to use
 	kmeans(dim, stored_data, n, k, cluster_centroid, cluster_assignment_final);
-	//for (i = 1; i < I; i++)
-	//{
-		//estep();
-		//mstep();
-	//}
+	//EM();
 }
 
 /*************************************************************************************************************/
@@ -578,61 +572,85 @@ the data x given a set of parameters theta:
 
 For a more detailed explanation of the procedure for the algorithm, see the comment block at the top of this code.
 For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Recipes 3 (citation above). 
-*******************************************************************************************************************/
-/*
-mu_k = the K number of means, each with a vector of length M
-sigma_k = the K number of covariance matrices, each of size M x M
-P(k) = the fraction of all data pointsat some position x, where x is the m-dimensional position vector
-p_nk = the K number of probabilities for each of the N data points
-N = number of gaussians
 
-double estep(mu, sigma, P(k), likelihood)
-{
-	probability of finding a point at position x_n = sum over k of (multivariate gaussian density)(P(k));
-	double likelihood = product over n of (probability of finding a point at position x_n);
+	mu_k = the K number of means, each with a vector of length M
+	sigma_k = the K number of covariance matrices, each of size M x M
+	P(k) = the fraction of all data points at some position x, where x is the m-dimensional position vector
+	p_nk = the K number of probabilities for each of the N data points
+	n = total number of data points
+	k = total number of multivariate Gaussians
+	data_point = an individual data point
+	gaussian = a specific gaussian (distribution)
+	weight = the probability of finding a point at position x_n
+	density = multivariate gaussian density
+			(actually the log of the densities)
+
+*******************************************************************************************************************/
+// need to define k and n - just pass them in? make sure they're the same
+//double estep(int n, int k, int K, int N, double mu, double sigma)
+{	
+	// need to either define K and N, or find them from above code and pass in
+	//weight = sum over k of (multivariate gaussian density)(P(k));
+	for (int gaussian = 1; gaussian < k; gaussian++)
+	{
+		double P(k) = 
+		//double density = -.5 * (x-mu)*sigma inverse*(x-mu)-(M/2)log(2 pi)-.5*logdet(sigma)
+		weight = (density)(P(k));
+	}
+	//likelihood = product over n of (weight);
+	for (int data_point = 1; data_point < n; data_point++)
+	{
+		double likelihood = weight;
+	}
 	return likelihood;
 	
 }
 
-vector<double> mstep(theta)
+//vector<double> mstep(int n, int k, double P(k), double theta)
 {
-	mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
-	sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
-	P(k) = (1 / N)(sum over n of p_nk);
+	//p_nk == P(k|n) = (multivariate gaussian density)(P(k)) / weight
+	x_n = 
+	
+	//double mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
+	//double sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
+	//double P(k) = (1 / N)(sum over n of p_nk);
+	/* since all these values are summed over n, according to the laws of sums, we can put all these
+		calculations in one for loop that loops through each data point */
+	for (data_point = 1; data_point < n; data_point++)
+	{
+		double mu = (p_nk)(x_n) / p_nk;
+		double sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk;
+		double P(k) = (1. / N)(p_nk);
+	}
 	vector<double> theta = (mu, sigma, P(k));
 	return theta;
 }
 
 
-void EM(int n, int k, int epsilon, double *cluster_centroid) //don't forget to add signature to .h file
+//void EM(int n, int k, int epsilon, double *cluster_centroid) //don't forget to add signature to .h file
 {
+	int iterations;	
+	int max_iterations = 100;
 	int epsilon = 0.001;
-	kmeans_mu = cluster centroids;
-	initial_sigma = 
-	initial_P(k) = 
+	//double kmeans_mu = &cluster_centroid;
+	//initial_sigma = 
+	//initial_P(k) = 
 
-	old_likelihood = 0;
-	new_likelihood = Estep(initial_mu, initial_sigma, initial_P(k));
-	current_mu = kmeans_mu;
-	current_sigma = initial_sigma;
-	current_P(k) = initial_P(k);
-	while
-		old_likelihood and abs(new_likelihood - old_likelihood) > epsilon 
-		and iterations < max_iterations
-		{
-			old_likelihood = new_likelihood;
-			new_likelihood = Estep(current_mu, current_sigma, current_P(k))
-			Mstep(current_mu, current_sigma, current_P(k)) = (new_mu, new_sigma, new_P(k))
-			theta = (new_mu, new_sigma, new_P(k))
-		}
-	end while
-	cout << "The best parameters for this mixture of Gaussians is   \n" << theta << endl;
+	//double old_likelihood;
+	//new_likelihood = estep(initial_mu, initial_sigma, initial_P(k));
+	//double current_mu = kmeans_mu;
+	//double current_sigma = initial_sigma;
+	//double current_P(k) = initial_P(k);
+	while ((old_likelihood > epsilon) && ((new_likelihood - old_likelihood) > epsilon) && (iterations < max_iterations))
+	{
+		
+		old_likelihood = new_likelihood;
+		//double new_likelihood = estep(current_mu, current_sigma, current_P(k))
+		//mstep(current_mu, current_sigma, current_P(k)) = (new_mu, new_sigma, new_P(k))
+		//theta = (new_mu, new_sigma, new_P(k))
+		
+	}
+	//cout << "The best parameters for this mixture of Gaussians is   \n" << theta << endl;
 
 }
-
-
-*/
-
-
-
 
