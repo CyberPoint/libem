@@ -11,7 +11,7 @@ ISBN:0521880688 9780521880688
 Gaussian Mixture Models are some of the simplest examples of classification for unsupervised learning - they are also some of the simplest examples where a solution by an Expectation Maximization algorithm is very successful. Here's the setup: you have N data points in an M dimensional space, usually with 1 < M < a few. You want to fit this data (and if you don't, you might as well stop reading now), but in a special sense - find a set of K multivariate Gaussian distributions that best represents the observed distribution of data points. K is fixed in advance but the means and covariances are unknown. What makes this "unsupervised" learning is that you have "unknown" data, which in this case are the individual data points' cluster memberships. One of the desired outputs of this algorithm is for each data point n, an estimate of the probability that it came from distribution number k. Thus, given the data points, there are three parameters we're interested in approximating:
 
 	mu - the K means, each a vector of length M
-	sigma - the K covariance matrices, each of size MxM
+	sigma - the K covariance matrices, each of size M x M
 	P - the K probabilities for each of N data points
 
 We also get some fun stuff as by-products: the probability density of finding a data point at a certain position x, where x is the M dimensional position vector; and L denotes the overall likelihood of your estimated parameter set. L is actually the key to the whole problem, because you find the best values for the parameters by maximizing the likelihood of L. This particular implementation of EM actually first implements a Kmeans approximation to provide an initial guess for cluster centroids, in an attempt to improve the precision and efficiency of the EM approximation.
@@ -36,6 +36,9 @@ Here's the procedure:
 #include <numeric>
 #include <functional>
 #include <algorithm>
+
+// Include Riva Borbley's matrix class (which lives in Vulcan) for matrix math
+#include "~/Vulcan/vulcan/src/utils/Matrix.cpp"
 
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 16
@@ -452,6 +455,31 @@ int assignment_change_count (int n, int a[], int b[])
 	return change_count;
 }
 
+/* 
+
+tensor_product computes the Kronecker tensor product - N x N matrix where the jth column is the column vector version of x 
+with each entry scaled by the jth component of the row vector 
+	input - scaling factor, 
+	output -
+*/
+
+float[][] tensor_product(vector<double> x_n, vector<double> mu, int len)
+{
+	// this piece just multiplies the two (x_n - mu)'s together
+	csv_data.size() = int m;
+	int len = m;
+	float [len][len];
+	vector<double> one = x_n - mu;
+	vector<double> two = x_n - mu;
+	for (i = 0; i < len; i++)
+	{
+		for (j = 0; j < len; j++)
+		{
+			float[i][j] = one[i] * two[i];
+		}
+	}
+}
+
 /******************************************************************************************************************
 ** K MEANS **
 
@@ -579,78 +607,108 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 	p_nk = the K number of probabilities for each of the N data points
 	n = total number of data points
 	k = total number of multivariate Gaussians
+	x = M dimensional position vector
+	x_n = observed position
 	data_point = an individual data point
 	gaussian = a specific gaussian (distribution)
 	weight = the probability of finding a point at position x_n
 	density = multivariate gaussian density
 			(actually the log of the densities)
 
+
 *******************************************************************************************************************/
-// need to define k and n - just pass them in? make sure they're the same
-//double estep(int n, int k, int K, int N, double mu, double sigma)
+//need to put the signatures for these three functions either in the header or up at the top
+double estep(int n, int k, &vector<double> csv_data, vector<double> mu, Matrix sigma, double current_P(k) )
 {	
-	// need to either define K and N, or find them from above code and pass in
 	//weight = sum over k of (multivariate gaussian density)(P(k));
-	for (int gaussian = 1; gaussian < k; gaussian++)
+	for (int gaussian = 1.; gaussian < k; gaussian++)
 	{
-		double P(k) = 
-		//double density = -.5 * (x-mu)*sigma inverse*(x-mu)-(M/2)log(2 pi)-.5*logdet(sigma)
-		weight = (density)(P(k));
+		for (int data_point = 1.; data_point < n; data_point++)
+		{
+			//need an x here that represents the position vector
+			vector<int> x = csv_data.size();
+			// define sigma inverse
+			Matrix sigma & inv() throw (SizeError, LapackError) = sigma_inverse;
+			csv_data.size() = int m;
+			//double density = -.5 * (x-mu)*sigma_inverse*(x-mu)-(m/2)log(2 pi)-.5*logdet(sigma) -> this is just a dot product
+
+			weight = (density)(current_P(k));
+		}
 	}
 	//likelihood = product over n of (weight);
-	for (int data_point = 1; data_point < n; data_point++)
+	for (data_point = 1; data_point < n; data_point++)
 	{
-		double likelihood = weight;
+		double likelihood = 1.;
+		likelihood *= weight;
 	}
 	return likelihood;
 	
 }
 
-//vector<double> mstep(int n, int k, double P(k), double theta)
+vector<double> mstep(int n, int k, double density, double p_nk, double current_P(k), double weight, double theta)
 {
 	//p_nk == P(k|n) = (multivariate gaussian density)(P(k)) / weight
-	x_n = 
+	double p_nk = (density)(current_P(k)) / weight;
+	int x_n;
+	csv_data.at(x_n) = x_n;
 	
-	//double mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
+	//vector<double> mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
 	//double sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
-	//double P(k) = (1 / N)(sum over n of p_nk);
-	/* since all these values are summed over n, according to the laws of sums, we can put all these
-		calculations in one for loop that loops through each data point */
-	for (data_point = 1; data_point < n; data_point++)
+	//double P(k) = (1 / n)(sum over n of p_nk);
+	for (data_point = 1.; data_point < n; data_point++)
 	{
-		double mu = (p_nk)(x_n) / p_nk;
-		double sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk;
-		double P(k) = (1. / N)(p_nk);
+		for (int gaussian = 1.; gaussian < k; gaussian++)
+		{
+			double mu = (p_nk)(x_n) / p_nk;
+		}
+		//sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk; -> here's where you use the tensor product
+		tensor_product (vector<double> x_n, vector<double> mu, int len);
+		double numerator = float[][] * p_nk;
+		double denominator = p_nk;
+			for (data_point = 1.; data_point < n; data_point++)
+			{
+				Matrix sigma (int m, int m) = numerator / denominator;
+			}
+		double P(k) = (1. / n)(p_nk);
 	}
 	vector<double> theta = (mu, sigma, P(k));
 	return theta;
 }
 
 
-//void EM(int n, int k, int epsilon, double *cluster_centroid) //don't forget to add signature to .h file
+void EM(int n, int k, int epsilon, &double cluster_centroid) //don't forget to add signature to .h file
 {
 	int iterations;	
-	int max_iterations = 100;
+	int max_iterations = 100.; //arbitrary at this point
 	int epsilon = 0.001;
-	//double kmeans_mu = &cluster_centroid;
-	//initial_sigma = 
-	//initial_P(k) = 
+	// use the kmeans cluster centroids as the starting mu's for EM
+	double kmeans_mu = cluster_centroid; //syntax is probably wrong, but this is what i want to do
+	// create the covariance matrix with dimensions M x M, where M is the length of the vectors which are the rows in the matrix
+	csv_data.size() = int m;
+	Matrix sigma (int m, int m);
+	// fill in the covariance matrix initially - will approximate values later
+	for (int filler = 1.;filler < m-1.;filler++)
+	{
+		double val = 1.;
+		assign(double val, int i, int j);
+	}
+	// initialize P(k)s to 1 for starters
+	vector<double> initial_P(k) = 1.;
 
-	//double old_likelihood;
+	double old_likelihood;
 	//new_likelihood = estep(initial_mu, initial_sigma, initial_P(k));
-	//double current_mu = kmeans_mu;
-	//double current_sigma = initial_sigma;
-	//double current_P(k) = initial_P(k);
+	double current_mu = kmeans_mu;
+	Matrix current_sigma (int m, int m) = Matrix initial_sigma (int m, int m);
+	vector<double> current_P(k) = vector<double> initial_P(k);
 	while ((old_likelihood > epsilon) && ((new_likelihood - old_likelihood) > epsilon) && (iterations < max_iterations))
 	{
-		
 		old_likelihood = new_likelihood;
 		//double new_likelihood = estep(current_mu, current_sigma, current_P(k))
 		//mstep(current_mu, current_sigma, current_P(k)) = (new_mu, new_sigma, new_P(k))
 		//theta = (new_mu, new_sigma, new_P(k))
 		
 	}
-	//cout << "The best parameters for this mixture of Gaussians is   \n" << theta << endl;
+	//cout << "The best parameters for this mixture of Gaussians after an Expectation Maximization analysis is   \n" << theta << endl;
 
 }
 
