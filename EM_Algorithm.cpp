@@ -23,45 +23,16 @@ Here's the procedure:
 	-stop when L converges (i.e. when the value of L stops changing
 */
 
-// brick o' header files - don't forget the algorithm-specific one, please
-#include <iostream>
-#include <cstdlib>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <cmath>
-#include <vector>
-#include <istream>
-#include <list>
-#include <numeric>
-#include <functional>
-#include <algorithm>
-
+#include "EM_Algorithm.h"
 // Include Riva Borbley's matrix class (which lives in Vulcan) for matrix math
 #include "~/Vulcan/vulcan/src/utils/Matrix.cpp"
+// don't panic! the rest of the headers are in EM_Algorithm.h
 
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 16
 #define BIG_double (INFINITY)
 
 using namespace std;
-
-void ReadCSV(vector<string> &record, const string& line, char delimiter);
-vector<double> ParseCSV(void);
-void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final);
-vector<double> * ParseCSV(int argc, char *argv[]);
-double euclid_distance(int dim, double *pl, double *p2);
-void all_distances(int dim, int n, int k, double *X, double *centroid, double *distance_out);
-double calc_total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index);
-void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double *distance_array, int *cluster_assignment_index);
-void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid);
-void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *cluster_member_count);
-void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count,       double*point_move_score_table, int cc);
-void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster);
-void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid);
-void copy_assignment_array(int n, int *src, int *tgt);
-int assignment_change_count (int n, int a[], int b[]);
-
 
 /*************************************************************************************************************/
 /** MAIN **
@@ -103,14 +74,7 @@ int main(int argc, char *argv[])
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
-
-/* 
-
-ReadCSV is a function that simply reads in data from a comma delineated file and stores it in a string
-for immediate use by ParseCSV.
-	input - CSV data as a vector of strings
-	output - void
-*/
+// For detailed descriptions of these functions (including input and output), see the header file
 
 void ReadCSV(vector<string> &record, const string& line, char delimiter)
 {
@@ -162,13 +126,6 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 	return;
 }
 
-/* 
-
-ParseCSV a function that parses the data you just read in from ReadCSV and returns a vector of doubles 
-(which is the input format necessary for the kmeans function).
-	input - string from ReadCSV
-	output - vector of doubles containing your data
-*/
 
 vector<double> ParseCSV(void)
 {
@@ -203,16 +160,6 @@ vector<double> ParseCSV(void)
 		
 }
 
-/*
-
-euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
-is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster
-centroid.
-	input - two double*s representing point one and point 2
-	output - double which stores the distance
-
-*/
-
 double euclid_distance(int dim, double *p1, double *p2)
 {	
 	double distance_sq_sum = 0;
@@ -220,13 +167,7 @@ double euclid_distance(int dim, double *p1, double *p2)
 		distance_sq_sum += sqr(p1[ii] - p2[ii]);
 	return distance_sq_sum;
 }
-/*
 
-all_distances calculates distances from the centroids you initialized in main to every data point.
-	input - double*s containing your data, initial centroids
-	output - void
-
-*/
 void all_distances(int dim, int n, int k, double *X, double *centroid, double *distance_out)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
@@ -236,15 +177,6 @@ void all_distances(int dim, int n, int k, double *X, double *centroid, double *d
 		}
 }
 
-/*
-
-calc_total_distance computes the total distance from all their respective data points for all the clusters
-you initialized. This function also initializes the array that serves as the index of cluster assignments 
-for each point (i.e. which cluster each point "belongs" to on this iteration).
-	input - double*s containing your data, initial centroids
-	output - double 
-
-*/
 
 double calc_total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
 {
@@ -258,14 +190,7 @@ double calc_total_distance(int dim, int n, int k, double *X, double *centroids, 
 	}
 	return tot_D;
 }
-/*
 
-choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points - this
-is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data.
-	input - data, the array that holds the distances, and the assignment index
-	output - void
-
-*/
 
 void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)
 {
@@ -289,16 +214,6 @@ void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double
 		cluster_assignment_index[ii] = best_index;
 	}
 }
-
-/*
-
-calc_cluster_centroids is the function that actually recalculates the values for centroids based on their reassignment, in order
-to ensure that the cluster centroids are still the means of the data that belong to them. This is also where the double* that
-holds the new cluster centroids is assigned and filled in.
-	input - data, assignment index
-	output - void
-
-*/
 
 void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
 {
@@ -337,14 +252,6 @@ void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assig
 	}
 }
 
-/*
-
-get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how
-many points belong to each cluster. This is where the int* representing the number of data points for 
-every cluster is initialized and filled in.
-	input - assignment index
-	output - void
-*/
 
 void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int * cluster_member_count)
 {
@@ -357,14 +264,6 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 
 }
 
-/*
-
-update_delta_score_table is the first step in reassigning points to the clusters that are now closest to them - it basically
-creates a table of which clusters need to be moved and fills in that table. Not all points will need to be reassigned after
-each iteration, so this function keeps track of the ones that do. 
-	input - data, current cluster assignment, current cluster centroids, member count
-	output - void
-*/
 
 void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double *point_move_score_table, int cc)
 {
@@ -382,12 +281,6 @@ void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_ass
 	}
 }
 
-/*
-
-perform_move is the piece that actually smooshes around the clusters. 
-	input - data, cluster assignments, cluster centroids, and member counts
-	output - void
-*/
 
 void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster)
 {
@@ -409,14 +302,6 @@ void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, do
 	}
 }
 
-/* 
-
-cluster_diag gets the current cluster member count and centroids and prints them out for the user after each iteration.
-	input - data, assignment index, centroids
-	output - void
-
-*/
-
 void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
 {
 	int cluster_member_count[MAX_CLUSTERS];
@@ -426,26 +311,12 @@ void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_inde
 		printf("   cluster %d:       members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*dim + 0]/*, cluster_centroid[ii*dim  + 1]*/);
 } 
 
-/*
-
-copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster)
-so you can use it for the next iteration
-	input - source and target
-	output - void
-*/ 
-
 void copy_assignment_array(int n, int *src, int *tgt)
 {
 	for (int ii = 0; ii < n; ii++)
 		tgt[ii] = src[ii];
 }
 
-/*
-
-assignment_change_count keeps track of the count of how many points have been reassigned for each iteration.
-	input - arrays a and b
-	output - an integer representing how many points have "moved" (been reassigned)
-*/
 int assignment_change_count (int n, int a[], int b[])
 {
 	int change_count = 0;
@@ -462,6 +333,8 @@ with each entry scaled by the jth component of the row vector
 	input - scaling factor, 
 	output -
 */
+
+// declaration needs to go in the header
 
 float[][] tensor_product(vector<double> x_n, vector<double> mu, int len)
 {
@@ -617,14 +490,17 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 
 
 *******************************************************************************************************************/
-//need to put the signatures for these three functions either in the header or up at the top
+//need to put the signatures for these three functions in the header
 double estep(int n, int k, &vector<double> csv_data, vector<double> mu, Matrix sigma, double current_P(k) )
 {	
-	//weight = sum over k of (multivariate gaussian density)(P(k));
-	for (int gaussian = 1.; gaussian < k; gaussian++)
+	double likelihood = 1;	
+	for (data_point = 1; data_point < n; data_point++)
 	{
-		for (int data_point = 1.; data_point < n; data_point++)
+		int weight = 0;
+	
+		for (int gaussian = 1.; gaussian < k; gaussian++)
 		{
+			
 			//need an x here that represents the position vector
 			vector<int> x = csv_data.size();
 			// define sigma inverse
@@ -632,47 +508,44 @@ double estep(int n, int k, &vector<double> csv_data, vector<double> mu, Matrix s
 			csv_data.size() = int m;
 			//double density = -.5 * (x-mu)*sigma_inverse*(x-mu)-(m/2)log(2 pi)-.5*logdet(sigma) -> this is just a dot product
 
-			weight = (density)(current_P(k));
+			weight += (density)(current_P(k));
+
 		}
-	}
-	//likelihood = product over n of (weight);
-	for (data_point = 1; data_point < n; data_point++)
-	{
-		double likelihood = 1.;
 		likelihood *= weight;
 	}
-	return likelihood;
+
 	
 }
-
+// needs to be invoked for each cluster k
 vector<double> mstep(int n, int k, double density, double p_nk, double current_P(k), double weight, double theta)
 {
-	//p_nk == P(k|n) = (multivariate gaussian density)(P(k)) / weight
-	double p_nk = (density)(current_P(k)) / weight;
-	int x_n;
-	csv_data.at(x_n) = x_n;
-	
-	//vector<double> mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
-	//double sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
-	//double P(k) = (1 / n)(sum over n of p_nk);
-	for (data_point = 1.; data_point < n; data_point++)
+	// needs to be invoked for each cluster k
+	for (int cluster = 1; cluster < k; cluster++)
 	{
+		//p_nk == P(k|n) = (multivariate gaussian density)(P(k)) / weight
+		double p_nk = (density)(current_P(k)) / weight;
+		int x_n;
+		csv_data.at(x_n) = x_n;
+	
+		//vector<double> mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
+		//double sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
+		//double P(k) = (1 / n)(sum over n of p_nk);
 		for (int gaussian = 1.; gaussian < k; gaussian++)
 		{
-			double mu = (p_nk)(x_n) / p_nk;
-		}
-		//sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk; -> here's where you use the tensor product
-		tensor_product (vector<double> x_n, vector<double> mu, int len);
-		double numerator = float[][] * p_nk;
-		double denominator = p_nk;
-			for (data_point = 1.; data_point < n; data_point++)
+			for (int data_point = 1.; data_point < n; data_point++)
 			{
-				Matrix sigma (int m, int m) = numerator / denominator;
+				double mu = (p_nk)(x_n) / p_nk;
+				//sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk; -> here's where you use the tensor product
+				tensor_product (vector<double> x_n, vector<double> mu, int len);
+				double numerator += float[][] * p_nk;
+				double denominator += p_nk;
+				double P(k) = (1. / n)(p_nk);
 			}
-		double P(k) = (1. / n)(p_nk);
+		}
+		Matrix sigma (int m, int m) = numerator / denominator;
+		vector<double> theta = (mu, sigma, P(k));
+		return theta;
 	}
-	vector<double> theta = (mu, sigma, P(k));
-	return theta;
 }
 
 
@@ -682,7 +555,7 @@ void EM(int n, int k, int epsilon, &double cluster_centroid) //don't forget to a
 	int max_iterations = 100.; //arbitrary at this point
 	int epsilon = 0.001;
 	// use the kmeans cluster centroids as the starting mu's for EM
-	double kmeans_mu = cluster_centroid; //syntax is probably wrong, but this is what i want to do
+	vector<vector<double>> kmeans_mu = cluster_centroid; //syntax is probably wrong, but this is what i want to do
 	// create the covariance matrix with dimensions M x M, where M is the length of the vectors which are the rows in the matrix
 	csv_data.size() = int m;
 	Matrix sigma (int m, int m);
