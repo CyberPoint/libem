@@ -21,6 +21,8 @@
 #include <functional>
 #include <algorithm>
 
+using namespace std;
+
 /**************************************************************************
 			SUPPORT FUNCTION DECLARATIONS
 **************************************************************************/
@@ -37,7 +39,7 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter);
 	input - string from ReadCSV
 	output - vector of doubles containing your data */
 
-vector<double> * ParseCSV(int argc, char *argv[]);
+vector<double> ParseCSV();
 
 /* euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
 is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster
@@ -45,7 +47,7 @@ centroid.
 	input - two double*s representing point one and point 2
 	output - double which stores the distance */
 
-double euclid_distance(int dim, double *pl, double *p2);
+double euclid_distance(int dim, double *p1, double *p2);
 
 /* all_distances calculates distances from the centroids you initialized in main to every data point.
 	input - double*s containing your data, initial centroids
@@ -116,6 +118,14 @@ void copy_assignment_array(int n, int *src, int *tgt);
 	output - an integer representing how many points have "moved" (been reassigned) */
 
 int assignment_change_count (int n, int a[], int b[]);
+
+/* tensor_product computes the Kronecker tensor product - N x N matrix where the jth column is the column vector version of x 
+with each entry scaled by the jth component of the row vector 
+	input - data, row and column vectors
+	output - vector of doubles that represents the */
+
+vector<double> tensor_product(vector<double> csv_data, vector<double> x_n, vector<double> mu);
+
 
 /***************************************************************************
 		KMEANS AND EM DECLARATIONS
