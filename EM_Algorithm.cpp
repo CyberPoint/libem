@@ -314,6 +314,9 @@ for more sophisticated methods (like Expectation Maximization).
 
 *******************************************************************************************************************/
 void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final)
+
+//don't take last two as arguments - instantiate (cut and paste from main) then return cluster_centroid
+
 // dim = dimension of data
 // double *X = pointer to data
 // int n = number of elements
@@ -435,174 +438,79 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 
 
 *******************************************************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//need to put the signatures for these three functions in the header
-//need to call mstep in this function to get new parameters for the likelihood calculation
-double estep(int n, int k, int m, vector<double> csv_data, vector<double> mu, double current_Pk )
-{	
-	for (int data_point = 1; data_point < n; data_point++)
+void estep(sigma, mu, Pk)
+{
+	struct output
 	{
-		// the following calculations are done for each point 
-		// seed an initial weight
-		int weight = 0;
-		
-		vector<double> x;
-		// make x the m dimensional position vector
-		// a is just an interation variable
-		for (int a = 0; a < m; a++) 
-			x.push_back(a);
-		for (int gaussian = 1.; gaussian < k; gaussian++)
-		{
-		// this next part is the calculation of each point's multivariate gaussian density as outlined in 16.1.14 in NR - please keep hands and feet inside the vehicle at all times.
-
-			vector<vector<double> > difference;
-			for (int i = 0; i < m; i++)
-			{
-				for (int j = 0; j < m; j++)
-				{
-					difference[i][j] = x[i] - mu[j];
-				}
-			}
-			
-			// need a covariance matrix unique to each gaussian, hence why it's in this for loop
-
-			//define sigma
-			Matrix::Matrix sigma(m,m);
-			//covmat is the covariance matrix
-			Matrix::Matrix& covmat = sigma.covar();
-			//invmat is the inverse matrix
-			Matrix::Matrix& invmat = covmat.inv();
-			//detmat is the determinant of sigma
-			double det = covmat.det();
-
-			double term1 = pow((2*M_PI), (m/2));
-			double term2 = pow(det, .5);
-			double denominator = term1 * term2;
-			//double term3 = ((-.5)*(difference)*(invmat)*difference);
-			//double numerator = exp (term3);
-		
-			//double density = numerator/denominator;
-			// this ends 16.1.14 - hope you had fun.
-
-			//double weight += (density)(current_Pk);
-
-		}
-		//double likelihood *= weight;
-		cout << "This iteration's likelihood is   \n" << likelihood << endl;
+		theta array
+		likelihood
 	}
-
-	
+	initialize weight
+	over n
+		over k
+			calculate multivariate gaussian density
+			calculate weight from density
+		end k
+		calculate likelihood (still inside the n loop because i want a likelihood estimation for each point)
+	end n
+	cout << likelihood << endl;
+	return output;	
 }
 
-// needs to be invoked for each cluster k
-//vector<double> mstep(int n, int k, int m, double density, double p_nk, double current_Pk, double weight, vector<double> theta)
+void mstep(theta array)
 {
-	// needs to be invoked for each cluster k
-	for (int cluster = 1; cluster < k; cluster++)
+	struct output
 	{
-		//p_nk == P(k|n) = (multivariate gaussian density)(P(k)) / weight
-		//double p_nk = (density)(current_P(k)) / weight;
-		int x_n;
-		x_n = csv_data.at(x_n);
-	
-		//vector<double> mu = sum over n of (p_nk)(x_n) / sum over n of p_nk;
-		//double sigma = sum over n of (p_nk)(x_n - mu)*(x_n - mu) / sum over n of p_nk;
-		//double P(k) = (1 / n)(sum over n of p_nk);
-		for (int gaussian = 1.; gaussian < k; gaussian++)
-		{
-			for (int data_point = 1.; data_point < n; data_point++)
-			{
-				double mu = (p_nk)(x_n) / p_nk;
-				//sigma = (p_nk)(x_n - mu)*(x_n - mu) / p_nk; -> here's where you use the tensor product
-				tensor_product (vector<double> x_n, vector<double> mu, int len);
-				//double numerator += tensor_product * p_nk;
-				//double denominator += p_nk;
-				//double P(k) = (1. / n)(p_nk);
-			}
-		}
-		//Matrix::Matrix sigma(m, m) = numerator / denominator;
-		vector<double> theta = (mu, sigma, P(k));
-		return theta;
+		sigma
+		mu
+		Pk
 	}
+	over k
+		over n
+			calculate sigmas
+			calculate mus
+			calculate Pks
+		end n
+	end k
+	return output;
 }
 
-//i think the EM routine should be one of two things:
-	//what i've got main doing right now
-	//or just the function that calls estep and mstep and returns the best likelihood
-
-
-void EM(int n, int k, int epsilon, &double cluster_centroid) //don't forget to add signature to .h file
+void EM(dim, *X, k, n)
 {
-	int iterations;	
-	//max_iterations is arbitrary at this point
-	int max_iterations = 100.; 
-	// epsilon represents the convergence criteria - the smaller epsilon is, the narrower the definition of convergence
-	int epsilon = 0.001;
-	// use the kmeans cluster centroids as the starting mu's for EM
-	vector<vector<double>> kmeans_mu = cluster_centroid; //syntax is probably wrong, but this is what i want to do
-
-// i have a feeling that everything from here ----------------------->
-	// create the covariance matrix with dimensions M x M, where M is the length of the vectors which are the rows in the matrix
-	//csv_data.size() = int m;
-	//Matrix::Matrix current_sigma (m, m);
-	// fill in the covariance matrix initially - will approximate values later
-	//for (int filler = 1.;filler < m-1.;filler++)
-	//{
-		//double val = 1.;
-		//assign(double val, int i, int j);
-	//}
-
-	// initialize P(k)s to 1 for starters
-	//vector<double> initial_Pk = 1.;
-
-	//double current_mu = kmeans_mu;
-	//vector<double> current_Pk = vector<double> initial_Pk;
-//--------------------------------------------------------------------> to here is extraneous/unnecessary, if i write my estep and mstep cleverly
-	// seed an initial likelihood
-	double old_likelihood = 1;	
-	while ((old_likelihood > epsilon) && ((new_likelihood - old_likelihood) > epsilon) && (iterations < max_iterations))
+	struct m_output_struct
 	{
-		//double new_likelihood = estep(current_mu, current_sigma, current_Pk)
-		//old_likelihood = new_likelihood;
-		//mstep(current_mu, current_sigma, current_Pk) = (new_mu, new_sigma, new_Pk)
-		//theta = (new_mu, new_sigma, new_Pk)
-		
+		sigma
+		mu
+		Pk
 	}
-	cout << "The best parameters for this mixture of Gaussians after an Expectation Maximization analysis is   \n" << theta << endl;
-	delete &covmat;
-	delete &invmat;
-	delete &detmat;
+	struct e_output_struct
+	{
+		theta array
+		likelihood	
+	}
+	start
+		initialize Pks
+		initialize sigmas
+		initial_likelihood = 0;
+		take the cluster centroids from kmeans as initial mus
+			i.e. => kmeans mus = kmeans(dim, *X, k, n)
+		int counter ==0;
+		m_output_struct m_output;
+		e_output_struct e_output;
+
+		while likelihood - old_likelihood > epsilon
+			old_likelihood = likelihood;
+			if counter ==0;
+				e_output = estep(initial sigma, kmeans mus, initial Pk);
+			else
+				e_output = estep(m_output.sigma, m_output.mu, m_output.Pk)
+
+			m_output = mstep(e_output.theta array)		
+		
+			likelihood = e_output.likelihood;
+
+		cout << likelihood << endl;
+		cout << theta array << endl;
+	return 0;
 }
 
