@@ -18,7 +18,6 @@ all: em_algorithm
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
-debug: vulcan_unittest
 
 #///// LINK STEPS /////
 
