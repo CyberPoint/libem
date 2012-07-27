@@ -31,14 +31,54 @@ Here's the procedure:
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 16
 #define BIG_double (INFINITY)
+#define debug 1
 
 using namespace std;
+
+//dummy main for compiling purposes
+
+int main(int argc, char *argv[])
+{
+	int i;
+
+	vector<double> csv_data;
+	csv_data = ParseCSV();
+	int n = csv_data.size();
+	
+	printf("n: %d\n", n);
+	double pre[50];
+	double * stored_data = pre;
+	for (i = 0; i < n; i++)
+	{
+		stored_data[i] = csv_data[i];
+		printf("%f |", stored_data[i]);
+	} 
+	cout << "loaded correctly \n";
+	// this section is hard coded to fit 'test_data.csv' for now - values need to be changed for specific use
+	int dim = 1;
+	int k = 3;
+	//int m = csv_data.size();
+	int m = 1;
+		//N AND M NEED TO BE DIFFERENT - N IS NUMBER OF DATA POINTS, M IS THE DIMENSION OF THE DATA
+	// number of centroids you want it to use
+	//double pre_c_c[3] = {0, 0, 0};
+	//double *cluster_centroid = pre_c_c;
+	//int pre_c_a_f[50];
+	//int *cluster_assignment_final = pre_c_a_f;
+
+	// perfom a KMeans analysis to determine initial cluster means for the EM algorithm to use
+	//kmeans(dim, double *X, int n, int k);
+
+	// run the EM function, which itself calls estep and mstep, returning a best fit (best log likelihood approx.) for your data
+	EM(dim, stored_data, n, k, m); 
+}
 
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
 // For detailed descriptions of these functions (including input and output), see the header file
 
+// a function that reads in data from a comma deliniated file
 void ReadCSV(vector<string> &record, const string& line, char delimiter)
 {
 	int linepos = 0;
@@ -88,8 +128,9 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 	record.push_back(curstring);
 	return;
 }
-/*******************/
-vector<double> ParseCSV()
+
+// a function that parses the data you just read in and returns a vector of doubles (which is the input format necessary for the kmeans function)
+vector<double> ParseCSV(void)
 {
 	// read and parse the CSV data
 		cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n";
@@ -98,7 +139,7 @@ vector<double> ParseCSV()
 		
 		int line_number = 0;
 		string line;
-		ifstream in("test_data.csv"); 
+		ifstream in("test_data.csv"); // changed from test_data.csv
 		if (in.fail())
 		{
 			cout << "File not found" << endl;
@@ -121,15 +162,23 @@ vector<double> ParseCSV()
 		return data;
 		
 }
-/*******************/
-double euclid_distance(int dim, double *p1, double *p2)
+
+// define failure
+/*void fail(char *str)
+{
+	printf(str);
+	exit(-1);
+} */
+
+// calculates the euclidean distance between points	
+double euclid_distance(int dim, double *pl, double *p2)
 {	
 	double distance_sq_sum = 0;
 	for (int ii = 0; ii < dim; ii++)
-		distance_sq_sum += sqr(p1[ii] - p2[ii]);
+		distance_sq_sum += sqr(pl[ii] - p2[ii]);
 	return distance_sq_sum;
 }
-/*******************/
+// calculates all distances
 void all_distances(int dim, int n, int k, double *X, double *centroid, double *distance_out)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
@@ -138,7 +187,22 @@ void all_distances(int dim, int n, int k, double *X, double *centroid, double *d
 			distance_out[ii*k + jj] = euclid_distance(dim, &X[ii*dim], &centroid[jj*dim]);
 		}
 }
-/*******************/
+
+// calculate total distance
+double total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
+// point with a cluster assignment of -1 is ignored
+{
+	double tot_D = 0;
+	for (int ii = 0; ii < n; ii++) // for each data point
+	{
+		int active_cluster = cluster_assignment_index[ii]; // which cluster it's in
+		// sum distance
+		if (active_cluster != -1) 
+			tot_D += euclid_distance(dim, &X[ii*dim], &centroids[active_cluster*dim]);
+	}
+	return tot_D;
+}
+
 double calc_total_distance(int dim, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
 {
 	double tot_D = 0;
@@ -151,7 +215,7 @@ double calc_total_distance(int dim, int n, int k, double *X, double *centroids, 
 	}
 	return tot_D;
 }
-/*******************/
+
 void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
@@ -174,7 +238,7 @@ void choose_all_clusters_from_distances(int dim, int n, int k, double *X, double
 		cluster_assignment_index[ii] = best_index;
 	}
 }
-/*******************/
+
 void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
 {
 	for (int b = 0; b < k; b++)
@@ -211,7 +275,7 @@ void calc_cluster_centroids(int dim, int n, int k, double *X, int *cluster_assig
 			// warning!! will divide by zero here for any empty clusters
 	}
 }
-/*******************/
+
 void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int * cluster_member_count)
 {
 	// initialize cluster member counts
@@ -222,7 +286,7 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 		cluster_member_count[cluster_assignment_index[ii]]++;
 
 }
-/*******************/
+
 void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double *point_move_score_table, int cc)
 {
 	// for each point both in and not in the cluster
@@ -238,7 +302,7 @@ void update_delta_score_table(int dim, int n, int k, double *X, int *cluster_ass
 		point_move_score_table[ii*dim + cc] = dist_sum * mult;
 	}
 }
-/*******************/
+
 void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster)
 {
 	int cluster_old = cluster_assignment[move_point];
@@ -258,7 +322,7 @@ void perform_move (int dim, int n, int k, double *X, int *cluster_assignment, do
 		cluster_centroid[cluster_new*dim + ii] += (X[move_point*dim + ii] - cluster_centroid[cluster_new*dim + ii]) / cluster_member_count[cluster_new];
 	}
 }
-/*******************/
+
 void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
 {
 	int cluster_member_count[MAX_CLUSTERS];
@@ -267,13 +331,13 @@ void cluster_diag(int dim, int n, int k, double *X, int *cluster_assignment_inde
 	for (int ii = 0; ii < k; ii++)
 		printf("   cluster %d:       members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*dim + 0]/*, cluster_centroid[ii*dim  + 1]*/);
 } 
-/*******************/
+
 void copy_assignment_array(int n, int *src, int *tgt)
 {
 	for (int ii = 0; ii < n; ii++)
 		tgt[ii] = src[ii];
 }
-/*******************/
+
 int assignment_change_count (int n, int a[], int b[])
 {
 	int change_count = 0;
@@ -282,41 +346,11 @@ int assignment_change_count (int n, int a[], int b[])
 			change_count++;
 	return change_count;
 }
-/*******************/
-vector<double> tensor_product(vector<double> csv_data, vector<double> x_n, vector<double> mu)
-{
-	double m;
-	m = csv_data.size();
-	vector<vector<double> > result_tensor;	
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < m; j++)
-		{
-			result_tensor[i][j] = x_n[i] * mu[j];
-		}
-	}
-}
 
 /******************************************************************************************************************
 ** K MEANS **
-
-Kmeans is a clustering algorithm which takes in a pile of data and separates it into clusters - it will keep shifting 
-the means of these clusters ("cluster centroids") until they stop moving, i.e. when the algorithm converges. Like the
-EM algorithm, it works in two steps:
-
-	- assign each data point to the component whose mean it is closest to, by Euclidean distance
-	- for all components, re-estimate the mean as the average of data points assigned to that component
-
-With Kmeans, convergence is guaranteed: you can't get stuck in an infinite loop of shifting a point back and forth
-between two centroids. This algorithm is relatively fast and converges rapidly. Its main advantage is that it can
-easily reduce a huge pile of data to a much smaller number of "centers," which can then be used as the starting points
-for more sophisticated methods (like Expectation Maximization).
-
 *******************************************************************************************************************/
-void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final)
-
-//don't take last two as arguments - instantiate (cut and paste from main) then return cluster_centroid
-
+double * kmeans(int dim, double *X, int n, int k)
 // dim = dimension of data
 // double *X = pointer to data
 // int n = number of elements
@@ -325,6 +359,7 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 // int *cluster_assignment_final = output
 
 {
+    	double *cluster_centroid = (double*)malloc(sizeof(double) * dim * k);
 	double *dist = (double *)malloc(sizeof(double) * n * k);
 	int *cluster_assignment_cur = (int *)malloc(sizeof(int) * n);
 	int *cluster_assignment_prev = (int *)malloc(sizeof(int) * n);
@@ -335,9 +370,9 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 
 			
 	// give the initial cluster centroids some values
-	double array [3] = {0, 5, 10};
-
-	cluster_centroid = array;
+    srand( time(NULL) );
+    for (int i = 0; i < k; i++)
+        cluster_centroid[i] = X[rand() % n];
 	
 	// initial setup
 	all_distances(dim, n, k, X, cluster_centroid, dist);
@@ -397,14 +432,15 @@ void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *clu
 		prev_totD = totD;
 		batch_iteration++;
 	}
-	// write to output array
-	copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_final);
 	// clean up
 	free(dist);
 	free(cluster_assignment_cur);
 	free(cluster_assignment_prev);
 	free(point_move_score);
+    return cluster_centroid;
 }
+
+
 
 /*****************************************************************************************************************/
 /** EM ALGORITHM **/
@@ -438,79 +474,198 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 
 
 *******************************************************************************************************************/
-void estep(sigma, mu, Pk)
+
+e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_matrix, Matrix Pk_matrix)
 {
-	struct output
+	Matrix p_nk_matrix(n,k);
+	//Matrix likelihood(1,1);
+
+	//Matrix denominator(1,1);
+	//Matrix weight(1,n);
+
+	Matrix data(X,n,m, Matrix::ROW_MAJOR);
+	int pi = 3.141592653;
+	int data_point;
+	int gaussian;
+
+	for (data_point = 1; data_point < n; data_point++)
 	{
-		theta array
-		likelihood
+		cout << "beginning iteration 1 of n \n" << endl;
+		Matrix x(1,m);
+		for (int dim = 0; dim < m; dim++)
+		{
+			double data = x.getValue(data_point,m);
+			x.assign(data,data_point,dim);
+		}
+		double weight_d;
+
+		for (gaussian = 1; gaussian < k; gaussian++)
+		{
+			cout << "beginning iteration 1 of n \n" << endl;
+			//please keep all hands and feet inside the vehicle at all times.
+			
+			//calculate the numerator = exp[-.5 * (x-mu) * sigma_inverse * (x-mu)]
+			//difference = x-mu
+			Matrix& difference = x.subtract(mu_matrix);
+			//sigma inverse
+			Matrix& sigma_inv = sigma_matrix.inv();
+
+			//multiply the difference by the sigma inverse by the difference 
+			Matrix &term1 = sigma_inv.dot(difference);
+
+			Matrix &term2 = term1.dot(difference);
+			//make term2 a double
+			double term2_d = term2.getValue(0,0);
+			//exp
+			double numerator = exp(-.5 * term2_d);
+			//calculate the denominator = (2pi)^(m/2)*sigma_determinant^.5
+			double determinant = sigma_matrix.det();
+			double term3 = pow(2*pi, m/2);
+			double term4 = pow(determinant, .5);
+			double denominator = term3 * term4;
+			//calculate multivariate gaussian density = numerator / denominator
+			double density = numerator/denominator;
+
+			if (debug)
+				cout << density << endl;
+
+			//calculate weight = density * Pk
+			Matrix density_m(1,1);
+			density_m.assign(density, 1, 1);
+			Matrix &weight = density_m.dot(Pk_matrix);
+			weight_d = weight.getValue(0,0);
+
+			if (debug)
+				cout << weight_d << endl;
+
+			//calculate p_nk = density * Pk / weight
+			double p_nk = density * Pk_matrix.getValue(1, gaussian) / weight_d;
+			p_nk_matrix.assign(p_nk,data_point,gaussian);
+
+			if (debug)
+				p_nk_matrix.print();
+		}
+		//calculate likelihood 
+		double likelihood;
+		likelihood *= weight_d;
+		cout << "The likelihood for this iteration is    \n" << likelihood << endl;
 	}
-	initialize weight
-	over n
-		over k
-			calculate multivariate gaussian density
-			calculate weight from density
-		end k
-		calculate likelihood (still inside the n loop because i want a likelihood estimation for each point)
-	end n
-	cout << likelihood << endl;
-	return output;	
+
+	e_output e_output_instance;
+	return e_output_instance;
 }
 
-void mstep(theta array)
+
+m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix)
 {
-	struct output
+	Matrix sigma_matrix(m,m);
+	Matrix mu_matrix(1,m);
+	Matrix Pk_matrix(1,m);
+	Matrix data(X,n,m, Matrix::ROW_MAJOR);
+
+	for (int data_point = 1; data_point < n; data_point++)
 	{
-		sigma
-		mu
-		Pk
+		Matrix x(1,m);
+		for (int dim = 0; dim < m; dim++)
+		{
+			double data_d = data.getValue(1,1);
+			x.assign(data_d,data_point,dim);
+		}
+		for (int gaussian = 1; gaussian < k; gaussian++)
+		{
+			//calculate mus
+			double x_d = x.getValue(0,data_point);
+			double p_nk_d = p_nk_matrix.getValue(data_point,gaussian);
+			double mu = p_nk_d * x_d / p_nk_d;
+			mu_matrix.assign(mu,0,data_point);
+
+			if (debug)
+				mu_matrix.print();
+
+			//calculate sigmas
+			double mu_d = mu_matrix.getValue(0,data_point);
+			double subtract = x_d - mu_d;
+			double product = subtract * subtract;
+			double numerator = product * p_nk_d;
+			double sigma = numerator / p_nk_d;
+			sigma_matrix.assign(sigma,0,data_point);
+
+			if (debug)	
+				sigma_matrix.print();
+
+			//calculate Pks
+			double factor = 1/n;
+			double Pk_d = factor * p_nk_d;
+			Pk_matrix.assign(Pk_d,1,m);
+			
+			if (debug)
+				Pk_matrix.print();
+
+		}
 	}
-	over k
-		over n
-			calculate sigmas
-			calculate mus
-			calculate Pks
-		end n
-	end k
-	return output;
+
+	m_output m_output_instance;
+	return m_output_instance;
 }
 
-void EM(dim, *X, k, n)
+void EM(int dim, double *X, int n, int k, int m)
 {
-	struct m_output_struct
+	int epsilon = .001;
+	cout << "n is " << n;
+	cout << "\nm is: " << m << endl;
+	Matrix data(X,n,m, Matrix::ROW_MAJOR);
+	cout << "matrix data made \n";
+	
+	//initialize the Pks
+	Matrix initial_Pk(1,m);
+	cout << "matrix initial_Pk made \n";
+	//initialize sigma
+	Matrix initial_sigma(m,m);
+	cout << "matrix initial_sigma made \n";
+	//initialize likelihoods
+	double likelihood;
+	double old_likelihood;
+	
+	//take the cluster centroids from kmeans as initial mus 
+	double *kmeans_mu = kmeans(dim, X, n, k); 
+	//make a matrix
+	Matrix kmeans_mu_m(dim,m);
+	for (int i = 0; i < k; i++)
 	{
-		sigma
-		mu
-		Pk
+		for (int j = 0; j < dim; j++)
+		{
+			kmeans_mu_m.assign(*(kmeans_mu + (i*dim + j)),i,j);
+		}
 	}
-	struct e_output_struct
+	
+    	//for (int i = 0;i < k; i++)
+	//{
+       		//printf("%f\n", &kmeans_mu[i]);
+	//}
+
+	m_output m_output_instance;
+	e_output e_output_instance;
+
+	int counter = 0;
+
+	while (likelihood - old_likelihood > epsilon)
 	{
-		theta array
-		likelihood	
+		likelihood = old_likelihood;
+		if (counter == 0)
+			e_output_instance = estep(n, m, k, X, initial_sigma, kmeans_mu_m, initial_Pk);
+
+		else if (counter != 0)
+
+			e_output_instance = estep(n, m, k, X, m_output_instance.sigma_matrix, m_output_instance.mu_matrix, m_output_instance.Pk_matrix);
+
+		m_output_instance = mstep(n, m, k, X, e_output_instance.p_nk_matrix);
 	}
-	start
-		initialize Pks
-		initialize sigmas
-		initial_likelihood = 0;
-		take the cluster centroids from kmeans as initial mus
-			i.e. => kmeans mus = kmeans(dim, *X, k, n)
-		int counter ==0;
-		m_output_struct m_output;
-		e_output_struct e_output;
 
-		while likelihood - old_likelihood > epsilon
-			old_likelihood = likelihood;
-			if counter ==0;
-				e_output = estep(initial sigma, kmeans mus, initial Pk);
-			else
-				e_output = estep(m_output.sigma, m_output.mu, m_output.Pk)
+	likelihood = e_output_instance.likelihood;
 
-			m_output = mstep(e_output.theta array)		
-		
-			likelihood = e_output.likelihood;
-
-		cout << likelihood << endl;
-		cout << theta array << endl;
-	return 0;
+	cout << "The likelihood approximated by the EM algorithm with the best fit is   \n" << likelihood << endl;
+	//don't forget matrix cleanup!!!!
+	
+	
 }
 
