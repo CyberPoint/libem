@@ -35,7 +35,6 @@ Here's the procedure:
 
 using namespace std;
 
-//dummy main for compiling purposes
 
 int main(int argc, char *argv[])
 {
@@ -57,7 +56,6 @@ int main(int argc, char *argv[])
 	// this section is hard coded to fit 'test_data.csv' for now - values need to be changed for specific use
 	int dim = 1;
 	int k = 3;
-	//int m = csv_data.size();
 	int m = 1;
 		//N AND M NEED TO BE DIFFERENT - N IS NUMBER OF DATA POINTS, M IS THE DIMENSION OF THE DATA
 	// number of centroids you want it to use
@@ -130,7 +128,7 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 }
 
 // a function that parses the data you just read in and returns a vector of doubles (which is the input format necessary for the kmeans function)
-vector<double> ParseCSV(void)
+vector<double> ParseCSV()
 {
 	// read and parse the CSV data
 		cout << "This algorithm takes mixture data in a CSV. Make sure to replace test_data.txt with your file name. \n";
@@ -147,10 +145,10 @@ vector<double> ParseCSV(void)
 		while (getline(in, line) && in.good())
 		{
 			ReadCSV(row, line, ',');
-			// only looking at row[0] now because of an assumption of 1D data
 			// count through line_number
-			const char* s = row[0].c_str();
-			data.push_back(atof(s));
+				const char* s = row[0].c_str();
+				data.push_back(atof(s));
+			
 			// now the data is stored in a vector of doubles called data
 			//for (int i = 0, leng = row.size(); i < leng; i++)
 			//{
@@ -381,26 +379,26 @@ double * kmeans(int dim, double *X, int n, int k)
 
 	// batch update
 	double prev_totD = 10000.0;
-	printf("1: \n%lf\n", prev_totD);
+	//printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
 	while (batch_iteration < 100.)
 	{
 		printf("batch iteration %d \n", batch_iteration);
-		printf("2: \n%lf\n", prev_totD);
+		//printf("2: \n%lf\n", prev_totD);
 		
 		cluster_diag(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
-		printf("2.5: \n%lf\n", prev_totD);
+		//printf("2.5: \n%lf\n", prev_totD);
 		// update cluster centroids
 		calc_cluster_centroids(dim, n, k, X, cluster_assignment_cur, cluster_centroid);
 
 		// deal with empty clusters
 		// see if we've failed to improve
 		
-		printf("3: \n%lf\n", prev_totD);
+		//printf("3: \n%lf\n", prev_totD);
 
 		double totD = calc_total_distance(dim, n, k, X, cluster_centroid, cluster_assignment_cur);
-		printf("4: \n%lf\n", prev_totD);
-		printf("totD: %lf, prev_totD: %lf\n", totD, prev_totD);
+		//printf("4: \n%lf\n", prev_totD);
+		//printf("totD: %lf, prev_totD: %lf\n", totD, prev_totD);
 		if (totD > prev_totD)
 			// failed to improve - this solution is worse than the last one
 			{
@@ -432,11 +430,11 @@ double * kmeans(int dim, double *X, int n, int k)
 		prev_totD = totD;
 		batch_iteration++;
 	}
-	// clean up
-	free(dist);
-	free(cluster_assignment_cur);
-	free(cluster_assignment_prev);
-	free(point_move_score);
+	// clean up later
+	//free(dist);
+	//free(cluster_assignment_cur);
+	///free(cluster_assignment_prev);
+	//free(point_move_score);
     return cluster_centroid;
 }
 
@@ -478,43 +476,85 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_matrix, Matrix Pk_matrix)
 {
 	Matrix p_nk_matrix(n,k);
+	cout << "p_nk matrix";
+	p_nk_matrix.print();
 	//Matrix likelihood(1,1);
 
 	//Matrix denominator(1,1);
 	//Matrix weight(1,n);
 
-	Matrix data(X,n,m, Matrix::ROW_MAJOR);
+	Matrix data(X,n,m,Matrix::ROW_MAJOR);
+	cout << "data";
+	data.print();
+
 	int pi = 3.141592653;
 	int data_point;
 	int gaussian;
 
-	for (data_point = 1; data_point < n; data_point++)
+	for (data_point = 0; data_point < n; data_point++)
 	{
-		cout << "beginning iteration 1 of n \n" << endl;
+		cout << "1:beginning iteration " << data_point << " of " << n << endl;
+		
 		Matrix x(1,m);
+		
+		Matrix mu_matrix_row(1,m);
+
 		for (int dim = 0; dim < m; dim++)
 		{
-			double data = x.getValue(data_point,m);
-			x.assign(data,data_point,dim);
+			//double data = x.getValue(data_point,m)	
+
+			cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
+		
+			x.assign(X[m*dim + data_point],dim,data_point);
+		cout << "here" << endl;	
+			//double data = x.getValue(data_point,m)	
+			cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
+			mu_matrix_row.assign(mu_matrix.getValue(dim,data_point),dim,data_point);
 		}
 		double weight_d;
 
 		for (gaussian = 1; gaussian < k; gaussian++)
 		{
-			cout << "beginning iteration 1 of n \n" << endl;
+			cout << "2:beginning iteration 1 of n \n" << endl;
 			//please keep all hands and feet inside the vehicle at all times.
 			
 			//calculate the numerator = exp[-.5 * (x-mu) * sigma_inverse * (x-mu)]
 			//difference = x-mu
-			Matrix& difference = x.subtract(mu_matrix);
+			int currStep = 0;
+			cout << currStep << endl; currStep++;
+			
+			cout << "x row count is " << x.rowCount() << endl;
+			cout << "x col count is " << x.colCount() << endl;
+			cout << "mu_matrix row count is " << mu_matrix.rowCount() << endl;
+			cout << "mu_matrix col count is " << mu_matrix.colCount() << endl;
+			cout << "data" << endl;
+			data.print();
+			cout << "x" << endl;
+			x.print();
+			cout << "mu matrix" << endl;
+			mu_matrix.print();
+			Matrix& difference = x.subtract(mu_matrix_row);
+			difference.print();
+
 			//sigma inverse
+			cout << currStep << endl; currStep++;
+			
+			cout << sigma_matrix.det() << endl;
 			Matrix& sigma_inv = sigma_matrix.inv();
+			sigma_inv.print();
 
 			//multiply the difference by the sigma inverse by the difference 
+			cout << "multiplication" << endl; 
 			Matrix &term1 = sigma_inv.dot(difference);
+			term1.print();
 
+			cout << currStep << endl; currStep++;
+			cout << "yet another multiplication" << endl;
 			Matrix &term2 = term1.dot(difference);
+			term2.print();
 			//make term2 a double
+
+			cout << currStep << endl; currStep++;
 			double term2_d = term2.getValue(0,0);
 			//exp
 			double numerator = exp(-.5 * term2_d);
@@ -527,38 +567,59 @@ e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_ma
 			double density = numerator/denominator;
 
 			if (debug)
-				cout << density << endl;
+				
+				cout << "density is " << density << endl;
 
 			//calculate weight = density * Pk
 			Matrix density_m(1,1);
-			density_m.assign(density, 1, 1);
+			density_m.assign(density,0,0);
+			cout << "density matrix" << endl;
+			density_m.print();
 			Matrix &weight = density_m.dot(Pk_matrix);
 			weight_d = weight.getValue(0,0);
+			
+			cout << weight_d << endl;
 
 			if (debug)
 				cout << weight_d << endl;
 
 			//calculate p_nk = density * Pk / weight
-			double p_nk = density * Pk_matrix.getValue(1, gaussian) / weight_d;
+			double p_nk = density * Pk_matrix.getValue(gaussian,data_point) / weight_d;
+
 			p_nk_matrix.assign(p_nk,data_point,gaussian);
 
 			if (debug)
 				p_nk_matrix.print();
+			//clean up
+			delete &difference;
+			delete &sigma_inv;
+			delete &term1;
+			delete &term2;
+			delete &weight;
 		}
 		//calculate likelihood 
 		double likelihood;
 		likelihood *= weight_d;
-		cout << "The likelihood for this iteration is    \n" << likelihood << endl;
+		cout << "The likelihood for this iteration is " << likelihood << endl;
 	}
 
 	e_output e_output_instance;
 	return e_output_instance;
+
+	
 }
 
 
 m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix)
 {
-	Matrix sigma_matrix(m,m);
+	//initialize sigma_matrix not as zeroes, but as the identity matrix
+	//initialize sigma
+	double *di = new double[m]; 
+	for (int i = 0; i < m; i++)
+		di[i] = 1;
+	Matrix sigma_matrix(di,m);
+	sigma_matrix.print();
+	
 	Matrix mu_matrix(1,m);
 	Matrix Pk_matrix(1,m);
 	Matrix data(X,n,m, Matrix::ROW_MAJOR);
@@ -610,7 +671,7 @@ m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix)
 
 void EM(int dim, double *X, int n, int k, int m)
 {
-	int epsilon = .001;
+	double epsilon = .001;
 	cout << "n is " << n;
 	cout << "\nm is: " << m << endl;
 	Matrix data(X,n,m, Matrix::ROW_MAJOR);
@@ -618,23 +679,33 @@ void EM(int dim, double *X, int n, int k, int m)
 	
 	//initialize the Pks
 	Matrix initial_Pk(1,m);
-	cout << "matrix initial_Pk made \n";
 	//initialize sigma
-	Matrix initial_sigma(m,m);
+	double *di = new double[m]; 
+	for (int i = 0; i < m; i++)
+		di[i] = 1;
+	Matrix initial_sigma(di,m);
+	cout << "initial sigma" << endl;
+	initial_sigma.print();
+	cout << "matrix initial_Pk made \n";
+	
 	cout << "matrix initial_sigma made \n";
-	//initialize likelihoods
-	double likelihood;
-	double old_likelihood;
+	//initialize likelihoods with dummy fillers
+	double likelihood = 1;
+	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
-	double *kmeans_mu = kmeans(dim, X, n, k); 
+	double *kmeans_mu = kmeans(dim, X, n, k);
+	cout << "kmeans_mu allocated \n"; 
 	//make a matrix
-	Matrix kmeans_mu_m(dim,m);
+	Matrix kmeans_mu_m(k,dim);
+	cout << "kmeans_mu_m \n";
 	for (int i = 0; i < k; i++)
 	{
 		for (int j = 0; j < dim; j++)
 		{
-			kmeans_mu_m.assign(*(kmeans_mu + (i*dim + j)),i,j);
+			kmeans_mu_m.assign(kmeans_mu[i*dim + j],i,j);
+			cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j(" << j << ") \n";
+			//kmeans_mu_m.assign(kmeans_mu[i], j, i);
 		}
 	}
 	
@@ -646,17 +717,17 @@ void EM(int dim, double *X, int n, int k, int m)
 	m_output m_output_instance;
 	e_output e_output_instance;
 
-	int counter = 0;
+	//first time
+	e_output_instance = estep(n, m, k, X, initial_sigma, kmeans_mu_m, initial_Pk);
 
 	while (likelihood - old_likelihood > epsilon)
 	{
+		
+		cout << "epsilon is " << epsilon << endl;
 		likelihood = old_likelihood;
-		if (counter == 0)
-			e_output_instance = estep(n, m, k, X, initial_sigma, kmeans_mu_m, initial_Pk);
-
-		else if (counter != 0)
-
-			e_output_instance = estep(n, m, k, X, m_output_instance.sigma_matrix, m_output_instance.mu_matrix, m_output_instance.Pk_matrix);
+		cout << "likelihood is " << likelihood << endl;
+		
+		e_output_instance = estep(n, m, k, X, m_output_instance.sigma_matrix, m_output_instance.mu_matrix, m_output_instance.Pk_matrix);
 
 		m_output_instance = mstep(n, m, k, X, e_output_instance.p_nk_matrix);
 	}
