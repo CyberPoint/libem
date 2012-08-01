@@ -9,6 +9,7 @@
 */
 
 #include <iostream>
+#include <ostream>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
@@ -20,6 +21,9 @@
 #include <numeric>
 #include <functional>
 #include <algorithm>
+#include "time.h"
+
+#include "/home/egarbee/gmm/Matrix.h"
 
 using namespace std;
 
@@ -130,12 +134,28 @@ vector<double> tensor_product(vector<double> csv_data, vector<double> x_n, vecto
 /***************************************************************************
 		KMEANS AND EM DECLARATIONS
 ***************************************************************************/
+typedef struct 
+	{
+		Matrix p_nk_matrix;
+		double likelihood;
 
-void kmeans(int dim, double *X, int n, int k, double *cluster_centroid, int *cluster_assignment_final);
+	}e_output;
 
+typedef struct
+	{
+		Matrix sigma_matrix;
+		Matrix mu_matrix;
+		Matrix Pk_matrix;
 
+	}m_output;
 
+double * kmeans(int dim, double *X, int n, int k);
 
+e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_matrix, Matrix Pk_matrix);
+
+m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix);
+
+void EM(int dim, double *X, int n, int k, int m);
 
 
 #endif //EM_ALGORITHM_HEADER

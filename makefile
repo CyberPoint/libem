@@ -18,6 +18,7 @@ all: em_algorithm
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
+debug: em_algorithm
 
 #///// LINK STEPS /////
 

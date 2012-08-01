@@ -476,16 +476,16 @@ For a detailed mathematical derivation of EM, see chapter 16.1 in Numerical Reci
 e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_matrix, Matrix Pk_matrix)
 {
 	Matrix p_nk_matrix(n,k);
-	cout << "p_nk matrix";
-	p_nk_matrix.print();
+	if (debug) cout << "p_nk matrix";
+	if (debug) p_nk_matrix.print();
 	//Matrix likelihood(1,1);
 
 	//Matrix denominator(1,1);
 	//Matrix weight(1,n);
 
 	Matrix data(X,n,m,Matrix::ROW_MAJOR);
-	cout << "data";
-	data.print();
+	if (debug) cout << "data";
+	if (debug) data.print();
 
 	int pi = 3.141592653;
 	int data_point;
@@ -493,7 +493,7 @@ e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_ma
 
 	for (data_point = 0; data_point < n; data_point++)
 	{
-		cout << "1:beginning iteration " << data_point << " of " << n << endl;
+		if (debug) cout << "1:beginning iteration " << data_point << " of " << n << endl;
 		
 		Matrix x(1,m);
 		
@@ -503,58 +503,59 @@ e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_ma
 		{
 			//double data = x.getValue(data_point,m)	
 
-			cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
+			if (debug) cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
 		
 			x.assign(X[m*dim + data_point],dim,data_point);
-		cout << "here" << endl;	
+cout << "here" << endl;
+
 			//double data = x.getValue(data_point,m)	
-			cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
+			if (debug) cout << "trying to assign data " << X[dim] << "to location " << dim << "by" << data_point << endl;
 			mu_matrix_row.assign(mu_matrix.getValue(dim,data_point),dim,data_point);
 		}
 		double weight_d;
 
 		for (gaussian = 1; gaussian < k; gaussian++)
 		{
-			cout << "2:beginning iteration 1 of n \n" << endl;
+			if (debug) cout << "2:beginning iteration 1 of n \n" << endl;
 			//please keep all hands and feet inside the vehicle at all times.
 			
 			//calculate the numerator = exp[-.5 * (x-mu) * sigma_inverse * (x-mu)]
 			//difference = x-mu
 			int currStep = 0;
-			cout << currStep << endl; currStep++;
+			if (debug) cout << currStep << endl; currStep++;
 			
-			cout << "x row count is " << x.rowCount() << endl;
-			cout << "x col count is " << x.colCount() << endl;
-			cout << "mu_matrix row count is " << mu_matrix.rowCount() << endl;
-			cout << "mu_matrix col count is " << mu_matrix.colCount() << endl;
-			cout << "data" << endl;
-			data.print();
-			cout << "x" << endl;
-			x.print();
-			cout << "mu matrix" << endl;
-			mu_matrix.print();
+			if (debug) cout << "x row count is " << x.rowCount() << endl;
+			if (debug) cout << "x col count is " << x.colCount() << endl;
+			if (debug) cout << "mu_matrix row count is " << mu_matrix.rowCount() << endl;
+			if (debug) cout << "mu_matrix col count is " << mu_matrix.colCount() << endl;
+			if (debug) cout << "data" << endl;
+			if (debug) data.print();
+			if (debug) cout << "x" << endl;
+			if (debug) x.print();
+			if (debug) cout << "mu matrix" << endl;
+			if (debug) mu_matrix.print();
 			Matrix& difference = x.subtract(mu_matrix_row);
 			difference.print();
 
 			//sigma inverse
-			cout << currStep << endl; currStep++;
+			if (debug) cout << currStep << endl; currStep++;
 			
-			cout << sigma_matrix.det() << endl;
+			if (debug) cout << sigma_matrix.det() << endl;
 			Matrix& sigma_inv = sigma_matrix.inv();
-			sigma_inv.print();
+			if (debug) sigma_inv.print();
 
 			//multiply the difference by the sigma inverse by the difference 
-			cout << "multiplication" << endl; 
+			if (debug) cout << "multiplication" << endl; 
 			Matrix &term1 = sigma_inv.dot(difference);
-			term1.print();
+			if (debug) term1.print();
 
-			cout << currStep << endl; currStep++;
-			cout << "yet another multiplication" << endl;
+			if (debug) cout << currStep << endl; currStep++;
+			if (debug) cout << "yet another multiplication" << endl;
 			Matrix &term2 = term1.dot(difference);
-			term2.print();
+			if (debug) term2.print();
 			//make term2 a double
 
-			cout << currStep << endl; currStep++;
+			if (debug) cout << currStep << endl; currStep++;
 			double term2_d = term2.getValue(0,0);
 			//exp
 			double numerator = exp(-.5 * term2_d);
@@ -566,38 +567,35 @@ e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_ma
 			//calculate multivariate gaussian density = numerator / denominator
 			double density = numerator/denominator;
 
-			if (debug)
-				
-				cout << "density is " << density << endl;
+			if (debug) cout << "density is " << density << endl;
 
 			//calculate weight = density * Pk
 			Matrix density_m(1,1);
 			density_m.assign(density,0,0);
-			cout << "density matrix" << endl;
-			density_m.print();
+			if (debug) cout << "density matrix" << endl;
+			if (debug) density_m.print();
 			Matrix &weight = density_m.dot(Pk_matrix);
 			weight_d = weight.getValue(0,0);
 			
-			cout << weight_d << endl;
+			if (debug) cout << weight_d << endl;
 
-			if (debug)
-				cout << weight_d << endl;
+			if (debug) cout << weight_d << endl;
 
 			//calculate p_nk = density * Pk / weight
 			double p_nk = density * Pk_matrix.getValue(gaussian,data_point) / weight_d;
 
 			p_nk_matrix.assign(p_nk,data_point,gaussian);
 
-			if (debug)
-				p_nk_matrix.print();
+			if (debug) p_nk_matrix.print();
 			//clean up
 			delete &difference;
 			delete &sigma_inv;
 			delete &term1;
 			delete &term2;
 			delete &weight;
+
+			
 		}
-		//calculate likelihood 
 		double likelihood;
 		likelihood *= weight_d;
 		cout << "The likelihood for this iteration is " << likelihood << endl;
@@ -672,39 +670,42 @@ m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix)
 void EM(int dim, double *X, int n, int k, int m)
 {
 	double epsilon = .001;
-	cout << "n is " << n;
-	cout << "\nm is: " << m << endl;
+	if (debug) cout << "n is " << n;
+	if (debug) cout << "\nm is: " << m << endl;
 	Matrix data(X,n,m, Matrix::ROW_MAJOR);
-	cout << "matrix data made \n";
+	if (debug) cout << "matrix data made \n";
 	
 	//initialize the Pks
 	Matrix initial_Pk(1,m);
+	if (debug) cout << "matrix initial_Pk made \n";
 	//initialize sigma
 	double *di = new double[m]; 
 	for (int i = 0; i < m; i++)
 		di[i] = 1;
 	Matrix initial_sigma(di,m);
-	cout << "initial sigma" << endl;
-	initial_sigma.print();
-	cout << "matrix initial_Pk made \n";
-	
-	cout << "matrix initial_sigma made \n";
+	if (debug) cout << "initial sigma" << endl;
+	if (debug) initial_sigma.print();
+		
+	if (debug) cout << "matrix initial_sigma made \n";
+
 	//initialize likelihoods with dummy fillers
-	double likelihood = 1;
+	double new_likelihood = 1;
+	
 	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
 	double *kmeans_mu = kmeans(dim, X, n, k);
-	cout << "kmeans_mu allocated \n"; 
+
+	if (debug) cout << "kmeans_mu allocated \n"; 
 	//make a matrix
 	Matrix kmeans_mu_m(k,dim);
-	cout << "kmeans_mu_m \n";
+	if (debug) cout << "kmeans_mu_m \n";
 	for (int i = 0; i < k; i++)
 	{
 		for (int j = 0; j < dim; j++)
 		{
 			kmeans_mu_m.assign(kmeans_mu[i*dim + j],i,j);
-			cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j(" << j << ") \n";
+			if (debug) cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j(" << j << ") \n";
 			//kmeans_mu_m.assign(kmeans_mu[i], j, i);
 		}
 	}
@@ -720,21 +721,21 @@ void EM(int dim, double *X, int n, int k, int m)
 	//first time
 	e_output_instance = estep(n, m, k, X, initial_sigma, kmeans_mu_m, initial_Pk);
 
-	while (likelihood - old_likelihood > epsilon)
+	while (new_likelihood - old_likelihood > epsilon)
 	{
 		
-		cout << "epsilon is " << epsilon << endl;
-		likelihood = old_likelihood;
-		cout << "likelihood is " << likelihood << endl;
+		if (debug) cout << "epsilon is " << epsilon << endl;
+		new_likelihood = old_likelihood;
+		if (debug) cout << "likelihood is " << new_likelihood << endl;
 		
 		e_output_instance = estep(n, m, k, X, m_output_instance.sigma_matrix, m_output_instance.mu_matrix, m_output_instance.Pk_matrix);
 
 		m_output_instance = mstep(n, m, k, X, e_output_instance.p_nk_matrix);
 	}
 
-	likelihood = e_output_instance.likelihood;
+	new_likelihood = e_output_instance.likelihood;
 
-	cout << "The likelihood approximated by the EM algorithm with the best fit is   \n" << likelihood << endl;
+	cout << "The likelihood approximated by the EM algorithm with the best fit is   \n" << new_likelihood << endl;
 	//don't forget matrix cleanup!!!!
 	
 	
