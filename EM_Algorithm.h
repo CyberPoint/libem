@@ -1,12 +1,9 @@
 #ifndef EM_AGORITHM_H
 #define EM_ALGORITHM_H
 
-/* 
-   EXPECTATION MAXIMIZATION ALGORITHM (header file)
+/* EXPECTATION MAXIMIZATION ALGORITHM (header file)
    CYBERPOINT INTERNATIONAL, LLC
-   Written by Elizabeth Garbee, Summer 2012
-
-*/
+   Written by Elizabeth Garbee, Summer 2012 */
 
 #include <iostream>
 #include <ostream>
@@ -43,7 +40,7 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter);
 	input - string from ReadCSV
 	output - vector of doubles containing your data */
 
-vector<double> ParseCSV();
+int ParseCSV(char *file_name, double *data, int n, int m);
 
 /* euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
 is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster
@@ -123,39 +120,38 @@ void copy_assignment_array(int n, int *src, int *tgt);
 
 int assignment_change_count (int n, int a[], int b[]);
 
-/* tensor_product computes the Kronecker tensor product - N x N matrix where the jth column is the column vector version of x 
-with each entry scaled by the jth component of the row vector 
-	input - data, row and column vectors
-	output - vector of doubles that represents the */
-
-vector<double> tensor_product(vector<double> csv_data, vector<double> x_n, vector<double> mu);
-
 
 /***************************************************************************
 		KMEANS AND EM DECLARATIONS
 ***************************************************************************/
-typedef struct 
-	{
-		Matrix p_nk_matrix;
-		double likelihood;
 
-	}e_output;
-
-typedef struct
-	{
-		Matrix sigma_matrix;
-		Matrix mu_matrix;
-		Matrix Pk_matrix;
-
-	}m_output;
+/* input - dimension of the data, pointer to the data, number of data points and clusters
+   output - cluster centroids stored in a double*
+*/
 
 double * kmeans(int dim, double *X, int n, int k);
 
-e_output estep(int n, int m, int k, double *X, Matrix sigma_matrix, Matrix mu_matrix, Matrix Pk_matrix);
+/* input - number of data points, dimension, clusters, pointer to the data, pointer to the sigma matrix, mu matrix and Pk matrix
+   output - likelihood stored in a double
+*/
 
-m_output mstep(int n, int m, int k, double *X, Matrix p_nk_matrix);
+double estep(int n, int m, int k, double *X, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
 
-void EM(int dim, double *X, int n, int k, int m);
+/* input - number of data points, dimension, clusters, pointer to the data, pointer to the sigma matrix, mu matrix and Pk matrix
+   output - void, but this is where the above matrices are calculated
+*/
+
+void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
+
+/* 
+EM assumes that sigma_matrix is a vector of pointers to m x m matrices initialized to zeros
+mu local is a reference to a clusters by dimensions matrix initialized to zeros
+Pks is a reference to a matrix of zeros of size 1 x clusters
+input - number of data points, dimension, clusters, pointer to the data, pointer to the sigma matrix, mu matrix and Pk matrix
+   output - 
+*/
+
+void EM(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks);
 
 
 #endif //EM_ALGORITHM_HEADER
