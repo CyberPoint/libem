@@ -1,0 +1,50 @@
+
+   EXPECTATION MAXIMIZATION ALGORITHM (readme)
+   CYBERPOINT INTERNATIONAL, LLC
+   Written by Elizabeth Garbee, Summer 2012 
+
+REFERENCE:
+
+Numerical Recipes 3rd Edition: The Art of Scientific Computing 3 
+Cambridge University Press New York, NY, USA ©2007 
+ISBN:0521880688 9780521880688
+
+DESCRIPTION:
+
+Gaussian Mixture Models are some of the simplest examples of classification for unsupervised learning - they are also some of the simplest examples where a solution by an Expectation Maximization algorithm is very successful. Here's the setup: you have N data points in an M dimensional space. You want to fit this data (and if you don't, you might as well stop reading now), but in a special sense - find a set of K multivariate Gaussian distributions that best represents the observed distribution of data points. K is fixed in advance but the means and covariances are unknown. What makes this "unsupervised" learning is that you have "unknown" data, which in this case are the individual data points' cluster memberships. One of the desired outputs of this algorithm is for each data point n, an estimate of the probability that it came from distribution number k. Thus, given the data points, there are three parameters we're interested in approximating:
+
+	mu - the K means, each a vector of length M
+	sigma - the K covariance matrices, each of size M x M
+	P(k) - the K probabilities for each of N data points
+
+We also get some fun stuff as by-products: the probability density of finding a data point at a certain position x, where x is the M dimensional position vector; and L, the overall likelihood of your estimated parameter set. L is actually the key to the whole problem, because you find the best values for the parameters by maximizing the likelihood of L. This particular implementation of EM actually first implements a Kmeans approximation to provide an initial guess for cluster centroids, in an attempt to improve the precision and efficiency of the EM approximation.
+
+Here's the general procedure:
+	-run a kmeans approximation on your data to give yourself a good starting point for your cluster centroids
+	-guess starting values for mu's, sigmas, and P(k)'s
+	-repeat: an Estep to get new p's and a new L, then an Mstep to get new mu's, sigmas and P(k)'s
+	-stop when L converges (i.e. when the value of L stops changing)
+
+*This library is compatible with multidimensional, comma delineated data*
+
+DEPENDENCIES:
+
+	BLAS
+	LAPACK
+	Riva Borbley's Matrix class (currently living in Vulcan)
+
+USER INSTRUCTIONS:
+
+1. Install BLAS and LAPACK on your machine if they're not already there, and clone a copy of Vulcan so you can get to Riva's Matrix class.
+2. Update the makefile/change the EM_Algorithm.cpp header to point to where my code, Riva's code and your copies of BLAS and LAPACK are - this is specific to each box.
+3. Put your data in the same directory as my code, then go into the ParseCSV function and change "test_data.csv" to your data's filename.
+4. make
+5. ./em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>
+
+Here is a sample main function that runs the EM algorithm - make sure all these pieces are in whatever you're calling EM with.
+
+
+
+
+
+

@@ -16,8 +16,8 @@
 #define MAX_CLUSTERS 16
 #define BIG_double (INFINITY)
 //TODO: change debug to 0 when done
-#define debug 1
-#define MAX_LINE_SIZE 100000
+#define debug 0
+#define MAX_LINE_SIZE 1000
 
 using namespace std;
 
@@ -28,9 +28,9 @@ int main(int argc, char *argv[])
 	if (argc != 4) cout << " Usage: <exec_name> <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
 	//TODO: cut out this main and put in the README as an example ... no mains in libraries
 	int errno = 0;
-	sscanf(argv[2],"d", &m);
-	sscanf(argv[3],"d", &n);
-	sscanf(argv[4],"d", &k);
+	sscanf(argv[2],"%d", &m);
+	sscanf(argv[3],"%d", &n);
+	sscanf(argv[4],"%d", &k);
 	if (errno != 0) 
 	{
 		cout << "Invalid inputs" << endl;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
 	//reading in and parsing the data
 	double * data = new double[n*m];
-	
+	ParseCSV(argv[1], data, n, m);
 	if (ParseCSV(argv[1], data, n, m) != 1)
 	{
 		return 0;
@@ -54,20 +54,28 @@ int main(int argc, char *argv[])
 	}
 	//if (debug) cout << " final sigma matrices " << sigma_vector << endl;
 	Matrix mu_local(k,m);
-	if (debug) mu_local.print();
 	Matrix Pk_matrix(1,k);
-	if (debug) Pk_matrix.print();
-	Matrix p_nk_matrix_local(n,k);
 
 	// run the EM function
-	EM(n, m, k, data, p_nk_matrix_local, sigma_vector, mu_local, Pk_matrix);
+	EM(n, m, k, data, sigma_vector, mu_local, Pk_matrix);
 
+	//print out results
+	cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
+	mu_local.print();
+	cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
+	Pk_matrix.print();
+	
 	// free the matrices you allocated
 	for (i = 0; i < k; i++)
 	{
-		free(sigma_vector[i]);
+		cout << "The " << i << " -th covariance matrix approximated by the EM algorithm is " << endl;
+		sigma_vector[i]->print();
+		delete (sigma_vector[i]);
 	}
-	delete [] data;
+	delete[] data;
+	mu_local.clear();
+	Pk_matrix.clear();
+	cout << "I got here just fine." << endl;
 }
 
 /*************************************************************************************************************/
@@ -75,7 +83,7 @@ int main(int argc, char *argv[])
 **************************************************************************************************************/
 // For detailed descriptions of these functions (including input and output), see the header file
 
-// a function that reads in data from a comma delineated file
+/* a function that reads in data from a comma delineated file
 void ReadCSV(vector<string> &record, const string& line, char delimiter)
 {
 	int linepos = 0;
@@ -125,13 +133,13 @@ void ReadCSV(vector<string> &record, const string& line, char delimiter)
 	record.push_back(curstring);
 	return;
 }
-
+*/
 //return 1 for success, zero for error
 int ParseCSV(char *file_name, double *data, int n, int m)
 {
 	char buffer[MAX_LINE_SIZE];
 	FILE *f = fopen(file_name, "r");
-	if (f = NULL) 
+	if (f == NULL) 
 	{
 		cout << "Could not open file" << endl;
 		return 0;
@@ -149,7 +157,7 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 
 		int errno = 0;
 		char *ptok = strtok(buffer, ",");
-		if (ptok) sscanf(ptok, "lf", &data[row*m]);
+		if (ptok) sscanf(ptok, "%lf", &data[row*m]);
 		if (errno != 0)
 		{
 			cout << "Could not convert data at index " << row << " and " << cols << endl;
@@ -157,7 +165,7 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 		}
 		for (cols = 1; cols < m; cols++)
 		{
-			sscanf(strtok(NULL, ","), "lf", &data[row*m + cols]);
+			sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
 			
 			if (errno != 0) 
 			{
@@ -165,7 +173,7 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 				return 0;
 			}
 		}
-
+		row++;
 		memset(buffer, 0, MAX_LINE_SIZE);
 	}
 	return 1;
@@ -473,17 +481,15 @@ density = multivariate gaussian density
 
 *******************************************************************************************************************/
 
-double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
+double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
-	Matrix p_nk_matrix(n,k);
+	
 	if (debug) cout << "p_nk matrix";
 	if (debug) p_nk_matrix.print();
 	
 	double likelihood = 1;
 	
-	Matrix data(X,n,m,Matrix::ROW_MAJOR);
 	if (debug) cout << "data";
-	if (debug) data.print();
 
 	int pi = 3.141592653;
 	int data_point;
@@ -503,7 +509,7 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 
 			if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << endl;
 		
-			x.assign(X[m*data_point + dim],0,dim);
+			x.update(X[m*data_point + dim],0,dim);
 
 		}
 			
@@ -519,7 +525,7 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 			for (int dim = 0; dim < m; dim++)
 			{
 				double temp = mu_matrix.getValue(gaussian,dim);
-				mu_matrix_row.assign(temp,0,dim);
+				mu_matrix_row.update(temp,0,dim);
 			}
 		
 			
@@ -537,7 +543,6 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 			if (debug) cout << "mu_matrix row count is " << mu_matrix.rowCount() << endl;
 			if (debug) cout << "mu_matrix col count is " << mu_matrix.colCount() << endl;
 			if (debug) cout << "data" << endl;
-			if (debug) data.print();
 			if (debug) cout << "x" << endl;
 			if (debug) x.print();
 			if (debug) cout << "mu matrix" << endl;
@@ -565,7 +570,7 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 			
 			for (int i = 0; i < m; i++)
 			{
-				difference_column.assign(difference_row.getValue(0,i),i,0);
+				difference_column.update(difference_row.getValue(0,i),i,0);
 			}
 	
 			if (debug) cout << currStep << endl; currStep++;
@@ -596,7 +601,7 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 			log_densities[gaussian] = log(Pk_matrix.getValue(0,gaussian)) + (log_density);
 			
 			//calculate p_nk = density * Pk / weight
-			p_nk_matrix.assign(log_densities[gaussian],data_point,gaussian);
+			p_nk_matrix.update(log_densities[gaussian],data_point,gaussian);
 
 			if (debug) p_nk_matrix.print();
 			
@@ -611,7 +616,7 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
 			// re-normalize per-gaussian point densities
-			p_nk_matrix.assign(p_nk_matrix.getValue(data_point,gaussian)-log_P_xn,data_point,gaussian);
+			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log_P_xn,data_point,gaussian);
 					
 		}	
 		
@@ -625,7 +630,6 @@ double estep(int n, int m, int k, double *X, vector<Matrix *> &sigma_matrix, Mat
 
 void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
-	Matrix data(X,n,m, Matrix::ROW_MAJOR);
 
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{	
@@ -647,7 +651,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 		for (int dim = 0; dim < m; dim++)
 		{
-			mu_hat.assign(mu_hat.getValue(0,dim)/norm_factor,0,dim);
+			mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 		}
 		for (int data_point = 0; data_point < n; data_point++)
 		{
@@ -661,7 +665,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 			for (int i = 0; i < m; i++)
 			{
-				difference_column.assign(difference_row.getValue(0,i),i,0);
+				difference_column.update(difference_row.getValue(0,i),i,0);
 			}
 			
 			//magic tensor product
@@ -669,7 +673,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-					sigma_hat.assign(difference_row.getValue(0,i) * difference_column.getValue(0,j),i,j);
+					sigma_hat.update(difference_row.getValue(0,i) * difference_column.getValue(0,j),i,j);
 				}
 			}
 		}
@@ -678,7 +682,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 			for (int j = 0; j < m; j++)
 			{
-				sigma_hat.assign(sigma_hat.getValue(i,j)/norm_factor,i,j);
+				sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
 			}
 		}
 
@@ -686,7 +690,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 			for (int j = 0; j < m; j++)
 			{
-				Pk_hat.assign((1.0/n)*norm_factor,i,j);
+				Pk_hat.update((1.0/n)*norm_factor,i,j);
 			}
 		}
 
@@ -696,7 +700,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 			for (int j = 0; j < m; j++)
 			{
-				sigma_matrix[i*m + j]->assign(sigma_hat.getValue(i,j),i,j);
+				sigma_matrix[i*m + j]->update(sigma_hat.getValue(i,j),i,j);
 			}
 		}
 		
@@ -705,27 +709,27 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 			for (int j = 0; j < m; j++)
 			{
-				mu_matrix.assign(mu_hat.getValue(i,j),i,j);
+				mu_matrix.update(mu_hat.getValue(i,j),i,j);
 			}
 		}
 
 		//assign Pk_hat to Pk_matrix[gaussian]
 		for (int i = 0; i < m; i++)
 		{
-			Pk_matrix.assign(Pk_hat.getValue(0,i),0,i);
+			Pk_matrix.update(Pk_hat.getValue(0,i),0,i);
 		}
 
 	}
 }
 
-void EM(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
+void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
 
 {
 	double epsilon = .001;
+	Matrix p_nk_matrix(n,k);
 
 	if (debug) cout << "n is " << n;
 	if (debug) cout << "\nm is: " << m << endl;
-	Matrix data(X,n,m, Matrix::ROW_MAJOR);
 	if (debug) cout << "matrix data made \n";
 	
 
@@ -742,7 +746,7 @@ void EM(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix*> &si
 	{
 		for (int j = 0; j < m; j++)
 		{
-			sigma_matrix[gaussian]->assign(1.0,j,j);
+			sigma_matrix[gaussian]->update(1.0,j,j);
 		}
 	}
 	//initialize matrix of mus from kmeans the first time
@@ -750,26 +754,25 @@ void EM(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix*> &si
 	{
 		for (int j = 0; j < m; j++)
 		{
-			mu_matrix.assign(kmeans_mu[i*m + j],i,j);
+			mu_matrix.update(kmeans_mu[i*m + j],i,j);
 			if (debug) cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j(" << j << ") \n";
-			//kmeans_mu_m.assign(kmeans_mu[i], j, i);
+			//kmeans_mu_m.update(kmeans_mu[i], j, i);
 		}
 	}
 	//initialize Pks
-	Matrix Pk_matrix(n,k);
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{
-		Pk_matrix.assign(1.0/k,0,gaussian);
+		Pks.update(1.0/k,0,gaussian);
 	}
 
 	//main loop of EM - this is where the magic happens
 	while (new_likelihood - old_likelihood > epsilon)
 	{
+		estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+
 		new_likelihood = old_likelihood;
 		if (debug) cout << "likelihood is " << new_likelihood << endl;
-
-		estep(n, m, k, X, sigma_matrix, mu_matrix, Pk_matrix);
-		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pk_matrix);
 		
 	}
 

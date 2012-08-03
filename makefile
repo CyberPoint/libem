@@ -36,8 +36,12 @@ em_algorithm: $(OBJS)
 
 #-- utils --
 
-Matrix.o: $(VULCAN_SRC)/utils/Matrix.cc $(VULCAN_INC)/utils/Matrix.h
-	$(CXX) -c $(VULCAN_SRC)/utils/Matrix.cc -I$(VULCAN_INC)/utils -I/usr/local/include \
+#Matrix.o: $(VULCAN_SRC)/utils/Matrix.cc $(VULCAN_INC)/utils/Matrix.h
+#	$(CXX) -c $(VULCAN_SRC)/utils/Matrix.cc -I$(VULCAN_INC)/utils -I/usr/local/include \
+#	-I$(LAPACK_PATH)/lapacke/include #$(LAPACK_PATH)/liblapack.a $(LAPACK_PATH)/liblapacke.a $(BLAS_PATH)/libblas.a
+
+Matrix.o: $(EM_DIR)/Matrix.cc $(EM_DIR)/Matrix.h
+	$(CXX) -c $(EM_DIR)/Matrix.cc -I$(VULCAN_INC)/utils -I/usr/local/include \
 	-I$(LAPACK_PATH)/lapacke/include #$(LAPACK_PATH)/liblapack.a $(LAPACK_PATH)/liblapacke.a $(BLAS_PATH)/libblas.a
 
 EM_Algorithm.o: $(EM_DIR)/EM_Algorithm.cpp $(EM_DIR)/EM_Algorithm.h

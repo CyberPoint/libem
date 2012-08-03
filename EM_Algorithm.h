@@ -135,7 +135,7 @@ double * kmeans(int dim, double *X, int n, int k);
    output - likelihood stored in a double
 */
 
-double estep(int n, int m, int k, double *X, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
+double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
 
 /* input - number of data points, dimension, clusters, pointer to the data, pointer to the sigma matrix, mu matrix and Pk matrix
    output - void, but this is where the above matrices are calculated
@@ -151,7 +151,7 @@ input - number of data points, dimension, clusters, pointer to the data, pointer
    output - 
 */
 
-void EM(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks);
+void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks);
 
 
 #endif //EM_ALGORITHM_HEADER
