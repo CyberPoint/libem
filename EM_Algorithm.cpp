@@ -47,12 +47,71 @@ double * kmeans(int dim, double *X, int n, int k);
 
 //#define statements - change #debug to 1 if you want to see EM's calculations as it goes
 #define sqr(x) ((x)*(x))
-#define MAX_CLUSTERS 16
+#define MAX_CLUSTERS 5
 #define BIG_double (INFINITY)
-#define debug 0
+#define debug 1
 #define MAX_LINE_SIZE 1000
 
 using namespace std;
+
+int main(int argc, char *argv[])
+{
+	int i, k, m, n;
+	if (argc != 4) cout << " Usage: <exec_name> <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
+	int errno = 0;
+
+	sscanf(argv[2],"%d", &m);
+	sscanf(argv[3],"%d", &n);
+	sscanf(argv[4],"%d", &k);
+
+	//error checking
+	if (errno != 0) 
+	{
+		cout << "Invalid inputs" << endl;
+	}
+
+	//reading in and parsing the data
+	double * data = new double[n*m];
+	ParseCSV(argv[1], data, n, m);
+	if (ParseCSV(argv[1], data, n, m) != 1)
+	{
+		return 0;
+	}
+	
+
+	// create vectors that hold pointers to the EM result matrices
+	vector<Matrix *> sigma_vector;
+	for (i = 0; i < k; i++)
+	{
+		Matrix*p = new Matrix(m,m);
+		sigma_vector.push_back(p);
+	}
+
+	//create matrices for EM to fill
+	Matrix mu_local(k,m);
+	Matrix Pk_matrix(1,k);
+
+	// run the EM function
+	EM(n, m, k, data, sigma_vector, mu_local, Pk_matrix);
+
+	//print out results
+	cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
+	mu_local.print();
+	cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
+	Pk_matrix.print();
+	
+	// free the matrices you allocated
+	for (i = 0; i < k; i++)
+	{
+		cout << "The " << i << " -th covariance matrix approximated by the EM algorithm is " << endl;
+		sigma_vector[i]->print();
+		delete (sigma_vector[i]);
+	}
+	delete[] data;
+	mu_local.clear();
+	Pk_matrix.clear();
+	if (debug) cout << "I got here just fine." << endl;
+}
 
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
@@ -246,7 +305,7 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 {
 	// initialize cluster member counts
 	for (int ii = 0; ii < k; ii++)
-		cluster_member_count[ii] = 0;
+		cluster_member_count[ii];
 	// count members of each cluster
 	for (int ii = 0; ii < n; ii++)
 		cluster_member_count[cluster_assignment_index[ii]]++;
@@ -314,7 +373,10 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 	get_cluster_member_count(n, k, cluster_assignment_index, cluster_member_count);
 	cout << "  Final clusters \n" << endl;
 	for (int ii = 0; ii < k; ii++)
-		printf("cluster %d:  members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*m + 0];
+	{
+		printf("cluster %d:  members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*m + 0]);
+		fflush(stdout);
+	}
 } 
 
 /* 
@@ -361,6 +423,7 @@ double * kmeans(int m, double *X, int n, int k)
 
 {
     	double *cluster_centroid = (double*)malloc(sizeof(double) * m * k);
+	
 	double *dist = (double *)malloc(sizeof(double) * n * k);
 	int *cluster_assignment_cur = (int *)malloc(sizeof(int) * n);
 	int *cluster_assignment_prev = (int *)malloc(sizeof(int) * n);
@@ -369,7 +432,7 @@ double * kmeans(int m, double *X, int n, int k)
 	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score)
 		cout << "Error allocating arrays. \n" << endl;
 
-			
+	return cluster_centroid;		
 	// give the initial cluster centroids some values
     srand( time(NULL) );
     for (int i = 0; i < k; i++)
@@ -384,12 +447,13 @@ double * kmeans(int m, double *X, int n, int k)
 	double prev_totD = 10000.0;
 	//printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
-	while (batch_iteration < 100.)
+	while (batch_iteration < 1)
 	{
 		printf("batch iteration %d \n", batch_iteration);
 		//printf("2: \n%lf\n", prev_totD);
 		
 		cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
+		printf("i've returned unscathed(?) from cluster diag \n");
 		//printf("2.5: \n%lf\n", prev_totD);
 		// update cluster centroids
 		calc_cluster_centroids(m, n, k, X, cluster_assignment_cur, cluster_centroid);
@@ -432,8 +496,16 @@ double * kmeans(int m, double *X, int n, int k)
 
 		prev_totD = totD;
 		batch_iteration++;
+
+		free (dist);
+		free (cluster_assignment_cur);
+		free (cluster_assignment_prev);
+		free (point_move_score);
 	}
+	
+
     	return cluster_centroid;
+	
 }
 
 
@@ -483,12 +555,16 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	int pi = 3.141592653;
 	int data_point;
 	int gaussian;
-
+	int count = 0;
 	for (data_point = 0; data_point < n; data_point++)
 	{
 		if (debug) cout << "1:beginning iteration " << data_point << " of " << n << endl;
 		//initialize the x matrix, which holds the data passed in from double*X
+		printf("i am initing matrix iteration %d \n", count);
+		count++;
+		fflush(stdout);
 		Matrix x(1,m);
+		
 		//initialize the P_xn to zero to start
 		double P_xn = 0;
 
@@ -748,7 +824,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 {
 	//epsilon is the convergence criteria - the smaller epsilon, the narrower the convergence
 	double epsilon = .001;
-
+	int counter = 0;
 	//initialize the p_nk matrix
 	Matrix p_nk_matrix(n,k);
 
@@ -762,7 +838,10 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
+	printf("i will call kmeans \n");
+	fflush(stdout);
 	double *kmeans_mu = kmeans(m, X, n, k);
+	
 
 	//initialize array of identity covariance matrices, 1 per k
 	for(int gaussian = 0; gaussian < k; gaussian++)
@@ -787,15 +866,21 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{
 		Pks.update(1.0/k,0,gaussian);
+		
 	}
-
+	printf("i finished matrix inits \n");
+	fflush (stdout);
 	//main loop of EM - this is where the magic happens!
 	while (new_likelihood - old_likelihood > epsilon)
 	{
 		estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+		printf("i finished estep \n");
+		fflush (stdout);
 		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-
+		
+		
 		new_likelihood = old_likelihood;
 		if (debug) cout << "likelihood is " << new_likelihood << endl;
 	}
+	
 }
