@@ -495,16 +495,15 @@ double * kmeans(int m, double *X, int n, int k)
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
 		printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
 
-		// done with this phase if nothing has changed
-		//if (change_count == 0)
-		//{
-			//cout << "No change made on this step - iteration complete. \n" << endl;
-			//break;
-		//}
-
 		prev_totD = totD;
 		batch_iteration++;
-	
+
+		// done with this phase if nothing has changed
+		if (totD > prev_totD)
+		{
+			cout << "No change made on this step - reached convergence. \n" << endl;
+			break;
+		}
 		
 	}
 	if (debug) printf("%p \n",dist);
@@ -573,16 +572,19 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		printf("i am initing matrix iteration %d \n", count);
 		count++;
 		fflush(stdout);
-		Matrix x(1,m);
+		Matrix x(n,m);
 		
 		//initialize the P_xn to zero to start
 		double P_xn = 0;
 
 		for (int dim = 0; dim < m; dim++)
 		{	
-			if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << endl;
-			//put the data stored in the double* in the x matrix you just created
-			x.update(X[m*data_point + dim],0,dim);
+			for(data_point = 0; data_point < n; data_point++)
+			{
+				if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << endl;
+				//put the data stored in the double* in the x matrix you just created
+				x.update(X[m*data_point + dim],data_point,dim);
+			}
 		}
 		//here's where the estep calculation begins:
 			//initialize the weight, z max and log densities	
@@ -874,7 +876,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		for (int j = 0; j < m; j++)
 		{
 			mu_matrix.update(kmeans_mu[i*m + j],i,j);
-			if (debug) cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j(" << j << ") \n";
+			if (debug) cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j (" << j << ")\n";
 		}
 	}
 
@@ -884,7 +886,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		Pks.update(1.0/k,0,gaussian);
 		
 	}
-	printf("i finished matrix inits \n");
+	printf("i initialized matrices successfully \n");
 	fflush (stdout);
 	//main loop of EM - this is where the magic happens!
 	while (new_likelihood - old_likelihood > epsilon)
@@ -893,7 +895,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		printf("i finished estep \n");
 		fflush (stdout);
 		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-		
+		printf("i finished mstep \n");
 		
 		new_likelihood = old_likelihood;
 		if (debug) cout << "likelihood is " << new_likelihood << endl;
