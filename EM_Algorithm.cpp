@@ -422,12 +422,12 @@ double * kmeans(int m, double *X, int n, int k)
 
 
 {
-    	double *cluster_centroid = (double*)malloc(sizeof(double) * m * k);
+    	double *cluster_centroid = new double[m*k];
 	
-	double *dist = (double *)malloc(sizeof(double) * n * k);
-	int *cluster_assignment_cur = (int *)malloc(sizeof(int) * n);
-	int *cluster_assignment_prev = (int *)malloc(sizeof(int) * n);
-	double *point_move_score = (double *)malloc(sizeof(double) * n * k);
+	double *dist = new double[n*k];
+	int *cluster_assignment_cur = new int[n];
+	int *cluster_assignment_prev = new int[n];
+	double *point_move_score = new double[n*k];
 
 	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score)
 		cout << "Error allocating arrays. \n" << endl;
@@ -497,12 +497,13 @@ double * kmeans(int m, double *X, int n, int k)
 		prev_totD = totD;
 		batch_iteration++;
 
-		free (dist);
-		free (cluster_assignment_cur);
-		free (cluster_assignment_prev);
-		free (point_move_score);
+		
 	}
-	
+
+	delete[] dist; 
+	delete[] cluster_assignment_cur;
+	delete[] cluster_assignment_prev;
+	delete[] point_move_score;
 
     	return cluster_centroid;
 	
@@ -626,13 +627,14 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			}
 			//make a column representation of the difference in preparation for matrix multiplication
 			Matrix difference_column(m,1);
+			Matrix term1 = sigma_inv.dot(difference_column);
 			for (int i = 0; i < m; i++)
 			{
 				difference_column.update(difference_row.getValue(0,i),i,0);
 			}
 
 			//(x - mu) * sigma^-1
-			Matrix term1 = sigma_inv.dot(difference_column);
+			
 			if (debug) cout << "multiplication" << endl; 
 			
 			if (debug) cout << currStep << endl; currStep++;
@@ -723,7 +725,8 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			}
 
 			//sum up all the individual mu calculations
-			mu_hat.add(x, m, 0);
+			printf("mu hat addition \n");
+			mu_hat.add(x, m, 1);
 
 			//TODO: see if we need to deal w/ underflow here
 
@@ -741,10 +744,11 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		for (int data_point = 0; data_point < n; data_point++)
 		{
 			//initialize the x_m matrix
-			Matrix x_m(m,1);
+			Matrix x_m(1,m);
 
 			//fill it
-			x_m.add(x,m,0);
+			printf("x_m addition \n");
+			x_m.add(x,m,1);
 	
 			//row representation of x - mu for matrix multiplication			
 			Matrix difference_row = x_m.subtract(mu_hat);
