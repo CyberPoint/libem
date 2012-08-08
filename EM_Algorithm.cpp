@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 	{
 		cout << "The " << i << " -th covariance matrix approximated by the EM algorithm is " << endl;
 		sigma_vector[i]->print();
-		delete[] sigma_vector[i];
+		delete sigma_vector[i];
 		
 	}
 	delete[] data;
@@ -266,11 +266,14 @@ void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignm
 {
 	for (int b = 0; b < k; b++)
 		printf("\n%f\n", new_cluster_centroid[b]);
-	int * cluster_member_count = new int[k];
+	int cluster_member_count[k];
 	// initialize cluster centroid coordinate sums to zero
 	for (int ii = 0; ii < k; ii++)
 	{
-		new_cluster_centroid[m*k] = 0;
+		for (int jj = 0; jj < m; jj++)
+		{
+			new_cluster_centroid[ii*m + jj] = 0;
+		}
 	}
 	// sum all points for every point
 	for (int ii = 0; ii < n; ii++)
@@ -305,7 +308,7 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 {
 	// initialize cluster member counts
 	for (int ii = 0; ii < k; ii++)
-		cluster_member_count[ii];
+		cluster_member_count[ii] = 0;
 	// count members of each cluster
 	for (int ii = 0; ii < n; ii++)
 		cluster_member_count[cluster_assignment_index[ii]]++;
@@ -425,7 +428,11 @@ double * kmeans(int m, double *X, int n, int k)
     	double *cluster_centroid = new double[m*k];
 	
 	double *dist = new double[n*k];
+	
+
+	printf("%p \n",dist);
 	int *cluster_assignment_cur = new int[n];
+	printf("%p \n",cluster_assignment_cur);
 	int *cluster_assignment_prev = new int[n];
 	double *point_move_score = new double[n*k];
 
@@ -446,6 +453,7 @@ double * kmeans(int m, double *X, int n, int k)
 	double prev_totD = 10000.0;
 	//printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
+	
 	while (batch_iteration < MAX_ITERATIONS)
 	{
 		printf("batch iteration %d \n", batch_iteration);
@@ -455,6 +463,7 @@ double * kmeans(int m, double *X, int n, int k)
 		//printf("i've returned unscathed(?) from cluster diag \n");
 		//printf("2.5: \n%lf\n", prev_totD);
 		// update cluster centroids
+
 		calc_cluster_centroids(m, n, k, X, cluster_assignment_cur, cluster_centroid);
 
 		// deal with empty clusters
@@ -476,6 +485,7 @@ double * kmeans(int m, double *X, int n, int k)
 				// done with this phase
 				//break;
 			}
+
 		// save previous step
 		copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
 		// smoosh points around to nearest cluster
@@ -494,11 +504,12 @@ double * kmeans(int m, double *X, int n, int k)
 
 		prev_totD = totD;
 		batch_iteration++;
-
+	
 		
 	}
-
+	if (debug) printf("%p \n",dist);
 	delete[] dist; 
+	if (debug) printf("%p \n",cluster_assignment_cur);
 	delete[] cluster_assignment_cur;
 	delete[] cluster_assignment_prev;
 	delete[] point_move_score;
@@ -843,7 +854,10 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	printf("i will call kmeans \n");
 	fflush(stdout);
 	double *kmeans_mu = kmeans(m, X, n, k);
-	
+	printf("i called kmeans \n");
+	fflush(stdout);
+	if (kmeans_mu == 0)
+		return;
 
 	//initialize array of identity covariance matrices, 1 per k
 	for(int gaussian = 0; gaussian < k; gaussian++)
