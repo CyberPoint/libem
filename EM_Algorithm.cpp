@@ -48,6 +48,7 @@ double * kmeans(int dim, double *X, int n, int k);
 //#define statements - change #debug to 1 if you want to see EM's calculations as it goes
 #define sqr(x) ((x)*(x))
 #define MAX_CLUSTERS 5
+#define MAX_ITERATIONS 100
 #define BIG_double (INFINITY)
 #define debug 1
 #define MAX_LINE_SIZE 1000
@@ -75,10 +76,10 @@ int main(int argc, char *argv[])
 	ParseCSV(argv[1], data, n, m);
 	if (ParseCSV(argv[1], data, n, m) != 1)
 	{
+		
 		return 0;
 	}
 	
-
 	// create vectors that hold pointers to the EM result matrices
 	vector<Matrix *> sigma_vector;
 	for (i = 0; i < k; i++)
@@ -100,17 +101,17 @@ int main(int argc, char *argv[])
 	cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
 	Pk_matrix.print();
 	
-	// free the matrices you allocated
 	for (i = 0; i < k; i++)
 	{
 		cout << "The " << i << " -th covariance matrix approximated by the EM algorithm is " << endl;
 		sigma_vector[i]->print();
-		delete (sigma_vector[i]);
+		delete[] sigma_vector[i];
+		
 	}
 	delete[] data;
 	mu_local.clear();
 	Pk_matrix.clear();
-	if (debug) cout << "I got here just fine." << endl;
+	if (debug) cout << "I got to the end of main just fine." << endl;
 }
 
 /*************************************************************************************************************/
@@ -265,8 +266,7 @@ void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignm
 {
 	for (int b = 0; b < k; b++)
 		printf("\n%f\n", new_cluster_centroid[b]);
-	int carray[3];
-	int * cluster_member_count = carray;
+	int * cluster_member_count = new int[k];
 	// initialize cluster centroid coordinate sums to zero
 	for (int ii = 0; ii < k; ii++)
 	{
@@ -431,12 +431,11 @@ double * kmeans(int m, double *X, int n, int k)
 
 	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score)
 		cout << "Error allocating arrays. \n" << endl;
-
-	return cluster_centroid;		
+		
 	// give the initial cluster centroids some values
-    srand( time(NULL) );
-    for (int i = 0; i < k; i++)
-        cluster_centroid[i] = X[rand() % n];
+    	srand( time(NULL) );
+    	for (int i = 0; i < k; i++)
+        	cluster_centroid[i] = X[rand() % n];
 	
 	// initial setup
 	all_distances(m, n, k, X, cluster_centroid, dist);
@@ -447,13 +446,13 @@ double * kmeans(int m, double *X, int n, int k)
 	double prev_totD = 10000.0;
 	//printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
-	while (batch_iteration < 1)
+	while (batch_iteration < MAX_ITERATIONS)
 	{
 		printf("batch iteration %d \n", batch_iteration);
 		//printf("2: \n%lf\n", prev_totD);
 		
 		cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
-		printf("i've returned unscathed(?) from cluster diag \n");
+		//printf("i've returned unscathed(?) from cluster diag \n");
 		//printf("2.5: \n%lf\n", prev_totD);
 		// update cluster centroids
 		calc_cluster_centroids(m, n, k, X, cluster_assignment_cur, cluster_centroid);
@@ -475,7 +474,7 @@ double * kmeans(int m, double *X, int n, int k)
 				calc_cluster_centroids(m, n, k, X, cluster_assignment_cur, cluster_centroid);
 				printf(" negative progress made on this step - iteration completed (%.2f) \n", totD-prev_totD);
 				// done with this phase
-				break;
+				//break;
 			}
 		// save previous step
 		copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
@@ -485,14 +484,13 @@ double * kmeans(int m, double *X, int n, int k)
 
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
 		printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
-		fflush(stdout);
 
 		// done with this phase if nothing has changed
-		if (change_count == 0)
-		{
-			cout << "No change made on this step - iteration complete. \n" << endl;
-			break;
-		}
+		//if (change_count == 0)
+		//{
+			//cout << "No change made on this step - iteration complete. \n" << endl;
+			//break;
+		//}
 
 		prev_totD = totD;
 		batch_iteration++;
