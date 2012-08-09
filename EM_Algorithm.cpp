@@ -50,7 +50,7 @@ double * kmeans(int dim, double *X, int n, int k);
 #define MAX_CLUSTERS 5
 #define MAX_ITERATIONS 100
 #define BIG_double (INFINITY)
-#define debug 1
+#define debug 0
 #define MAX_LINE_SIZE 1000
 
 using namespace std;
@@ -374,10 +374,10 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 {
 	int cluster_member_count[MAX_CLUSTERS];
 	get_cluster_member_count(n, k, cluster_assignment_index, cluster_member_count);
-	cout << "  Final clusters \n" << endl;
+	if (debug) cout << "  Final clusters \n" << endl;
 	for (int ii = 0; ii < k; ii++)
 	{
-		printf("cluster %d:  members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*m + 0]);
+		if (debug) printf("cluster %d:  members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*m + 0]);
 		fflush(stdout);
 	}
 } 
@@ -430,9 +430,9 @@ double * kmeans(int m, double *X, int n, int k)
 	double *dist = new double[n*k];
 	
 
-	printf("%p \n",dist);
+	if (debug) printf("%p \n",dist);
 	int *cluster_assignment_cur = new int[n];
-	printf("%p \n",cluster_assignment_cur);
+	if (debug) printf("%p \n",cluster_assignment_cur);
 	int *cluster_assignment_prev = new int[n];
 	double *point_move_score = new double[n*k];
 
@@ -456,7 +456,7 @@ double * kmeans(int m, double *X, int n, int k)
 	
 	while (batch_iteration < MAX_ITERATIONS)
 	{
-		printf("batch iteration %d \n", batch_iteration);
+		if (debug) printf("batch iteration %d \n", batch_iteration);
 		//printf("2: \n%lf\n", prev_totD);
 		
 		cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
@@ -481,7 +481,7 @@ double * kmeans(int m, double *X, int n, int k)
 				copy_assignment_array(n, cluster_assignment_prev, cluster_assignment_cur);
 				// recalculate centroids
 				calc_cluster_centroids(m, n, k, X, cluster_assignment_cur, cluster_centroid);
-				printf(" negative progress made on this step - iteration completed (%.2f) \n", totD-prev_totD);
+				if (debug) printf(" negative progress made on this step - iteration completed (%.2f) \n", totD-prev_totD);
 				// done with this phase
 				//break;
 			}
@@ -493,7 +493,7 @@ double * kmeans(int m, double *X, int n, int k)
 		choose_all_clusters_from_distances(m, n, k, dist, X, cluster_assignment_cur);
 
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
-		printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
+		if (debug) printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
 
 		prev_totD = totD;
 		batch_iteration++;
@@ -501,7 +501,7 @@ double * kmeans(int m, double *X, int n, int k)
 		// done with this phase if nothing has changed
 		if (totD > prev_totD)
 		{
-			cout << "No change made on this step - reached convergence. \n" << endl;
+			if (debug) cout << "No change made on this step - reached convergence. \n" << endl;
 			break;
 		}
 		
@@ -569,23 +569,33 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	{
 		if (debug) cout << "1:beginning iteration " << data_point << " of " << n << endl;
 		//initialize the x matrix, which holds the data passed in from double*X
-		printf("i am initing matrix iteration %d \n", count);
+		if (debug) printf("i am initing matrix iteration %d \n", count);
 		count++;
 		fflush(stdout);
-		Matrix x(n,m);
+		Matrix x(1,m);
 		
 		//initialize the P_xn to zero to start
 		double P_xn = 0;
 
 		for (int dim = 0; dim < m; dim++)
 		{	
-			for(data_point = 0; data_point < n; data_point++)
-			{
+			//for(data_point = 0; data_point < n; data_point++)
+			//{
 				if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << endl;
 				//put the data stored in the double* in the x matrix you just created
-				x.update(X[m*data_point + dim],data_point,dim);
-			}
+				x.update(X[m*data_point + dim],0,dim);
+			//}
 		}
+
+		//Matrix x_row(1,m);
+		//for (data_point = 0; data_point < n; data_point++)
+		//{
+			//for (int dim = 0; dim < m; dim++)
+			//{
+				//x_row.update(x.getValue(data_point,dim),0,dim);
+			//}
+		//}
+		//if (debug) x_row.print();
 		//here's where the estep calculation begins:
 			//initialize the weight, z max and log densities	
 		double weight_d;
@@ -630,6 +640,8 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			{
 				sigma_inv = sigma_matrix[i]->inv();	
 			}
+			if (debug) printf("sigma_inv \n");
+			if (debug) sigma_inv.print();
 			//det(sigma)
 			double determinant = 1;
 			for (int j = 0; j < sigma_matrix.size(); j++)
@@ -638,12 +650,16 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			}
 			//make a column representation of the difference in preparation for matrix multiplication
 			Matrix difference_column(m,1);
-			Matrix term1 = sigma_inv.dot(difference_column);
+			
 			for (int i = 0; i < m; i++)
 			{
 				difference_column.update(difference_row.getValue(0,i),i,0);
 			}
-
+			Matrix term1 = sigma_inv.dot(difference_column);
+			if (debug) printf("difference_column \n");
+			if (debug) difference_column.print();
+			if (debug) printf("term1 \n");
+			if (debug) term1.print();
 			//(x - mu) * sigma^-1
 			
 			if (debug) cout << "multiplication" << endl; 
@@ -653,49 +669,72 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 			//(x - mu) * sigma^-1 * (x - mu)
 			Matrix &term2 = term1.dot(difference_row);
-
+			if (debug) printf("term2 \n");
 			if (debug) term2.print();
-			if (debug) cout << currStep << endl; currStep++;
 
+			if (debug) cout << currStep << endl; currStep++;
+			double term2_d = 1;
 			//pull out the double from the above matrix multiplication
-			double term2_d = term2.getValue(0,0);
+			//for (data_point = 0; data_point < n; data_point++)
+			//{
+				//for (gaussian = 0; gaussian < k; gaussian++)
+				//{
+					 term2_d = term2.getValue(data_point,gaussian);
+				//}
+			//}
+		
 
 			//exp
 			double log_unnorm_density = (-.5 * term2_d);
 
 
 			double term3 = pow(2*pi, m/2);
+
 			double term4 = pow(determinant, .5);
+
 			double log_norm_factor = log(term3 * term4);
 
 			//calculate multivariate gaussian density
 			double log_density = log_unnorm_density - log_norm_factor;
+
+			if (debug) printf("Pk_matrix \n");
+			if (debug) Pk_matrix.print();
 			//log sum exp trick
-			double current_z = log(Pk_matrix.getValue(0,gaussian)) + log_density;
+			double temp1 = Pk_matrix.getValue(0,gaussian);
+			if (debug) printf("temp 1 is %lf \n", Pk_matrix.getValue(0,gaussian));
+
+			double temp2 = log(temp1);
+			if (debug) printf("temp2 is %lf \n", log(temp1));
+
+			double current_z = temp2 + log_density;
+
 			if (current_z > z_max) z_max = current_z;
+
 			log_densities[gaussian] = log(Pk_matrix.getValue(0,gaussian)) + (log_density);
-			
+		
 			/***** END 16.1.8 in NR3 *****/
 
 			//calculate p_nk = density * Pk / weight
 			p_nk_matrix.update(log_densities[gaussian],data_point,gaussian);
-
+			if (debug) printf("p_nk_matrix \n");
 			if (debug) p_nk_matrix.print();
 			
-		} 
+		//} 
 
 		//P_xn calculation in log space
-		for(gaussian = 0; gaussian < k; gaussian++)
-		{
+		//for(gaussian = 0; gaussian < k; gaussian++)
+		//{
 			P_xn += exp(log_densities[gaussian] - z_max);
-		}
+		//}
 		double log_P_xn = log(P_xn)+z_max;
 
 		// re-normalize per-gaussian point densities
-		for (int gaussian = 0; gaussian < k; gaussian++)
-		{
-			
-			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log_P_xn,data_point,gaussian);
+		//for (gaussian = 0; gaussian < k; gaussian++)
+		//{
+			if (debug) cout << "p_nk_matrix.getValue(data_point,gaussian) is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
+			if (debug) cout << "that -log(P_xn) is " << p_nk_matrix.getValue(data_point,gaussian) - log(P_xn) << endl;
+
+			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log(P_xn),data_point,gaussian);
 					
 		}	
 
@@ -712,19 +751,24 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
+	//initialize the matrices that hold the mstep approximations
+	Matrix sigma_hat(m,m);
+	Matrix mu_hat(1,m);
+	if (debug) printf("mu_hat \n");
+	if (debug) mu_hat.print();
+	Matrix Pk_hat(1,k);
 
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{	
-		//initialize the matrices that hold the mstep approximations
-		Matrix sigma_hat(m,m);
-		Matrix mu_hat(1,m);
-		Matrix Pk_hat(1,k);
+		
 
 		//initialize the normalization factor
 		double norm_factor = 0;
 
 		//initialize the array of doubles of length m that represents the data
 		double x[m];
+		if (debug) cout << "double x[m] " << x << endl;
+		
 
 		//do the mu calculation point by point
 		for (int data_point = 0; data_point < n; data_point++)
@@ -736,8 +780,9 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			}
 
 			//sum up all the individual mu calculations
-			printf("mu hat addition \n");
-			mu_hat.add(x, m, 1);
+			if (debug) printf("mu hat addition \n");
+
+			mu_hat.add(x, m, 0);
 
 			//TODO: see if we need to deal w/ underflow here
 
@@ -758,14 +803,16 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			Matrix x_m(1,m);
 
 			//fill it
-			printf("x_m addition \n");
-			x_m.add(x,m,1);
+			if (debug) printf("x_m addition \n");
+			x_m.add(x,m,0);
 	
 			//row representation of x - mu for matrix multiplication			
 			Matrix difference_row = x_m.subtract(mu_hat);
 
 			//column representation of x - mu for matrix multiplication
-			Matrix difference_column (m,1);
+			Matrix difference_column(m,1);
+			if (debug) printf("difference_column \n");
+			if (debug) difference_column.print();
 			for (int i = 0; i < m; i++)
 			{
 				difference_column.update(difference_row.getValue(0,i),i,0);
@@ -776,7 +823,10 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-					sigma_hat.update(difference_row.getValue(0,i) * difference_column.getValue(0,j),i,j);
+					double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0);
+
+					sigma_hat.update(temp1, i, j);
+
 				}
 			}
 		}
@@ -791,13 +841,12 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 
 		//calculate the new Pk's, also adjusted by the normalization factor
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < m; j++)
-			{
-				Pk_hat.update((1.0/n)*norm_factor,i,j);
-			}
-		}
+		//for (gaussian = 0; gaussian < k; gaussian++)
+		//{
+			double temp2 = (1.0/n)*norm_factor;
+			Pk_hat.update(temp2,0,gaussian);
+			
+		//}
 
 		//assign sigma_hat to sigma_matrix[gaussian]
 
@@ -805,26 +854,29 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 			for (int j = 0; j < m; j++)
 			{
-				sigma_matrix[i*m + j]->update(sigma_hat.getValue(i,j),i,j);
+				sigma_matrix[gaussian]->update(sigma_hat.getValue(i,j), i, j);
 			}
 		}
-		
+
 		//assign mu_hat to mu_matrix[gaussian]
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < m; j++)
+		//for (int i = 0; i < k; i++)
+		//{
+			for (int dim = 0; dim < m; dim++)
 			{
-				mu_matrix.update(mu_hat.getValue(i,j),i,j);
+				mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+
 			}
-		}
+		//}
+		
 
 		//assign Pk_hat to Pk_matrix[gaussian]
-		for (int i = 0; i < m; i++)
-		{
-			Pk_matrix.update(Pk_hat.getValue(0,i),0,i);
-		}
+		//for (int i = 0; i < m; i++)
+		//{
+			Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
+		//}
 
 	}
+
 }
 
 /*
@@ -853,10 +905,10 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
-	printf("i will call kmeans \n");
+	if (debug) printf("i will call kmeans \n");
 	fflush(stdout);
 	double *kmeans_mu = kmeans(m, X, n, k);
-	printf("i called kmeans \n");
+	if (debug) printf("i called kmeans \n");
 	fflush(stdout);
 	if (kmeans_mu == 0)
 		return;
@@ -886,16 +938,16 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		Pks.update(1.0/k,0,gaussian);
 		
 	}
-	printf("i initialized matrices successfully \n");
+	if (debug) printf("i initialized matrices successfully \n");
 	fflush (stdout);
 	//main loop of EM - this is where the magic happens!
 	while (new_likelihood - old_likelihood > epsilon)
 	{
 		estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-		printf("i finished estep \n");
+		if (debug) printf("i finished estep \n");
 		fflush (stdout);
 		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-		printf("i finished mstep \n");
+		if (debug) printf("i finished mstep \n");
 		
 		new_likelihood = old_likelihood;
 		if (debug) cout << "likelihood is " << new_likelihood << endl;
