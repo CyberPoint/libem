@@ -15,7 +15,7 @@ double calc_total_distance(int m, int n, int k, double *X, double *centroids, in
 void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *distance_array, int *cluster_assignment_index);
 void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid);
 void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *cluster_member_count);
-void update_delta_score_table(int m, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double*point_move_score_table, int cc);
+void deprecated_update_delta_score_table(int m, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double*point_move_score_table, int cc);
 void perform_move (int m, int n, int k, double *X, int *cluster_assignment, double *cluster_centroid, int *cluster_member_count, int move_point, int move_target_cluster);
 void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid);
 void copy_assignment_array(int n, int *src, int *tgt);
@@ -41,6 +41,7 @@ double * kmeans(int dim, double *X, int n, int k);
 #include "time.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 // EM specific header
 #include "EM_Algorithm.h"
@@ -50,7 +51,7 @@ double * kmeans(int dim, double *X, int n, int k);
 #define MAX_CLUSTERS 5
 #define MAX_ITERATIONS 100
 #define BIG_double (INFINITY)
-#define debug 0
+#define debug 1
 #define MAX_LINE_SIZE 1000
 
 using namespace std;
@@ -155,6 +156,7 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 			cout << "Could not convert data at index " << row << " and " << cols << endl;
 			return 0;
 		}
+		
 		for (cols = 1; cols < m; cols++)
 		{
 			sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
@@ -165,11 +167,13 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 				return 0;
 			}
 		}
+		
 		row++;
 		memset(buffer, 0, MAX_LINE_SIZE);
 	}
 	return 1;
 }
+
 
 /* 
 	euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
@@ -179,12 +183,13 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 		output - double which stores the distance
 */
 
-double euclid_distance(int m, double *pl, double *p2)
+double euclid_distance(int m, double *p1, double *p2)
 {	
-	double distance_sq_sum = 0;
+	double distance_sum = 0;
 	for (int ii = 0; ii < m; ii++)
-		distance_sq_sum += sqr(pl[ii] - p2[ii]);
-	return distance_sq_sum;
+		distance_sum += pow(p1[ii] - p2[ii],2);
+	return sqrt(distance_sum);
+	if (debug) cout << "this iteration's distance sum is " << distance_sum << endl;
 }
 
 /* 
@@ -196,10 +201,12 @@ double euclid_distance(int m, double *pl, double *p2)
 void all_distances(int m, int n, int k, double *X, double *centroid, double *distance_out)
 {
 	for (int ii = 0; ii < n; ii++) // for each data point
+	{
 		for (int jj = 0; jj < k; jj++) // for each cluster
 		{
 			distance_out[ii*k + jj] = euclid_distance(m, &X[ii*m], &centroid[jj*m]);
 		}
+	}
 }
 
 /* 
@@ -236,14 +243,14 @@ void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *
 	for (int ii = 0; ii < n; ii++) // for each data point
 	{
 		int best_index = -1;
-		double closest_distance = 100000;
+		double closest_distance = -1;
 
 		// for each cluster
 		for (int jj = 0; jj < k; jj++)
 		{
 			// distance between point and centroid
 			double cur_distance = distance_array[ii*k + jj];
-			if (cur_distance < closest_distance)
+			if ((closest_distance < 0) || (cur_distance < closest_distance))
 			{
 				best_index = jj;
 				closest_distance = cur_distance;
@@ -316,13 +323,13 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 }
 
 /* 
-	update_delta_score_table is the first step in reassigning points to the clusters that are now closest to them - it basically
+	deprecated_update_delta_score_table is the first step in reassigning points to the clusters that are now closest to them - it basically
 	creates a table of which clusters need to be moved and fills in that table. Not all points will need to be reassigned after
 	each iteration, so this function keeps track of the ones that do. 
 		input - data, current cluster assignment, current cluster centroids, member count
 		output - void 
 */
-void update_delta_score_table(int m, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double *point_move_score_table, int cc)
+void deprecated_update_delta_score_table(int m, int n, int k, double *X, int *cluster_assignment_cur, double *cluster_centroid, int *cluster_member_count, double *point_move_score_table, int cc)
 {
 	// for each point both in and not in the cluster
 	for (int ii = 0; ii < n; ii++)
@@ -377,9 +384,24 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 	if (debug) cout << "  Final clusters \n" << endl;
 	for (int ii = 0; ii < k; ii++)
 	{
-		if (debug) printf("cluster %d:  members: %8d, centroid(%.1f) \n", ii, cluster_member_count[ii], cluster_centroid[ii*m + 0]);
+		if (debug) printf("cluster %d:  members: %8d\n", ii, cluster_member_count[ii]);
+		printf(" ( ");
+		for (int jj = 0; jj < m; jj++)
+		{
+			printf("%lf ",cluster_centroid[ii*m + jj]);
+			if (jj != m-1)
+				printf(", ");
+		}
+		printf(" ) \n\n ");
+		
 		fflush(stdout);
 	}
+	printf("member list \n");
+	for (int ii = 0; ii < n; ii++)
+	{
+		printf(" %d, %d \n", ii, cluster_assignment_index[ii]);
+	}
+	cout << "--------------------------" << endl;
 } 
 
 /* 
@@ -425,8 +447,9 @@ double * kmeans(int m, double *X, int n, int k)
 
 
 {
+	//holds the computed cluster_centroids to pass to EM later
     	double *cluster_centroid = new double[m*k];
-	
+	//for each data point, the distance to each centroid
 	double *dist = new double[n*k];
 	
 
@@ -440,17 +463,26 @@ double * kmeans(int m, double *X, int n, int k)
 		cout << "Error allocating arrays. \n" << endl;
 		
 	// give the initial cluster centroids some values
+	
     	srand( time(NULL) );
     	for (int i = 0; i < k; i++)
-        	cluster_centroid[i] = X[rand() % n];
-	
+	{
+		int row = rand() % n;
+		if (row >= n) 
+			row = n-1;
+		for (int j = 0; j < m; j++)
+		{
+        		cluster_centroid[i*m + j] = X[row*m + j];
+		}
+	}
 	// initial setup
 	all_distances(m, n, k, X, cluster_centroid, dist);
 	choose_all_clusters_from_distances(m, n, k, X, dist, cluster_assignment_cur);
 	copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
 
 	// batch update
-	double prev_totD = 10000.0;
+	double prev_totD = -1;
+
 	//printf("1: \n%lf\n", prev_totD);
 	int batch_iteration = 0;
 	
@@ -474,7 +506,8 @@ double * kmeans(int m, double *X, int n, int k)
 		double totD = calc_total_distance(m, n, k, X, cluster_centroid, cluster_assignment_cur);
 		//printf("4: \n%lf\n", prev_totD);
 		//printf("totD: %lf, prev_totD: %lf\n", totD, prev_totD);
-		if (totD > prev_totD)
+/*
+		if ((prev_totD >= 0) && (totD > prev_totD))
 			// failed to improve - this solution is worse than the last one
 			{
 				// go back to the old assignments
@@ -485,12 +518,12 @@ double * kmeans(int m, double *X, int n, int k)
 				// done with this phase
 				//break;
 			}
-
+*/
 		// save previous step
-		copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
+		
 		// smoosh points around to nearest cluster
 		all_distances(m, n, k, X, cluster_centroid, dist);
-		choose_all_clusters_from_distances(m, n, k, dist, X, cluster_assignment_cur);
+		choose_all_clusters_from_distances(m, n, k, X, dist, cluster_assignment_cur);
 
 		int change_count = assignment_change_count(n, cluster_assignment_cur, cluster_assignment_prev);
 		if (debug) printf("batch iteration:%3d  dimension:%u  change count:%9d  totD:%16.2f totD-prev_totD:%17.2f\n", batch_iteration, 1, change_count, totD, totD-prev_totD);
@@ -499,13 +532,17 @@ double * kmeans(int m, double *X, int n, int k)
 		batch_iteration++;
 
 		// done with this phase if nothing has changed
-		if (totD > prev_totD)
+		if (change_count == 0)
 		{
 			if (debug) cout << "No change made on this step - reached convergence. \n" << endl;
 			break;
 		}
-		
+		copy_assignment_array(n, cluster_assignment_cur, cluster_assignment_prev);
+
 	}
+
+	cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
+
 	if (debug) printf("%p \n",dist);
 	delete[] dist; 
 	if (debug) printf("%p \n",cluster_assignment_cur);
@@ -635,19 +672,14 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 			//sigma^-1
 			if (debug) cout << currStep << endl; currStep++;
-			Matrix sigma_inv;
-			for (int i = 0; i < sigma_matrix.size(); i++)
-			{
-				sigma_inv = sigma_matrix[i]->inv();	
-			}
+
+			Matrix &sigma_inv = sigma_matrix[gaussian]->inv();
+			
 			if (debug) printf("sigma_inv \n");
 			if (debug) sigma_inv.print();
 			//det(sigma)
-			double determinant = 1;
-			for (int j = 0; j < sigma_matrix.size(); j++)
-			{
-				determinant = sigma_matrix[j]->det();
-			}
+			double determinant = sigma_matrix[gaussian]->det();
+			
 			//make a column representation of the difference in preparation for matrix multiplication
 			Matrix difference_column(m,1);
 			
@@ -655,6 +687,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			{
 				difference_column.update(difference_row.getValue(0,i),i,0);
 			}
+
 			Matrix term1 = sigma_inv.dot(difference_column);
 			if (debug) printf("difference_column \n");
 			if (debug) difference_column.print();
@@ -726,7 +759,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		//{
 			P_xn += exp(log_densities[gaussian] - z_max);
 		//}
-		double log_P_xn = log(P_xn)+z_max;
+			double log_P_xn = log(P_xn)+z_max;
 
 		// re-normalize per-gaussian point densities
 		//for (gaussian = 0; gaussian < k; gaussian++)
@@ -735,12 +768,13 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug) cout << "that -log(P_xn) is " << p_nk_matrix.getValue(data_point,gaussian) - log(P_xn) << endl;
 
 			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log(P_xn),data_point,gaussian);
-					
+			delete &sigma_inv;			
 		}	
 
 		//calculate the likelihood of this model
 		likelihood *= weight_d;
 		if (debug) cout << "The likelihood for this iteration is " << likelihood << endl;
+		
 	}
 	return likelihood;
 }
@@ -841,13 +875,16 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 
 		//calculate the new Pk's, also adjusted by the normalization factor
-		//for (gaussian = 0; gaussian < k; gaussian++)
+		//for (int data_point = 0; data_point < n; data_point++)
 		//{
-			double temp2 = (1.0/n)*norm_factor;
-			Pk_hat.update(temp2,0,gaussian);
+			//double temp1 = 1.0 / data_point;
+			//double temp2 = temp1 * norm_factor;
+			
+			Pk_hat.update(norm_factor/n,0,gaussian);
 			
 		//}
-
+		if (debug) cout << "pk hat matrix" << endl;
+		if (debug) Pk_hat.print();
 		//assign sigma_hat to sigma_matrix[gaussian]
 
 		for (int i = 0; i < m; i++)
@@ -858,25 +895,35 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			}
 		}
 
-		//assign mu_hat to mu_matrix[gaussian]
-		//for (int i = 0; i < k; i++)
-		//{
+		//assign mu_hat to mu_matrix
+		for (int i = 0; i < k; i++)
+		{
 			for (int dim = 0; dim < m; dim++)
 			{
-				mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+				mu_matrix.update(mu_hat.getValue(0,dim),i,dim);
 
 			}
-		//}
+		}
 		
 
-		//assign Pk_hat to Pk_matrix[gaussian]
+		//assign Pk_hat to Pk_matrix
 		//for (int i = 0; i < m; i++)
 		//{
 			Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
 		//}
 
 	}
+	double sum = 0;
+	for (int i = 0; i < k; i++)
+	{	
+		sum += Pk_matrix.getValue(0,i);
+	}
 
+	for (int i = 0; i < k; i++)
+	{	
+		Pk_matrix.update(Pk_matrix.getValue(0,i)/sum,0,i);
+	}
+	
 }
 
 /*
@@ -889,6 +936,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
 
 {
+	int iterations;
 	//epsilon is the convergence criteria - the smaller epsilon, the narrower the convergence
 	double epsilon = .001;
 	int counter = 0;
@@ -907,7 +955,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	//take the cluster centroids from kmeans as initial mus 
 	if (debug) printf("i will call kmeans \n");
 	fflush(stdout);
-	double *kmeans_mu = kmeans(m, X, n, k);
+	double *kmeans_mu = kmeans(m, X, n, k); 
 	if (debug) printf("i called kmeans \n");
 	fflush(stdout);
 	if (kmeans_mu == 0)
@@ -935,7 +983,8 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	//initialize Pks
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{
-		Pks.update(1.0/k,0,gaussian);
+		double term1 = 1.0 / k;
+		Pks.update(term1,0,gaussian);
 		
 	}
 	if (debug) printf("i initialized matrices successfully \n");
@@ -951,6 +1000,23 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		
 		new_likelihood = old_likelihood;
 		if (debug) cout << "likelihood is " << new_likelihood << endl;
+		fflush(stdout);
+		if (debug) cout << " " << counter << " iteration's pnk matrix is " << endl;
+		if (debug) p_nk_matrix.print();
+		if (debug) cout << " " << counter << " iteration's mu matrix is " << endl;
+		if (debug) mu_matrix.print();
+		if (debug) cout << " " << counter << " iteration's sigma matrix is " << endl;
+		for (int gaussian = 0; gaussian < k; gaussian++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				if (debug) sigma_matrix[gaussian]->print();
+			}
+		}
+		if (debug) cout << " " << counter << " iteration's Pk matrix is " << endl;
+		if (debug) Pks.print();
+
+		counter++;
 	}
 	
 }
