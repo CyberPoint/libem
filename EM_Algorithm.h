@@ -15,7 +15,7 @@ using namespace std;
 
 double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
 
-void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
+bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
 
 void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks);
 
