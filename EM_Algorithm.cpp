@@ -272,7 +272,7 @@ void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *
 void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
 {
 	for (int b = 0; b < k; b++)
-		printf("\n%f\n", new_cluster_centroid[b]);
+		if (debug) printf("\n%f\n", new_cluster_centroid[b]);
 	int cluster_member_count[k];
 	// initialize cluster centroid coordinate sums to zero
 	for (int ii = 0; ii < k; ii++)
@@ -541,7 +541,7 @@ double * kmeans(int m, double *X, int n, int k)
 
 	}
 
-	cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
+	if (debug) cluster_diag(m, n, k, X, cluster_assignment_cur, cluster_centroid);
 
 	if (debug) printf("%p \n",dist);
 	delete[] dist; 
@@ -805,8 +805,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
-	//initialize the matrices that hold the mstep approximations
-	Matrix sigma_hat(m,m);
+	
 	
 	//if (debug) printf("mu_hat \n");
 	//if (debug) mu_hat.print();
@@ -814,6 +813,8 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{	
+		//initialize the matrices that hold the mstep approximations
+		Matrix sigma_hat(m,m);
 		Matrix mu_hat(1,m);
 
 		//initialize the normalization factor - this will be the sum of the densities for each data point for the current gaussian
@@ -857,11 +858,16 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		//calculate the new covariances
 		for (int data_point = 0; data_point < n; data_point++)
 		{
+			//fill in x vector for this data_point
+			for (int dim = 0; dim < m; dim++)
+			{
+				x[dim] = X[m*data_point + dim];
+			}
 			//initialize the x_m matrix
 			Matrix x_m(1,m);
 
 			//fill it
-			if (debug) printf("x_m addition \n");
+			//if (debug) printf("x_m addition \n");
 			x_m.add(x,m,0);
 	
 			//row representation of x - mu for matrix multiplication			
@@ -881,9 +887,9 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-					double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0);
-
-					sigma_hat.update(temp1, i, j);
+					double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0)*exp(p_nk_matrix.getValue(data_point,gaussian));
+				
+					sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
 
 				}
 			}
@@ -897,7 +903,8 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
 			}
 		}
-		if (sigma_hat.det() < 0) return false;
+		double determinant = sigma_matrix[gaussian]->det();
+		if (determinant < 0) return false;
 		//calculate the new Pk's, also adjusted by the normalization factor
 		//for (int data_point = 0; data_point < n; data_point++)
 		//{
@@ -980,6 +987,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	if (debug) printf("i will call kmeans \n");
 	fflush(stdout);
 	double *kmeans_mu = kmeans(m, X, n, k); 
+	
 	if (debug) printf("i called kmeans \n");
 	fflush(stdout);
 	if (kmeans_mu == 0)
@@ -990,7 +998,8 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	{
 		for (int j = 0; j < m; j++)
 		{
-			sigma_matrix[gaussian]->update(1.0*exp(-10),j,j);
+			sigma_matrix[gaussian]->update(1.0,j,j);
+			
 		}
 	}
 
@@ -1041,24 +1050,25 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 		
 
 		fflush(stdout);
-		cout << " " << counter << " iteration's pnk matrix is " << endl;
-		p_nk_matrix.print();
-		cout << " " << counter << " iteration's mu matrix is " << endl;
-		mu_matrix.print();
-		cout << " " << counter << " iteration's sigma matrix is " << endl;
+		if (debug) cout << " " << counter << " iteration's pnk matrix is " << endl;
+		if (debug) p_nk_matrix.print();
+		if (debug) cout << " " << counter << " iteration's mu matrix is " << endl;
+		if (debug) mu_matrix.print();
+		if (debug) cout << " " << counter << " iteration's sigma matrix is " << endl;
 		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
 			for (int j = 0; j < m; j++)
 			{
-				sigma_matrix[gaussian]->print();
+				if (debug) sigma_matrix[gaussian]->print();
 			}
 		}
-		cout << " " << counter << " iteration's Pk matrix is " << endl;
-		Pks.print();
+		if (debug) cout << " " << counter << " iteration's Pk matrix is " << endl;
+		if (debug) Pks.print();
 
 		counter++;
 	}
+	delete[] kmeans_mu;
 	if (debug) cout << "last new likelihood is " << new_likelihood << endl;	
 	if (debug) cout << "last old likelihood is " << old_likelihood << endl;
-	cout << "**************************************total number of iterations is " << counter << endl;
+	cout << "Total number of iterations completed by the EM Algorithm is \n" << counter << endl;
 }
