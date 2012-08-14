@@ -51,7 +51,7 @@ double * kmeans(int dim, double *X, int n, int k);
 #define MAX_CLUSTERS 5
 #define MAX_ITERATIONS 100
 #define BIG_double (INFINITY)
-#define debug 1
+#define debug 0
 #define MAX_LINE_SIZE 1000
 
 using namespace std;
@@ -595,7 +595,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	if (debug) cout << "data";
 
 	//initialize likelihood
-	double likelihood = 1;
+	double likelihood = 0;
 	
 	//initialize variables
 	int pi = 3.141592653;
@@ -636,6 +636,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		//here's where the estep calculation begins:
 			//initialize the weight, z max and log densities	
 		double weight_d;
+		//z max is the maximum cluster weighted density for the data point under any gaussian
 		double z_max = 0;
 		double log_densities[k];
 
@@ -701,7 +702,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug) cout << "yet another multiplication" << endl;
 
 			//(x - mu) * sigma^-1 * (x - mu)
-			Matrix &term2 = term1.dot(difference_row);
+			Matrix &term2 = difference_row.dot(term1);
 			if (debug) printf("term2 \n");
 			if (debug) term2.print();
 
@@ -712,7 +713,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			//{
 				//for (gaussian = 0; gaussian < k; gaussian++)
 				//{
-					 term2_d = term2.getValue(data_point,gaussian);
+			term2_d = term2.getValue(0,0);
 				//}
 			//}
 		
@@ -721,61 +722,80 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			double log_unnorm_density = (-.5 * term2_d);
 
 
-			double term3 = pow(2*pi, m/2);
+			double term3 = pow(2*pi, 0.5 * m);
 
 			double term4 = pow(determinant, .5);
-
+			// log norm factor is the normalization constant for the density functions
 			double log_norm_factor = log(term3 * term4);
 
 			//calculate multivariate gaussian density
+			// log density is the log of the density function for the kth gaussian evaluated on the nth data point
 			double log_density = log_unnorm_density - log_norm_factor;
 
 			if (debug) printf("Pk_matrix \n");
 			if (debug) Pk_matrix.print();
 			//log sum exp trick
+			// temp1 is the cluster weight for the current gaussian
 			double temp1 = Pk_matrix.getValue(0,gaussian);
 			if (debug) printf("temp 1 is %lf \n", Pk_matrix.getValue(0,gaussian));
-
+			//temp2 is the log of the cluster weight for the current gaussian
 			double temp2 = log(temp1);
 			if (debug) printf("temp2 is %lf \n", log(temp1));
-
+			//current z is the log of the density function times the cluster weight
 			double current_z = temp2 + log_density;
 
-			if (current_z > z_max) z_max = current_z;
-
-			log_densities[gaussian] = log(Pk_matrix.getValue(0,gaussian)) + (log_density);
+			if (gaussian == 0 || current_z > z_max) z_max = current_z;
+			
+			//log_densities[gaussian] = log(Pk_matrix.getValue(0,gaussian)) + (log_density);
 		
 			/***** END 16.1.8 in NR3 *****/
 
 			//calculate p_nk = density * Pk / weight
-			p_nk_matrix.update(log_densities[gaussian],data_point,gaussian);
+			p_nk_matrix.update(current_z,data_point,gaussian);
 			if (debug) printf("p_nk_matrix \n");
-			if (debug) p_nk_matrix.print();
+			//if (debug) p_nk_matrix.print();
 			
 		//} 
 
 		//P_xn calculation in log space
 		//for(gaussian = 0; gaussian < k; gaussian++)
 		//{
-			P_xn += exp(log_densities[gaussian] - z_max);
+			
 		//}
-			double log_P_xn = log(P_xn)+z_max;
+
 
 		// re-normalize per-gaussian point densities
 		//for (gaussian = 0; gaussian < k; gaussian++)
 		//{
-			if (debug) cout << "p_nk_matrix.getValue(data_point,gaussian) is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
-			if (debug) cout << "that -log(P_xn) is " << p_nk_matrix.getValue(data_point,gaussian) - log(P_xn) << endl;
+			//if (debug) cout << "p_nk_matrix.getValue(data_point,gaussian) is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
+			//if (debug) cout << "that -log(P_xn) is " << p_nk_matrix.getValue(data_point,gaussian) - log(P_xn) << endl;
 
-			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log(P_xn),data_point,gaussian);
+			
 			delete &sigma_inv;			
-		}	
+		} // end gaussian
+	
+		for (gaussian = 0; gaussian < k; gaussian++)
+		{
+			P_xn += exp(p_nk_matrix.getValue(data_point, gaussian) - z_max);
+		}
+		if (debug) cout << "P_xn is " << P_xn << endl;
+		//log of total density for data point
+		double tempa = log(P_xn);
+		if (debug) cout << "log Pxn is " << log(P_xn) << endl;
+		double log_P_xn = tempa + z_max;
+		if (debug) cout << "log Pxn plus z_max is " << log_P_xn << endl;
+		for (gaussian = 0; gaussian < k; gaussian++)
+		{
+			//normalize the probabilities per cluster for data point
+			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log_P_xn,data_point,gaussian);
+		}
+		
 
 		//calculate the likelihood of this model
-		likelihood *= weight_d;
+		likelihood += log_P_xn;
 		if (debug) cout << "The likelihood for this iteration is " << likelihood << endl;
 		
-	}
+	} // end data+point
 	return likelihood;
 }
 
@@ -783,20 +803,20 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	The M step is where the mu's, sigma's and Pk's are adjusted and re-calculated. This function takes the same arguments of estep.
 */
 
-void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
+bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
 	//initialize the matrices that hold the mstep approximations
 	Matrix sigma_hat(m,m);
-	Matrix mu_hat(1,m);
-	if (debug) printf("mu_hat \n");
-	if (debug) mu_hat.print();
+	
+	//if (debug) printf("mu_hat \n");
+	//if (debug) mu_hat.print();
 	Matrix Pk_hat(1,k);
 
 	for (int gaussian = 0; gaussian < k; gaussian++)
 	{	
-		
+		Matrix mu_hat(1,m);
 
-		//initialize the normalization factor
+		//initialize the normalization factor - this will be the sum of the densities for each data point for the current gaussian
 		double norm_factor = 0;
 
 		//initialize the array of doubles of length m that represents the data
@@ -817,11 +837,15 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			if (debug) printf("mu hat addition \n");
 
 			mu_hat.add(x, m, 0);
+			
 
 			//TODO: see if we need to deal w/ underflow here
 
 			//calculate the normalization factor
+			if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
 			norm_factor += exp(p_nk_matrix.getValue(data_point,gaussian));
+
+			if (debug) cout << "norm factor is " << norm_factor << endl;
 		}
 
 		//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
@@ -863,7 +887,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 				}
 			}
-		}
+		}//end data point
 
 		//rest of the sigma calculation, adjusted by the normalization factor
 		for (int i = 0; i < m; i++)
@@ -873,14 +897,14 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
 			}
 		}
-
+		if (sigma_hat.det() < 0) return false;
 		//calculate the new Pk's, also adjusted by the normalization factor
 		//for (int data_point = 0; data_point < n; data_point++)
 		//{
 			//double temp1 = 1.0 / data_point;
 			//double temp2 = temp1 * norm_factor;
 			
-			Pk_hat.update(norm_factor/n,0,gaussian);
+		Pk_hat.update(norm_factor/n,0,gaussian);
 			
 		//}
 		if (debug) cout << "pk hat matrix" << endl;
@@ -896,23 +920,23 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 
 		//assign mu_hat to mu_matrix
-		for (int i = 0; i < k; i++)
+		//for (int i = 0; i < k; i++)
+		//{
+		for (int dim = 0; dim < m; dim++)
 		{
-			for (int dim = 0; dim < m; dim++)
-			{
-				mu_matrix.update(mu_hat.getValue(0,dim),i,dim);
+			mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
 
-			}
 		}
+		//}
 		
 
 		//assign Pk_hat to Pk_matrix
 		//for (int i = 0; i < m; i++)
 		//{
-			Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
+		Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
 		//}
 
-	}
+	} //end gaussian
 	double sum = 0;
 	for (int i = 0; i < k; i++)
 	{	
@@ -923,7 +947,7 @@ void mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	{	
 		Pk_matrix.update(Pk_matrix.getValue(0,i)/sum,0,i);
 	}
-	
+	return true;
 }
 
 /*
@@ -949,7 +973,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	
 
 	//initialize likelihoods with dummy fillers
-	double new_likelihood = 1;	
+	double new_likelihood = 0;	
 	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
@@ -966,7 +990,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	{
 		for (int j = 0; j < m; j++)
 		{
-			sigma_matrix[gaussian]->update(1.0,j,j);
+			sigma_matrix[gaussian]->update(1.0*exp(-10),j,j);
 		}
 	}
 
@@ -989,34 +1013,52 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	}
 	if (debug) printf("i initialized matrices successfully \n");
 	fflush (stdout);
+
+	new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+	if (debug) cout << "new likelihood is " << new_likelihood << endl;
 	//main loop of EM - this is where the magic happens!
-	while (new_likelihood - old_likelihood > epsilon)
+	while (fabs(new_likelihood - old_likelihood) > epsilon)
 	{
-		estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-		if (debug) printf("i finished estep \n");
-		fflush (stdout);
-		mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-		if (debug) printf("i finished mstep \n");
+		if (debug) cout << "HERE " << counter << endl;
+		if (debug) cout << "new likelihood is " << new_likelihood << endl;
 		
-		new_likelihood = old_likelihood;
-		if (debug) cout << "likelihood is " << new_likelihood << endl;
+		if (debug) cout << "old likelihood is " << old_likelihood << endl;
+		old_likelihood = new_likelihood;
+		if ( mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks) == false) 
+		{
+			cout << "Found singular matrix - terminated." << endl;
+			break;
+		}
+		
+		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+		
+		//if (debug) printf("i finished estep \n");
+		fflush (stdout);
+
+		
+		//if (debug) printf("i finished mstep \n");
+		
+		
+
 		fflush(stdout);
-		if (debug) cout << " " << counter << " iteration's pnk matrix is " << endl;
-		if (debug) p_nk_matrix.print();
-		if (debug) cout << " " << counter << " iteration's mu matrix is " << endl;
-		if (debug) mu_matrix.print();
-		if (debug) cout << " " << counter << " iteration's sigma matrix is " << endl;
+		cout << " " << counter << " iteration's pnk matrix is " << endl;
+		p_nk_matrix.print();
+		cout << " " << counter << " iteration's mu matrix is " << endl;
+		mu_matrix.print();
+		cout << " " << counter << " iteration's sigma matrix is " << endl;
 		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
 			for (int j = 0; j < m; j++)
 			{
-				if (debug) sigma_matrix[gaussian]->print();
+				sigma_matrix[gaussian]->print();
 			}
 		}
-		if (debug) cout << " " << counter << " iteration's Pk matrix is " << endl;
-		if (debug) Pks.print();
+		cout << " " << counter << " iteration's Pk matrix is " << endl;
+		Pks.print();
 
 		counter++;
 	}
-	
+	if (debug) cout << "last new likelihood is " << new_likelihood << endl;	
+	if (debug) cout << "last old likelihood is " << old_likelihood << endl;
+	cout << "**************************************total number of iterations is " << counter << endl;
 }
