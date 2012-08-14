@@ -25,53 +25,90 @@ Here's the general procedure:
 	-repeat: an Estep to get new p's and a new L, then an Mstep to get new mu's, sigmas and P(k)'s
 	-stop when L converges (i.e. when the value of L stops changing)
 
+Be aware: the majority of the calculations in the functions "estep" and "mstep" are done in log space to avoid underflow.
+
 *This library is compatible with multidimensional, comma delineated data*
 
 DEPENDENCIES:
 
 	BLAS
 	LAPACK
-	Riva Borbley's Matrix class (currently living in Vulcan)
+	Riva Borbley's Matrix class
 
 USER INSTRUCTIONS:
 
-1. Install BLAS and LAPACK on your machine if they're not already there, and clone a copy of Vulcan so you can get to Riva's Matrix class.
-2. Update the makefile/change the EM_Algorithm.cpp header to point to where my code, Riva's code and your copies of BLAS and LAPACK are - this is specific to each box.
-3. Put your data in the same directory as my code, then go into the ParseCSV function and change "test_data.csv" to your data's filename.
+1. Install BLAS and LAPACK on your machine if they're not already there
+2. Update the makefile/change the EM_Algorithm.cpp header to point to where my code and your copies of BLAS and LAPACK are - this is specific to each box.
+3. Edit EM_Algorithm.h to point to the correct location of Matrix.h.
 4. make
 5. ./em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>
 
-Here is a sample main function that runs the EM algorithm - make sure all these pieces are in whatever you're calling EM with. Things to keep in mind:
-	EM assumes that sigma_matrix is a vector of pointers to m x m matrices initialized to zeros
-	mu local is a reference to a clusters by dimensions matrix initialized to zeros
-	Pks is a reference to a matrix of zeros of size 1 x clusters
+*The copy of Matrix.cc and Matrix.h included in this package are different from the ones currently housed in Vulcan. They include a function crucial to EM called "update" which was not in the original code*
+
+EXAMPLE CSV DATA:
+
+The following data contains 20 3 dimensional data points, drawn from two distinct gaussian mixtures, with mean vectors of [100 100 100] and [1 1 1]. Notice that there is a comma after each dimension of each data point, with no white space between the digits and the commas. Also make sure that if you enter "20" as your command line argument for the n parameter, you don't have any extra white space above or below your data chunk - ParseCSV will throw up its hands if you tell it there are 20 data points and you have white space on the 21st line.
+
+If your data doesn't look like this or similar, I would suggest writing a routine similar to EM's ParseCSV function that handles your unique format.
+
+99.90536353,100.9519929,101.9385873,
+99.54191165,99.80947901,100.9722583,
+100.3121106,102.4358085,101.562499,
+100.6186488,100.1757651,99.1680364,
+100.1469994,100.6456827,100.5566867,
+100.65789,99.25896006,100.2776279,
+99.07120212,101.2017697,101.3296947,
+99.3213353,99.44780776,101.0659122,
+98.95710325,99.30719897,99.12198086,
+100.4995072,100.7442414,100.286113,
+1.215281921,1.062221202,-0.252055442,
+0.50444074,0.561117871,1.538166245,
+1.98566035,1.61902389,2.187281321,
+1.178454094,1.477791732,1.32290785,
+0.67922562,1.160030889,2.268453499,
+1.204915964,0.848708198,-0.238638331,
+1.449834188,0.877311912,-0.232334496,
+0.271191307,1.32616999,0.574710975,
+2.456305245,2.080303551,1.906343256,
+1.876181052,2.223077532,2.909945178,
+
+EXAMPLE MAIN:
+
+Here is a sample main function that will run the EM algorithm - make sure all these pieces are in whatever you're calling EM with. Things to keep in mind:
+	-EM assumes that sigma_matrix is a vector of pointers to m x m matrices initialized to zeros
+	-mu local is a reference to a clusters by dimensions matrix initialized to zeros
+	-Pks is a reference to a matrix of zeros of size 1 x clusters
 
 int main(int argc, char *argv[])
 {
+	// initialize variables
 	int i, k, m, n;
+	// throw an error if the command line arguments don't match ParseCSV's inputs
 	if (argc != 4) cout << " Usage: <exec_name> <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
 	int errno = 0;
 
+	// take in the command line arguments and assign them to the previously initialized variables
 	sscanf(argv[2],"%d", &m);
 	sscanf(argv[3],"%d", &n);
 	sscanf(argv[4],"%d", &k);
 
-	//error checking
+	// error checking
 	if (errno != 0) 
 	{
 		cout << "Invalid inputs" << endl;
 	}
 
-	//reading in and parsing the data
+	// reading in and parsing the data
+	// create an array of doubles that is n by m dimensional
 	double * data = new double[n*m];
 	ParseCSV(argv[1], data, n, m);
 	if (ParseCSV(argv[1], data, n, m) != 1)
 	{
+		
 		return 0;
 	}
 	
-
-	// create vectors that hold pointers to the EM result matrices
+	// create vectors that hold pointers to the EM result covariance matrices
 	vector<Matrix *> sigma_vector;
 	for (i = 0; i < k; i++)
 	{
@@ -79,7 +116,7 @@ int main(int argc, char *argv[])
 		sigma_vector.push_back(p);
 	}
 
-	//create matrices for EM to fill
+	//create mean and Pk matrices for EM to fill
 	Matrix mu_local(k,m);
 	Matrix Pk_matrix(1,k);
 
@@ -89,19 +126,20 @@ int main(int argc, char *argv[])
 	//print out results
 	cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
 	mu_local.print();
+
 	cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
 	Pk_matrix.print();
 	
-	// free the matrices you allocated
 	for (i = 0; i < k; i++)
 	{
 		cout << "The " << i << " -th covariance matrix approximated by the EM algorithm is " << endl;
 		sigma_vector[i]->print();
-		delete (sigma_vector[i]);
+		delete sigma_vector[i];		
 	}
+
 	delete[] data;
 	mu_local.clear();
 	Pk_matrix.clear();
-	if (debug) cout << "I got here just fine." << endl;
+	
 }
 
