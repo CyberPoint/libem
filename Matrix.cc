@@ -37,14 +37,14 @@ Matrix::Matrix(int n, int m)
 	changed = false;
 	for (int j=0; j<m; j++)
 	{
-		printf("initing %d th column \n", j);
+		//printf("initing %d th column \n", j);
 		fflush(stdout);
 		std::vector<double> temp;
 		columns.push_back(temp);
 
 		for (int i=0; i<n; i++)
 		{
-			printf("initing %d th row \n", i);
+			//printf("initing %d th row \n", i);
 			fflush(stdout);
 
 			columns[j].push_back(0);
