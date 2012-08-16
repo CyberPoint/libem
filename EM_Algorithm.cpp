@@ -1,3 +1,59 @@
+/*! \mainpage Expectation Maximization Algorithm Index Page
+*
+*\section intro_sec Introduction
+*
+* In statistics, a mixture model is a probabilistic model for representing the sub-populations within a population, without requiring that the observed data set should itself identify its own sub-
+* populations. Formally, a mixture model corresponds to the mixture distribution representing the probability distribution of observations in the overall population - thus mixture models are used to 
+* make inferences about the properties of these sub-populations given only information about the data set as a whole. These are sometimes referred to as the "hidden" parameters of the data set. 
+* 
+* Expectation Maximization (EM) is perhaps the most popular technique for discovering the parameters of a mixture with an a priori given number of components. Here's the usual scenario:
+* you have N data points in an M-dimensional space. Your goal is to "fit" this data by finding a set of K multivariate Gaussian distributions that best represent to observed distribution of the data
+* points. You fix the number of distributions (K) in advance, but the means and covariances of these distributions are unknown - the "hidden" parameters of this particular data set. This exercise falls
+* under the category of "unsupervised" learning because you don't know ahead of time which of the N data points come from which of the K Gaussians. And indeed, one of the desired outputs of this 
+* approximation is, for each data point n, an estimate of the probability that it could belong to a specific distribution k. This probability is denoted P(n|k). Thus, given the data points stored
+* (for example) as an N x M matrix whose rows are vectors of length M, there are three specific parameters EM will estimate: the K means, each a vector of length M (mu); the K covariance matrices, each
+* of size M x M (sigma); and the P(n|k)s. We will also receive a few additional estimates as by-products of this calculation - the fraction of all the data points belonging to k (denoted P(k)), the 
+* probability (actually probability density) of finding some random data point at position x (denoted P(x)), and the overall likelihood of a given estimated parameter set (denoted L).
+*
+* The likelihood is actually the most important approximated parameter for the overall procedure of EM. L is defined, as usual, as proportional to the probability of the data set, given all the fitted
+* parameters - and we find the best values for these parameters by maximizing L. In statistics, this is similar to maximizing the posterior probability of the parameters, given uniform or even just
+*very broad priors. 
+*
+* An overall outline of the EM calculations is best described by working backwards from L. Since the data points are (assumed) to be independent, L is the product of the probabilities of finding a
+* point at each observed position. We can split that probability density function (sometimes called the mixture weight of the data point) into its contributions from each of the K Gaussians, giving
+* the individual probabilities (denoted Pnk's). In the language of EM, these two calculations of L and Pnk's are called the expectation step, or E step. But you may be asking yourself - those sound
+* lovely, but where are the mu's, sigma's and P(k)'s I was promised in the beginning? Suppose we "knew" the Pnk's. If you are familiar with the one-dimensional Gaussian distribution, you will be
+* familiar with the concept of the maximum liklihood estimate, in which the mean of a given Gaussian is given as just the arithmetic mean of a set of points drawn from it. This generalizes to give
+* maximum likelihood estimates for the means (mu's) and covariance matrices (sigma's) of multivariate Gaussians. A further generalization is that, since we know only whether a particular point comes
+* from a particular Gaussian (the Pnk's), we should count only the appropriate fraction of each point. These maximum likelihood estimates of mu and sigma are called the maximization step, or M step.
+*
+* The particular power of the EM algorithm comes from a more powerful theorem (beyond our scope to prove here) stating that, starting from any parameter values, an iteration of E step followed by an M * step will always increase the likelihood value of L; and that repeated iterations between these two steps will converge to (at least) a likelihood maximum. Often, the convergence is indeed to the
+* global maximum. The EM algorithm, in brief, goes like this: 
+* - Guess starting values for the mu's, sigma's and P(k)s for each of your Gaussians
+* - Repeat: an E step to get new L's and Pnk's, followed by an M step to get new mu's, sigma's and P(k)s
+* - Stop when the value of L is no longer changing, which in this scope defines convergence
+* In this particular implementation of EM, we use the clustering algorithm Kmeans to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
+* EM. 
+*
+* One important detail to note is that often, the values of the Gaussian density function will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of 
+* these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.
+*
+* \section usage_sec Usage
+*
+* The following is a workflow outline of sorts, detailing the steps necessary to successfully implement this EM algorithm.
+*
+* - 1. Install BLAS and LAPACK on your machine if they're not already there.
+* - 2. Update the makefile/change the EM_Algorithm.cpp header to point to where you downloaded this code and your copies of BLAS and LAPACK are - this is specific to each box.
+* - 3. Edit EM_Algorithm.h to point to the correct location of Matrix.h.
+* - 4. make
+* - 5. ./em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>
+* 
+* \section example_sec Caller Example
+*
+* For an example "main" that will run EM, see the README.
+*/
+
+
 /*********************************************************************************************************/
 
        /* EXPECTATION MAXIMIZATION ALGORITHM (code library)
@@ -57,14 +113,17 @@ using namespace std;
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
-
-/*
-	ParseCSV is a function that takes in your comma delineated data and parses it according to parameters given at the command line (see the README). 
-	This is how you first define the three crucial parameters for the Kmeans and EM approximations:
-		m - integer representing the dimensionality of the data
-		n - number of data points
-		k - how many clusters you want Kmeans to find
-	return 1 for success, zero for error
+//dummy main to make the compiler happy
+int main(int argc, char * argv[])
+{
+}
+/*! \brief ParseCSV is a function that takes in your comma delineated data and parses it according to parameters given at the command line. 
+*
+*	This is how you first define the three crucial parameters for the Kmeans and EM approximations:
+*		m - integer representing the dimensionality of the data
+*		n - number of data points
+*		k - how many clusters you want Kmeans to find
+*	This returns 1 for success, 0 for an error or failure.
 */
 
 int ParseCSV(char *file_name, double *data, int n, int m)
@@ -114,12 +173,11 @@ int ParseCSV(char *file_name, double *data, int n, int m)
 }
 
 
-/* 
-	euclid_distance is a function that does just that - it calculates the euclidean distance between two points. This
-	is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster
-	centroid.
-		input - the dimensionality of the data, and two double*s representing point 1 and point 2
-		output - double which stores the calculated distance
+/*! \brief euclid_distance calculates the euclidean distance between two points.
+*
+* This is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster centroid.
+*	input - the dimensionality of the data, and two double*s representing point 1 and point 2
+*	output - double which stores the calculated distance
 */
 
 double euclid_distance(int m, double *p1, double *p2)
@@ -131,11 +189,12 @@ double euclid_distance(int m, double *p1, double *p2)
 	if (debug) cout << "this iteration's distance sum is " << distance_sum << endl;
 }
 
-/* 
-	all_distances calculates distances from the centroids you initialized to every data point. In order to determine which data point belongs to which cluster,
-	you calculate the distance between each point to each cluster - whichever distance is the smallest from that sampling determines the cluster assignment.
-		input - dimensionality, number of data points, number of clusters, double*s containing your data, cluster centroids and the distance calculation
-		output - void 
+/*! \brief all_distances calculates distances from the centroids you initialized to every data point. 
+*
+* In order to determine which data point belongs to which cluster, you calculate the distance between each point to each cluster - whichever distance 
+* is the smallest from that sampling determines the cluster assignment.
+*	input - dimensionality, number of data points, number of clusters, double*s containing your data, cluster centroids and the distance calculation
+*	output - void 
 */
 
 void all_distances(int m, int n, int k, double *X, double *centroid, double *distance_out)
@@ -151,11 +210,12 @@ void all_distances(int m, int n, int k, double *X, double *centroid, double *dis
 	}
 }
 
-/* 
-	calc_total_distance is really the second piece to the distance calculation. It computes the total distance from all their respective data points for all the clusters you initialized. This 		function also initializes the array that serves as the index of cluster assignments for each point (i.e. which cluster each point "belongs" to on this iteration).
-		input - double*s containing your data, initial centroids
-		output - double holding the total distances
-	note: point with a cluster assignment of -1 is ignored
+/*! \brief calc_total_distance computes the total distance from all their respective data points for all the clusters you initialized. 
+*
+* This function also initializes the array that serves as the index of cluster assignments for each point (i.e. which cluster each point "belongs" to on this iteration).
+*	input - double*s containing your data, initial centroids
+*	output - double holding the total distances
+* note: a point with a cluster assignment of -1 is ignored.
 */
 
 double calc_total_distance(int m, int n, int k, double *X, double *centroids, int *cluster_assignment_index)
@@ -173,11 +233,11 @@ double calc_total_distance(int m, int n, int k, double *X, double *centroids, in
 	return tot_D;
 }
 
-/* 
-	choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points - this
-	is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data.
-		input - data, the array that holds the distances, and the assignment index
-		output - void 
+/*! \brief choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points.
+*
+* This is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data.
+*	input - data, the array that holds the distances, and the assignment index
+*	output - void 
 */
 
 void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)
@@ -204,12 +264,12 @@ void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *
 	}
 }
 
-/* 
-	calc_cluster_centroids is the function that actually recalculates the values for centroids based on their reassignment, in order
-	to ensure that the cluster centroids are still the means of the data that belong to them. This is also where the double* that
-	holds the new cluster centroids is assigned and filled in.
-		input - data, assignment index
-		output - void
+/*! \brief calc_cluster_centroids is the function that actually recalculates the values for centroids based on their reassignment.
+*
+* This ensures that the cluster centroids are still the means of the data that belong to them. Here is also where the double* that
+* holds the new cluster centroids is assigned and filled in.
+*	input - data, assignment index
+*	output - void
 */
 
 void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
@@ -252,12 +312,11 @@ void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignm
 	}
 }
 
-/* 
-	get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how
-	many points belong to each cluster. This is where the int* representing the number of data points for 
-	every cluster is initialized and filled in.
-		input - assignment index
-		output - void 
+/*! \brief get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how many points belong to each cluster. 
+*
+* This is where the int* representing the number of data points for every cluster is initialized and filled in.
+*	input - assignment index
+*	output - void 
 */
 
 void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int * cluster_member_count)
@@ -272,10 +331,10 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 
 }
 
-/* 
-	cluster_diag diagrams the current cluster member count and centroids and prints them out for the user after each iteration.
-		input - data, assignment index, centroids
-		output - void 
+/*! \brief cluster_diag diagrams the current cluster member count and centroids and prints them out for the user after each iteration.
+*
+*	input - data, assignment index, centroids
+*	output - void 
 */
 
 void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
@@ -310,11 +369,10 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 	cout << "--------------------------" << endl;
 } 
 
-/* 
-	copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster)
-	so you can use it for the next iteration
-		input - source and target
-		output - void 
+/*! \brief copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster) so you can use it for the next iteration.
+*	
+*	input - source and target
+*	output - void 
 */ 
 
 void copy_assignment_array(int n, int *src, int *tgt)
@@ -323,8 +381,7 @@ void copy_assignment_array(int n, int *src, int *tgt)
 		tgt[ii] = src[ii];
 }
 
-/*
-	assignment_change_count keeps track of how many cluster assignments have changed.
+/*! \brief assignment_change_count keeps track of how many cluster assignments have changed.
 */
 
 int assignment_change_count (int n, int a[], int b[])
@@ -336,15 +393,15 @@ int assignment_change_count (int n, int a[], int b[])
 	return change_count;
 }
 
-/******************************************************************************************************************
-** K MEANS **
+/*! \brief K Means does a clustering approximation of the data in order to find reasonable cluster centroids to then pass to EM for initial mu's.
+*
+* kmeans will return a double * containing its centroid approximations to pass to EM.
+@param m = dimension of data
+@param double *X = pointer to data
+@param n = number of elements
+@param k = number of clusters
+*/
 
-m = dimension of data
-double *X = pointer to data
-int n = number of elements
-int k = number of clusters
-
-*******************************************************************************************************************/
 double * kmeans(int m, double *X, int n, int k)
 {
 	//holds the computed cluster_centroids to pass to EM later
@@ -446,36 +503,16 @@ double * kmeans(int m, double *X, int n, int k)
 	
 }
 
-/*****************************************************************************************************************/
-/** EM ALGORITHM **
-
-mu_k = the K number of means, each with a vector of length M
-sigma_k = the K number of covariance matrices, each of size M x M
-P(k) = the fraction of all data points at some position x, where x is the m-dimensional position vector
-p_nk = the K number of probabilities for each of the N data points
-n = total number of data points
-k = total number of multivariate Gaussians
-x = M dimensional position vector
-x_n = observed position
-data_point = an individual data point
-gaussian = a specific gaussian (distribution)
-
-The E step of the EM algorithm is the piece that computes the likelihood of a particular model, and the 
-individual probabilites (p_nk) that each data point (n) belongs to a cluster (k). Be aware that the following
-calculations are done in the log space to avoid underflow.
-	
-The first four arguments are the number of data points, dimensionality, number of clusters, and double* with the actual data. The
-last four arguments are (in the following order):
-	a reference to the matrix that stores all the p_nk probabilities
-	a vector of matrix pointers that holds the covariances for each cluster
-	a reference to the matrix that stores all the means
-	a reference to the matrix that stores all the Pks
-These last four get passed between estep and mstep - the types stay the same for the EM function, but the names
-then correspond to the structures the caller initialized. That's how you actually get the results from EM.
-
-The M step is where the mu's, sigma's and Pk's are adjusted and re-calculated and normalized - it takes the same arguments of estep.
-
-*******************************************************************************************************************/
+/*! \brief estep is the function that calculates the L and Pnk for a given data point(n) and gaussian(k).
+*
+@param n = number of data points
+@param m = dimensionality of data
+@param k = number of clusters
+@param X = data
+@param p_nk_matrix = matrix generated by the caller of EM that holds the pnk's calculated
+@param sigma_matrix = vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
+@param Pk_matrix = matrix generated by the caller of EM that holds the Pk's calculated
+*/
 
 double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 {
@@ -654,6 +691,17 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	return likelihood;
 }
 
+/*! \brief mstep is the function that approximates the mu, sigma and P(k) paramters for a given Gaussian fit.
+*
+@param n = number of data points
+@param m = dimensionality of data
+@param k = number of clusters
+@param X = data
+@param p_nk_matrix = matrix generated by the caller of EM that holds the pnk's calculated
+@param sigma_matrix = vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
+@param Pk_matrix = matrix generated by the caller of EM that holds the Pk's calculated
+*/
+
 bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
 //note: the "hat" denotes an approximation in the literature - I called these matrices <name>_hat to avoid confusion between the estep and mstep calculations
 {
@@ -795,12 +843,21 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	return true;
 }
 
-/*
-	Here is where the whole EM algorithm comes together. First, you set up the initial conditions (noting that now, instead
-	of the arguments estep and mstep pass to each other, we're now passing in the structures your caller initialized). You then
-	call kmeans to get initial cluster centroid (mu) guesses, and then iterate between the estep and mstep until convergence.
-	EM doesn't actually return anything - instead, you're filling the containers you created when you called the function, and 
-	when EM has "finished," you can use/print out your final approximations in the caller.
+/*! \brief EM is the function in which the whole EM algorithm comes together. 
+*
+* First, you set up the initial conditions (noting that now, instead of the arguments estep and mstep pass to each other, 
+* we're now passing in the structures your caller initialized). You then call kmeans to get initial cluster centroid (mu) guesses, 
+* and then iterate between the estep and mstep until convergence.
+* EM doesn't actually return anything - instead, you're filling the containers you created when you called the function, and 
+* when EM has "finished," you can use/print out your final approximations in the caller.
+*
+@param n = number of data points
+@param m = dimensionality of data
+@param k = number of clusters
+@param X = data
+@param sigma_matrix = vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
+@param mu_matrix = matrix that holds the mu approximations
+@param Pks = local copy of the matrix generated by the caller of EM that holds the Pk's calculated
 */
 
 void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
