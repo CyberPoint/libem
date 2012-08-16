@@ -51,6 +51,7 @@ Introduction</a></h2>
 </ul>
 <p>In this particular implementation of EM, we use the clustering algorithm Kmeans to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of EM.</p>
 <p>One important detail to note is that often, the values of the Gaussian density function will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.</p>
+<p>NOTE: The <a class="el" href="classMatrix.html">Matrix</a> class used extensively in the EM library was written by Riva Borbley, and only edited slightly by Elizabeth Garbee.</p>
 <h2><a class="anchor" id="usage_sec">
 Usage</a></h2>
 <p>The following is a workflow outline of sorts, detailing the steps necessary to successfully implement this EM algorithm.</p>

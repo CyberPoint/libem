@@ -74,7 +74,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="EM__Algorithm_8cpp.html#a3a3c0af466d26e954227ddb0804d1662">all_distances</a> (int m, int n, int k, double *X, double *centroid, double *distance_out)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="EM__Algorithm_8cpp.html#af3bfa25d00078f40ae35c1e5593504d5">assignment_change_count</a> (int n, int a[], int b[])</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">assignment_change_count keeps track of how many cluster assignments have changed.  <a href="#af3bfa25d00078f40ae35c1e5593504d5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="EM__Algorithm_8cpp.html#a7117ef5ac6ed95458426a92d79be3a82">calc_cluster_centroids</a> (int m, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="EM__Algorithm_8cpp.html#aed740b17e6f58bf232cad6c8d322344c">calc_total_distance</a> (int m, int n, int k, double *X, double *centroids, int *cluster_assignment_index)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="EM__Algorithm_8cpp.html#aa8f0184589b7442276dd9b254ce95a0c">choose_all_clusters_from_distances</a> (int m, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)</td></tr>
@@ -101,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00109">109</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00111">111</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -116,7 +115,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00110">110</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00112">112</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -131,7 +130,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00106">106</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00108">108</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -146,7 +145,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00108">108</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00110">110</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -161,7 +160,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00111">111</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00113">113</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -181,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00105">105</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00107">107</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -234,8 +233,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>all_distances calculates distances from the centroids you initialized to every data point. In order to determine which data point belongs to which cluster, you calculate the distance between each point to each cluster - whichever distance is the smallest from that sampling determines the cluster assignment. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>centroid</em>&nbsp;</td><td>pointer to centroids calculated by kmeans </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>distance_out</em>&nbsp;</td><td>pointer to the distance calculation </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00201">201</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00203">203</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -269,10 +280,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-
 <p>assignment_change_count keeps track of how many cluster assignments have changed. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>a</em>&nbsp;</td><td>source </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>b</em>&nbsp;</td><td>target </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00399">399</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00404">404</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -324,8 +342,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>calc_cluster_centroids is the function that actually recalculates the values for centroids based on their reassignment. This ensures that the cluster centroids are still the means of the data that belong to them. Here is also where the double* that holds the new cluster centroids is assigned and filled in. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_assignment_index</em>&nbsp;</td><td>pointer to the index of which points are assigned to which cluster </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>new_cluster_centroid</em>&nbsp;</td><td>pointer to the new centroid calculation </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00285">285</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00287">287</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -377,8 +407,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>calc_total_distance computes the total distance from all their respective data points for all the clusters you initialized. This function also initializes the array that serves as the index of cluster assignments for each point (i.e. which cluster each point "belongs" to on this iteration). </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>centroid</em>&nbsp;</td><td>pointer to centroids calculated by kmeans </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>distance_out</em>&nbsp;</td><td>pointer to the distance calculation note: a point with a cluster assignment of -1 is ignored. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00225">225</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00227">227</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -430,8 +472,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points. This is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>distance_array</em>&nbsp;</td><td>pointer to the array holding distances </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_assignment_index</em>&nbsp;</td><td>pointer to the index of which points are assigned to which cluster </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00250">250</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00252">252</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -483,8 +537,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>cluster_diag diagrams the current cluster member count and centroids and prints them out for the user after each iteration. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_assignment_index</em>&nbsp;</td><td>pointer to the index of which points are assigned to which cluster </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_centroid</em>&nbsp;</td><td>pointer to the array of calculated centroids </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00352">352</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00354">354</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -518,8 +582,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster) so you can use it for the next iteration. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>source </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>tgt</em>&nbsp;</td><td>target </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00390">390</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00392">392</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -577,8 +650,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>EM is the function in which the whole EM algorithm comes together. First, you set up the initial conditions (noting that now, instead of the arguments estep and mstep pass to each other, we're now passing in the structures your caller initialized). You then call kmeans to get initial cluster centroid (mu) guesses, and then iterate between the estep and mstep until convergence. EM doesn't actually return anything - instead, you're filling the containers you created when you called the function, and when EM has "finished," you can use/print out your final approximations in the caller. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix that holds the mu approximations </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pks</em>&nbsp;</td><td>local copy of the matrix generated by the caller of EM that holds the Pk's calculated </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00870">870</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00875">875</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -642,8 +728,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>estep is the function that calculates the L and Pnk for a given data point(n) and gaussian(k). </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>p_nk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the pnk's calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the Pk's calculated </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00527">527</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00532">532</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -677,8 +776,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>euclid_distance calculates the euclidean distance between two points. This is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster centroid. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>p1</em>&nbsp;</td><td>pointer to first point in the distance calculation </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>p2</em>&nbsp;</td><td>pointer to second point </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00181">181</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00183">183</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -718,8 +826,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how many points belong to each cluster. This is where the int* representing the number of data points for every cluster is initialized and filled in. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_assignment_index</em>&nbsp;</td><td>pointer to the index of which points are assigned to which cluster </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cluster_member_count</em>&nbsp;</td><td>pointer to the number representing how many points are assigned to each cluster </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00333">333</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00335">335</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -731,7 +849,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="memname">double * kmeans </td>
           <td>(</td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>dim</em>, </td>
+          <td class="paramname"> <em>m</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -759,8 +877,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>kmeans does a clustering approximation of the data in order to find reasonable cluster centroids to then pass to EM for initial mu's. kmeans will return a double * containing its centroid approximations to pass to EM. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>= dimension of data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>double</em>&nbsp;</td><td>*X = pointer to data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>= number of elements </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>= number of clusters </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00416">416</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00421">421</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -789,7 +917,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00116">116</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00118">118</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -853,8 +981,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>mstep is the function that approximates the mu, sigma and P(k) paramters for a given Gaussian fit. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>p_nk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the pnk's calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the Pk's calculated </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00714">714</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00719">719</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
@@ -894,8 +1035,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+<p>ParseCSV is a function that takes in your comma delineated data and parses it according to parameters given at the command line. This is how you first define the three crucial parameters for the Kmeans and EM approximations: </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>integer representing the dimensionality of the data </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>how many clusters you want Kmeans to find This returns 1 for success, 0 for an error or failure. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00127">127</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
+<p>Definition at line <a class="el" href="EM__Algorithm_8cpp_source.html#l00129">129</a> of file <a class="el" href="EM__Algorithm_8cpp_source.html">EM_Algorithm.cpp</a>.</p>
 
 </div>
 </div>
