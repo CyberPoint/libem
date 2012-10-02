@@ -1,3 +1,34 @@
+/*********************************************************************************
+# Copyright (c) 2012, CyberPoint International, LLC
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the CyberPoint International, LLC nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL CYBERPOINT INTERNATIONAL, LLC BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**********************************************************************************/
+
+
+/*! \file Matrix.cc
+*   \brief Matrix class method implementations.
+*/
 #include <lapacke.h>
 #include <stdio.h>
 #include <vector>
@@ -128,20 +159,6 @@ Matrix::Matrix(double a[], int nRows, int nCols, Orientation major=COLUMN_MAJOR)
 	}
 
 }
-
-/**
-//TODO: this might be a bad idea -- once a reference is returned, user can change value whenever they want, but entries won't get updated.
-Overload [] so that i-j th entry can be accessed and assigned by matrix[i, j]
-@param i row number
-@param j column number
-@return reference to value in ith row, jth column
-*/
-/*double & Matrix::operator()(int i, int j) 
-{
-	changed = true; //unfortunately, we can't know whether user will changed the value, so have to assume he/she did
-	return columns[j][i]; 
-}*/
-
 
 /**
 @return the element in ith row, jth column (indexed from 0)
@@ -701,17 +718,4 @@ void matrixIndex(int k, int dim, int &i, int &j)
 	j = k/dim;
 	i = k%dim;
 }
-
-// this is code to put a 2-dimensional matrix in column-major form
-/*for (int i=0; i<N*N; i++)
-	{
-		for (int j=0; j<N; j++)
-		{
-			A[index++] = matrix[j][i]; // column major is more efficient with LAPACK
-		}
-	}*/
-
-
-
-// g++ Matrix.cc -I/home/rborbely/lapack-3.4.1/lapacke/include /usr/lib64/liblapack.so /home/rborbely/lapack-3.4.1/liblapacke.a /usr/lib64/libblas.a
 
