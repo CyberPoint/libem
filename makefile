@@ -6,17 +6,17 @@ EM_DIR=.
 # LAPACK_PATH must be the path to libpacke.a and liblapack.a
 # BLAS_PATH must be the path to librefblas.a
 #
-LAPACK_INC_PATH=/home/julrich/code/vulcan/src/lapack/lapacke/include
-LAPACK_PATH=/home/julrich/code/vulcan/build/lib
-BLAS_PATH=/home/julrich/code/vulcan/build/lib
+LAPACK_INC_PATH=
+LAPACK_PATH=
+BLAS_PATH=
 
-$(CXX) = g++ -g3 -gdwarf2
-$(CC) = gcc -g3 -gdwarf2
+CXX = g++ -g3 -gdwarf-2 -fopenmp
+CC = gcc -g3 -gdwarf-2 -fopenmp
 
 all: em_algorithm
 
-debug: CXX += -DDEBUG -g
-debug: CC += -DDEBUG -g
+debug: CXX = g++ -g3 -gdwarf-2 -fopenmp -DDEBUG -g
+debug: CC = gcc -g3 -gdwarf-2 -fopenmp -DDEBUG -g
 debug: em_algorithm
 
 #///// LINK STEPS /////
@@ -34,9 +34,9 @@ em_algorithm: $(OBJS)
 #///// COMPILE STEPS /////
 
 
-Matrix.o: $(EM_DIR)/Matrix.cc $(EM_DIR)/Matrix.h
+Matrix.o: $(EM_DIR)/Matrix.cpp $(EM_DIR)/Matrix.h
 	@echo LAPACK_INC_PATH is set to $(LAPACK_INC_PATH)
-	$(CXX) -c $(EM_DIR)/Matrix.cc -I$(LAPACK_INC_PATH) 
+	$(CXX) -c $(EM_DIR)/Matrix.cpp -I$(LAPACK_INC_PATH) 
 
 EM_Algorithm.o: $(EM_DIR)/EM_Algorithm.cpp $(EM_DIR)/EM_Algorithm.h
 	$(CXX) -c $(EM_DIR)/EM_Algorithm.cpp 

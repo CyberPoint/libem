@@ -128,6 +128,12 @@ double * kmeans(int dim, double *X, int n, int k);
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <set>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 
 //EM specific header
 #include "EM_Algorithm.h"
@@ -138,69 +144,20 @@ double * kmeans(int dim, double *X, int n, int k);
 //MAX_ITERATIONS is the while loop limiter for Kmeans
 #define MAX_ITERATIONS 100
 #define BIG_double (INFINITY)
-#define debug 0
+#define debug 1
 #define MAX_LINE_SIZE 1000
 
 using namespace std;
+
+double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
+bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
+
 
 /*************************************************************************************************************/
 /** SUPPORT FUNCTIONS **
 **************************************************************************************************************/
 
-/*! \brief ParseCSV is a function that takes in your comma delineated data and parses it according to parameters given at the command line. 
-*
-*	This is how you first define the three crucial parameters for the Kmeans and EM approximations:
-*		m - integer representing the dimensionality of the data
-*		n - number of data points
-*		k - how many clusters you want Kmeans to find
-*	This returns 1 for success, 0 for an error or failure.
-*/
 
-int ParseCSV(char *file_name, double *data, int n, int m)
-{
-	char buffer[MAX_LINE_SIZE];
-	FILE *f = fopen(file_name, "r");
-	if (f == NULL) 
-	{
-		cout << "Could not open file" << endl;
-		return 0;
-	}
-	memset(buffer, 0, MAX_LINE_SIZE);
-	int row = 0;
-	int cols = 0;
-	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
-	{
-		if (buffer[MAX_LINE_SIZE - 1] != 0) 
-		{
-			cout << "Max line size exceeded at zero relative line " << row << endl;
-			return 0;
-		}
-
-		int errno = 0;
-		char *ptok = strtok(buffer, ",");
-		if (ptok) sscanf(ptok, "%lf", &data[row*m]);
-		if (errno != 0)
-		{
-			cout << "Could not convert data at index " << row << " and " << cols << endl;
-			return 0;
-		}
-		
-		for (cols = 1; cols < m; cols++)
-		{
-			sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
-			
-			if (errno != 0) 
-			{
-				cout << "Could not convert data at index " << row << " and " << cols << endl;
-				return 0;
-			}
-		}
-		
-		row++;
-		memset(buffer, 0, MAX_LINE_SIZE);
-	}
-	return 1;
-}
 
 
 /*! \brief euclid_distance calculates the euclidean distance between two points.
@@ -391,12 +348,15 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 	}
 
 	//print which data point belongs to which cluster
-	printf("member list \n");
-	for (int ii = 0; ii < n; ii++)
+	if (debug)
 	{
-		printf(" %d, %d \n", ii, cluster_assignment_index[ii]);
+		cout << "member list" << endl;
+		for (int ii = 0; ii < n; ii++)
+		{
+			printf(" %d, %d \n", ii, cluster_assignment_index[ii]);
+		}
+		cout << "--------------------------" << endl << flush;
 	}
-	cout << "--------------------------" << endl;
 } 
 
 /*! \brief copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster) so you can use it for the next iteration.
@@ -430,6 +390,7 @@ int assignment_change_count (int n, int a[], int b[])
 @param double *X = pointer to data
 @param n = number of elements
 @param k = number of clusters
+@return pointer to centroids or null on error
 */
 
 double * kmeans(int m, double *X, int n, int k)
@@ -451,19 +412,34 @@ double * kmeans(int m, double *X, int n, int k)
 	//this keeps track of how many points have moved around - necessary to determine convergence
 	double *point_move_score = new double[n*k];
 
-	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score)
-		cout << "Error allocating arrays. \n" << endl;
-		
-	// give the initial cluster centroids some values randomly drawn from your data set
-    	srand( time(NULL) );
-    	for (int i = 0; i < k; i++)
+	if (!dist || !cluster_assignment_cur || !cluster_assignment_prev || !point_move_score || n < k)
 	{
-		int row = rand() % n;
-		if (row >= n) 
-			row = n-1;
+		cout << "Error allocating arrays. \n" << endl;
+		return NULL;
+	}
+
+	// give the initial cluster centroids some values randomly drawn from your data set
+    srand( time(NULL) );
+    std::set<int> choices;
+    for (int i = 0; i < k; i++)
+	{
+
+    	// randomly choose a row from those we haven't already chosen
+    	int row = 0;
+    	do
+    	{
+    		row = rand() % n;
+
+    	} while (choices.find(row) != choices.end());
+
+    	choices.insert(row);
+
+    	if (debug) cout << "picked row: " << row << endl;
+
 		for (int j = 0; j < m; j++)
 		{
         		cluster_centroid[i*m + j] = X[row*m + j];
+
 		}
 	}
 
@@ -550,24 +526,20 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	double likelihood = 0;
 	
 	//initialize variables
-	int pi = 3.141592653;
-	int data_point;
-	int gaussian;
-	int count = 0;
+	const int pi = 3.141592653;
+
+	std::vector<Matrix *> workingCovars;
 
 	//for each data point in n
-	for (data_point = 0; data_point < n; data_point++)
+	for (int data_point = 0, count = 0; data_point < n; data_point++, count++)
 	{
-		if (debug) cout << "1:beginning iteration " << data_point << " of " << n << endl;
+		if (debug)
+		{
+			cout << "1:beginning iteration " << data_point << " of " << n << endl << flush;
+		}
+
 
 		//initialize the x matrix, which holds the data passed in from double*X
-		if (debug) printf("i am initing matrix iteration %d \n", count);
-
-		//increment the counter
-		count++;
-		fflush(stdout);
-
-		//initialize the matrix where you're storing your data
 		Matrix x(1,m);
 		
 		//initialize the P_xn to zero to start
@@ -584,13 +556,28 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 		//z max is the maximum cluster weighted density for the data point under any gaussian
 		double z_max = 0;
+		bool z_max_assigned = false;
 
 		//log_densities is the k dimensional array that stores the density in log space
 		double log_densities[k];
 
 		//for each cluster
+		workingCovars.clear();
+
+		int gaussian = 0;
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (gaussian = 0; gaussian < k; gaussian++)
 		{
+
+			#ifdef _OPENMP
+			if (debug)
+			{
+				cout << "estep: in thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
+			}
+			#endif
+
 			//initialize the row representation of the mu matrix
 			Matrix mu_matrix_row(1,m);
 			
@@ -602,37 +589,34 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 				mu_matrix_row.update(temp,0,dim);
 			}
 	
-			if (debug) cout << "2:beginning iteration 1 of n \n" << endl;
-
-			//integer for debugging purposes
-			int currStep = 0;
-
-			if (debug) cout << currStep << endl; currStep++;
-			if (debug) cout << "x row count is " << x.rowCount() << endl;
-			if (debug) cout << "x col count is " << x.colCount() << endl;
-			if (debug) cout << "mu_matrix row count is " << mu_matrix.rowCount() << endl;
-			if (debug) cout << "mu_matrix col count is " << mu_matrix.colCount() << endl;
-			if (debug) cout << "data" << endl;
-			if (debug) cout << "x" << endl;
-			if (debug) x.print();
-			if (debug) cout << "mu matrix" << endl;
-			if (debug) mu_matrix.print();
-
-			/***** BEGIN eq 16.1.8 in NR3 *****/
 
 			//x - mu
 			Matrix& difference_row = x.subtract(mu_matrix_row);
 			if (debug) difference_row.print();
 
-			//sigma^-1
-			if (debug) cout << currStep << endl; currStep++;
-			Matrix &sigma_inv = sigma_matrix[gaussian]->inv();	
-			if (debug) printf("sigma_inv \n");
-			if (debug) sigma_inv.print();
+			//sigma^-
+			Matrix * sigma_inv;
+			//#ifdef _OPENMP
+			//# pragma omp critical(lapack)
+			//#endif
+//#ifdef _OPENMP
+//# pragma omp critical(lapack)
+//#endif
+			sigma_inv = &(sigma_matrix[gaussian]->inv());
+			if (debug) cout << "sigma_inv" << endl << flush;
+			if (debug) sigma_inv->print();
 
 			//det(sigma)
-			double determinant = sigma_matrix[gaussian]->det();
-			
+			double determinant;
+			//#ifdef _OPENMP
+			//# pragma omp critical(lapack)
+			//#endif
+//#ifdef _OPENMP
+//# pragma omp critical(lapack)
+//#endif
+			determinant = sigma_matrix[gaussian]->det();
+
+
 			//make a column representation of the difference in preparation for matrix multiplication
 			Matrix difference_column(m,1);
 			
@@ -643,7 +627,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			}
 
 			//(x - mu) * sigma^-1
-			Matrix term1 = sigma_inv.dot(difference_column);
+			Matrix term1 = sigma_inv->dot(difference_column);
 			if (debug) printf("difference_column \n");
 			
 			//(x - mu) * sigma^-1 * (x - mu)
@@ -681,18 +665,38 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			double current_z = temp2 + log_density;
 
 			//assign current_z
-			if (gaussian == 0 || current_z > z_max) z_max = current_z;
-			
-			/***** END 16.1.8 in NR3 *****/
-
+			#ifdef _OPENMP
+			# pragma omp critical(z_max)
+			#endif
+			if ((z_max_assigned == false) || current_z > z_max)
+			{
+				z_max = current_z;
+				z_max_assigned = true;
+			}
 			//calculate p_nk = density * Pk / weight
 			p_nk_matrix.update(current_z,data_point,gaussian);
-			if (debug) printf("p_nk_matrix \n");
-		
-			delete &sigma_inv;			
+			if (debug)
+			{
+				cout << "p_nk_matrix" << endl;
+				p_nk_matrix.print();
+				cout << flush;
+			}
+			#ifdef _OPENMP
+			# pragma omp critical(sigma_inv_tracking)
+			#endif
+			workingCovars.push_back(sigma_inv);
+
+
+
 		} // end gaussian 
-	
-		for (gaussian = 0; gaussian < k; gaussian++)
+
+		// free up covars created during above loop
+		for (std::vector<Matrix *>::iterator iter = workingCovars.begin(); iter != workingCovars.end();iter++)
+		{
+			delete *iter;
+		}
+
+		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
 			//calculate the P_xn's
 			P_xn += exp(p_nk_matrix.getValue(data_point, gaussian) - z_max);
@@ -705,7 +709,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		double log_P_xn = tempa + z_max;
 		if (debug) cout << "log Pxn plus z_max is " << log_P_xn << endl;
 
-		for (gaussian = 0; gaussian < k; gaussian++)
+		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
 			//normalize the probabilities per cluster for data point
 			p_nk_matrix.update(p_nk_matrix.getValue(data_point,gaussian)-log_P_xn,data_point,gaussian);
@@ -737,9 +741,22 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 {
 	//initialize the Pk_hat matrix
 	Matrix Pk_hat(1,k);
+	bool successflag = true;
 
-	for (int gaussian = 0; gaussian < k; gaussian++)
+	int gaussian = 0;
+	#ifdef _OPENMP
+	# pragma omp parallel for
+	#endif
+	for (gaussian = 0; gaussian < k; gaussian++)
 	{	
+
+		#ifdef _OPENMP
+		if (debug)
+		{
+			cout << "mstep: in thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
+		}
+		#endif
+
 		//initialize the mean and covariance matrices that hold the mstep approximations
 		Matrix sigma_hat(m,m);
 		Matrix mu_hat(1,m);
@@ -749,113 +766,121 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 		//initialize the array of doubles of length m that represents the data
 		double x[m];
-		if (debug) cout << "double x[m] " << x << endl;
 		
-		//do the mu calculation point by point
-		for (int data_point = 0; data_point < n; data_point++)
+		if (successflag == true)
 		{
-			for (int dim = 0; dim < m; dim++)
+			//do the mu calculation point by point
+			for (int data_point = 0; data_point < n; data_point++)
 			{
-				x[dim] = X[m*data_point + dim]*exp(p_nk_matrix.getValue(data_point,gaussian));
+				for (int dim = 0; dim < m; dim++)
+				{
+					x[dim] = X[m*data_point + dim]*exp(p_nk_matrix.getValue(data_point,gaussian));
+				}
+
+				//sum up all the individual mu calculations
+				mu_hat.add(x, m, 0);
+
+				//calculate the normalization factor
+				if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
+				norm_factor += exp(p_nk_matrix.getValue(data_point,gaussian));
+				if (debug) cout << "norm factor is " << norm_factor << endl;
 			}
 
-			//sum up all the individual mu calculations
-			if (debug) printf("mu hat addition \n");
-			mu_hat.add(x, m, 0);
-			
-			//TODO: see if we need to deal w/ underflow here
-
-			//calculate the normalization factor
-			if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
-			norm_factor += exp(p_nk_matrix.getValue(data_point,gaussian));
-			if (debug) cout << "norm factor is " << norm_factor << endl;
-		}
-
-		//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
-		for (int dim = 0; dim < m; dim++)
-		{
-			mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
-		}
-
-		//calculate the new covariances
-		for (int data_point = 0; data_point < n; data_point++)
-		{
-			//fill in x vector for this data_point
+			//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
 			for (int dim = 0; dim < m; dim++)
 			{
-				x[dim] = X[m*data_point + dim];
+				mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 			}
-
-			//initialize the x_m matrix
-			Matrix x_m(1,m);
-
-			//fill it
-			x_m.add(x,m,0);
 	
-			//row representation of x - mu for matrix multiplication			
-			Matrix difference_row = x_m.subtract(mu_hat);
-
-			//column representation of x - mu for matrix multiplication
-			Matrix difference_column(m,1);
-			if (debug) printf("difference_column \n");
-			if (debug) difference_column.print();
-			for (int i = 0; i < m; i++)
+			//calculate the new covariances
+			for (int data_point = 0; data_point < n; data_point++)
 			{
-				//fill it in
-				difference_column.update(difference_row.getValue(0,i),i,0);
-			}
-			
-			//magical kronecker tensor product calculation
+				//fill in x vector for this data_point
+				for (int dim = 0; dim < m; dim++)
+				{
+					x[dim] = X[m*data_point + dim];
+				}
+
+				//initialize the x_m matrix
+				Matrix x_m(1,m);
+
+				//fill it
+				x_m.add(x,m,0);
+
+				//row representation of x - mu for matrix multiplication
+				Matrix difference_row = x_m.subtract(mu_hat);
+
+				//column representation of x - mu for matrix multiplication
+				Matrix difference_column(m,1);
+				if (debug) cout << "difference column:" << endl;
+				if (debug) difference_column.print();
+				for (int i = 0; i < m; i++)
+				{
+					//fill it in
+					difference_column.update(difference_row.getValue(0,i),i,0);
+				}
+
+				//magical kronecker tensor product calculation
+				for (int i = 0; i < m; i++)
+				{
+					for (int j = 0; j < m; j++)
+					{
+						double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0)*exp(p_nk_matrix.getValue(data_point,gaussian));
+						sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
+					}
+				}
+			}//end data point
+
+			//rest of the sigma calculation, adjusted by the normalization factor
 			for (int i = 0; i < m; i++)
 			{
 				for (int j = 0; j < m; j++)
 				{
-					double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0)*exp(p_nk_matrix.getValue(data_point,gaussian));
-					sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
+					sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
 				}
 			}
-		}//end data point
-
-		//rest of the sigma calculation, adjusted by the normalization factor
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < m; j++)
+			
+			//you can't have a negative determinant - if somehow you do, mstep throws up its hands and EM will terminate
+			double determinant;
+//			#ifdef _OPENMP
+//			# pragma critical(lapack)
+//			#endif
 			{
-				sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
+				determinant = sigma_matrix[gaussian]->det();
 			}
-		}
-		
-		//you can't have a negative determinant - if somehow you do, mstep throws up its hands and EM will terminate
-		double determinant = sigma_matrix[gaussian]->det();
-		if (determinant < 0) return false;
-		
-		//adjust the Pk_hat calculations by the normalization factor
-		Pk_hat.update(norm_factor/n,0,gaussian);
-		if (debug) cout << "pk hat matrix" << endl;
-		if (debug) Pk_hat.print();
-
-		//assign sigma_hat to sigma_matrix[gaussian]
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < m; j++)
+			if (determinant < 0)
 			{
-				sigma_matrix[gaussian]->update(sigma_hat.getValue(i,j), i, j);
+				#ifdef __OPENMP
+				#pragma omp critical(success_flag)
+				#endif
+				successflag = false;
+
 			}
-		}
+			//adjust the Pk_hat calculations by the normalization factor (this particular func is threadsafe)
+			Pk_hat.update(norm_factor/n,0,gaussian);
+			if (debug) cout << "pk hat matrix" << endl;
+			if (debug) Pk_hat.print();
 
-		//assign mu_hat to mu_matrix
-		for (int dim = 0; dim < m; dim++)
-		{
-			mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+			//assign sigma_hat to sigma_matrix[gaussian]
+			for (int i = 0; i < m; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					sigma_matrix[gaussian]->update(sigma_hat.getValue(i,j), i, j);
+				}
+			}
 
-		}
-		
-		
+			//assign mu_hat to mu_matrix
+			for (int dim = 0; dim < m; dim++)
+			{
+				mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
 
-		//assign Pk_hat to Pk_matrix
-		Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
-		
+			}
 
+			//assign Pk_hat to Pk_matrix
+			Pk_matrix.update(Pk_hat.getValue(0,gaussian),0,gaussian);
+
+		} // end if successflag == true
 	} //end gaussian
 
 	//the Pk calculation is a sum - treat it as such
@@ -870,27 +895,15 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		Pk_matrix.update(Pk_matrix.getValue(0,i)/sum,0,i);
 	}
 
-	return true;
+	return successflag;
 }
+/******************************************************************
+ *    IMPLEMENTATIONS OF PUBLIC FUNCTIONS
+ ******************************************************************/
 
-/*! \brief EM is the function in which the whole EM algorithm comes together. 
-*
-* First, you set up the initial conditions (noting that now, instead of the arguments estep and mstep pass to each other, 
-* we're now passing in the structures your caller initialized). You then call kmeans to get initial cluster centroid (mu) guesses, 
-* and then iterate between the estep and mstep until convergence.
-* EM doesn't actually return anything - instead, you're filling the containers you created when you called the function, and 
-* when EM has "finished," you can use/print out your final approximations in the caller.
-*
-@param n number of data points
-@param m dimensionality of data
-@param k number of clusters
-@param X data
-@param sigma_matrix vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
-@param mu_matrix matrix that holds the mu approximations
-@param Pks local copy of the matrix generated by the caller of EM that holds the Pk's calculated
-*/
 
-void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
+
+double EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
 
 {
 	//create an iteration variable
@@ -907,7 +920,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 
 	if (debug) cout << "n is " << n;
 	if (debug) cout << "\nm is: " << m << endl;
-	if (debug) cout << "matrix data made \n";
+	if (debug) cout << "created matrix data ... " << endl;
 	
 	//initialize likelihoods to zero
 	double new_likelihood = 0;	
@@ -923,7 +936,7 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 
 	//if you don't have anything in kmeans_mu, the rest of this will be really hard
 	if (kmeans_mu == 0)
-		return;
+		return std::numeric_limits<double>::infinity();
 
 	//initialize array of identity covariance matrices, 1 per k
 	for(int gaussian = 0; gaussian < k; gaussian++)
@@ -1007,5 +1020,88 @@ void EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &m
 	if (debug) cout << "last old likelihood is " << old_likelihood << endl;
 	
 	//tell the user how many times EM ran
-	cout << "Total number of iterations completed by the EM Algorithm is \n" << counter << endl;
+	if (debug) cout << "Total number of iterations completed by the EM Algorithm is \n" << counter << endl;
+
+	return new_likelihood;
+}
+
+
+int ParseCSV(char *file_name, double *data, int n, int m)
+{
+	char buffer[MAX_LINE_SIZE];
+	FILE *f = fopen(file_name, "r");
+	if (f == NULL)
+	{
+		cout << "Could not open file" << endl;
+		return 0;
+	}
+	memset(buffer, 0, MAX_LINE_SIZE);
+	int row = 0;
+	int cols = 0;
+	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
+	{
+		if (buffer[MAX_LINE_SIZE - 1] != 0)
+		{
+			cout << "Max line size exceeded at zero relative line " << row << endl;
+			return 0;
+		}
+
+		int errno = 0;
+		if (strstr(buffer,":"))
+		{
+			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
+			char *ptok = strtok(buffer, " ");	// bump past label
+			if (ptok)
+			{
+				for (cols = 0; cols < m; cols++)
+				{
+					if (strtok(NULL, ":"))
+					{
+						sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
+
+						if (errno != 0)
+						{
+							cout << "Could not convert data at index " << row << " and " << cols << endl;
+							return 0;
+						}
+					}
+					else
+					{
+						cout << "expecting <label>:<data> format at index " << row << " and " << cols << endl;
+						return 0;
+					}
+				}
+			}
+			else
+			{
+				cout << "expecting <label><space> at index start of line" << row << endl;
+				return 0;
+			}
+		}
+		else
+		{
+			// csv-style input (data_point_1,data_point_2, etc.)
+			char *ptok = strtok(buffer, ",");
+			if (ptok) sscanf(ptok, "%lf", &data[row*m]);
+			if (errno != 0)
+			{
+				cout << "Could not convert data at index " << row << " and " << cols << endl;
+				return 0;
+			}
+
+			for (cols = 1; cols < m; cols++)
+			{
+				sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
+
+				if (errno != 0)
+				{
+					cout << "Could not convert data at index " << row << " and " << cols << endl;
+					return 0;
+				}
+			}
+		}
+		row++;
+		memset(buffer, 0, MAX_LINE_SIZE);
+	}
+	return 1;
 }
