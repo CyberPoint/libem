@@ -41,107 +41,135 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="globals.html"><span>Globals</span></a></li>
     </ul>
   </div>
-<h1>Matrix.h</h1><a href="Matrix_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#ifndef MATRIX_HEADER_H</span>
-<a name="l00002"></a>00002 <span class="preprocessor"></span><span class="preprocessor">#define MATRIX_HEADER_H</span>
-<a name="l00003"></a>00003 <span class="preprocessor"></span>
-<a name="l00004"></a>00004 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00005"></a>00005 <span class="preprocessor">#include &lt;exception&gt;</span>
-<a name="l00006"></a>00006 <span class="preprocessor">#include &lt;stdexcept&gt;</span>
-<a name="l00007"></a>00007 
-<a name="l00009"></a><a class="code" href="classSizeError.html">00009</a> <span class="keyword">class </span><a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>: <span class="keyword">public</span> std::runtime_error
-<a name="l00010"></a>00010 {
-<a name="l00011"></a>00011         <span class="keyword">public</span>:
-<a name="l00012"></a><a class="code" href="classSizeError.html#a4ba32a9b9923f1f74446594dd494b978">00012</a>         <a class="code" href="classSizeError.html#a4ba32a9b9923f1f74446594dd494b978">SizeError</a>(<span class="keywordtype">char</span>* error=<span class="stringliteral">&quot;Matrix operation could not be performed due to a size mismatch.&quot;</span>):std::runtime_error(error){}
-<a name="l00013"></a>00013         
-<a name="l00014"></a>00014         
-<a name="l00015"></a>00015 };
-<a name="l00016"></a>00016 
-<a name="l00018"></a>00018 <span class="comment">/*class SingularError: public std::runtime_error</span>
-<a name="l00019"></a>00019 <span class="comment">{</span>
-<a name="l00020"></a>00020 <span class="comment">        public:</span>
-<a name="l00021"></a>00021 <span class="comment">        SingularError(char* error=&quot;Operation could not be performed--perhaps matrix is singular?&quot;):std::runtime_error(error){}</span>
-<a name="l00022"></a>00022 <span class="comment">        </span>
-<a name="l00023"></a>00023 <span class="comment">};*/</span>
-<a name="l00024"></a>00024 
-<a name="l00026"></a><a class="code" href="classLapackError.html">00026</a> <span class="keyword">class </span><a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>: <span class="keyword">public</span> std::runtime_error
-<a name="l00027"></a>00027 {
-<a name="l00028"></a>00028         <span class="keyword">public</span>:
-<a name="l00029"></a><a class="code" href="classLapackError.html#a2825c6c836f5bfe13ec0dacf643cb33d">00029</a>         <a class="code" href="classLapackError.html#a2825c6c836f5bfe13ec0dacf643cb33d">LapackError</a>(<span class="keywordtype">char</span>* error=<span class="stringliteral">&quot;Operation could not be performed--error in call to lapacke&quot;</span>):std::runtime_error(error){}
-<a name="l00030"></a>00030         
-<a name="l00031"></a>00031 };
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033 
-<a name="l00034"></a><a class="code" href="classMatrix.html">00034</a> <span class="keyword">class </span><a class="code" href="classMatrix.html">Matrix</a>
-<a name="l00035"></a>00035 {
-<a name="l00036"></a>00036         <span class="keyword">public</span>:
-<a name="l00038"></a><a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">00038</a>         <span class="keyword">enum</span> <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a>{<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">ROW_MAJOR</a>, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485aced329f1fc491f4ead5c083ee994d384">COLUMN_MAJOR</a> };
-<a name="l00039"></a>00039 
-<a name="l00041"></a>00041         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>();
-<a name="l00042"></a>00042 
-<a name="l00046"></a>00046         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m);
+<h1>Matrix.h</h1><a href="Matrix_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*********************************************************************************</span>
+<a name="l00002"></a>00002 <span class="comment"># Copyright (c) 2012, CyberPoint International, LLC</span>
+<a name="l00003"></a>00003 <span class="comment"># All rights reserved.</span>
+<a name="l00004"></a>00004 <span class="comment">#</span>
+<a name="l00005"></a>00005 <span class="comment"># Redistribution and use in source and binary forms, with or without</span>
+<a name="l00006"></a>00006 <span class="comment"># modification, are permitted provided that the following conditions are met:</span>
+<a name="l00007"></a>00007 <span class="comment">#     * Redistributions of source code must retain the above copyright</span>
+<a name="l00008"></a>00008 <span class="comment">#       notice, this list of conditions and the following disclaimer.</span>
+<a name="l00009"></a>00009 <span class="comment">#     * Redistributions in binary form must reproduce the above copyright</span>
+<a name="l00010"></a>00010 <span class="comment">#       notice, this list of conditions and the following disclaimer in the</span>
+<a name="l00011"></a>00011 <span class="comment">#       documentation and/or other materials provided with the distribution.</span>
+<a name="l00012"></a>00012 <span class="comment">#     * Neither the name of the CyberPoint International, LLC nor the</span>
+<a name="l00013"></a>00013 <span class="comment">#       names of its contributors may be used to endorse or promote products</span>
+<a name="l00014"></a>00014 <span class="comment">#       derived from this software without specific prior written permission.</span>
+<a name="l00015"></a>00015 <span class="comment">#</span>
+<a name="l00016"></a>00016 <span class="comment"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<a name="l00017"></a>00017 <span class="comment"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<a name="l00018"></a>00018 <span class="comment"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<a name="l00019"></a>00019 <span class="comment"># DISCLAIMED. IN NO EVENT SHALL CYBERPOINT INTERNATIONAL, LLC BE LIABLE FOR ANY</span>
+<a name="l00020"></a>00020 <span class="comment"># DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<a name="l00021"></a>00021 <span class="comment"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<a name="l00022"></a>00022 <span class="comment"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<a name="l00023"></a>00023 <span class="comment"># ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<a name="l00024"></a>00024 <span class="comment"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<a name="l00025"></a>00025 <span class="comment"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00026"></a>00026 <span class="comment">**********************************************************************************/</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00032"></a>00032 <span class="preprocessor">#ifndef MATRIX_HEADER_H</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#define MATRIX_HEADER_H</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;exception&gt;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;stdexcept&gt;</span>
+<a name="l00038"></a>00038 
+<a name="l00040"></a><a class="code" href="classSizeError.html">00040</a> <span class="keyword">class </span><a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>: <span class="keyword">public</span> std::runtime_error
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042         <span class="keyword">public</span>:
+<a name="l00043"></a><a class="code" href="classSizeError.html#a4ba32a9b9923f1f74446594dd494b978">00043</a>         <a class="code" href="classSizeError.html#a4ba32a9b9923f1f74446594dd494b978">SizeError</a>(<span class="keywordtype">char</span>* error=<span class="stringliteral">&quot;Matrix operation could not be performed due to a size mismatch.&quot;</span>):std::runtime_error(error){}
+<a name="l00044"></a>00044         
+<a name="l00045"></a>00045         
+<a name="l00046"></a>00046 };
 <a name="l00047"></a>00047 
-<a name="l00051"></a>00051         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">double</span> di[], <span class="keywordtype">int</span> len);
-<a name="l00052"></a>00052 
-<a name="l00058"></a>00058         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">double</span> a[], <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a> major);
-<a name="l00059"></a>00059 
-<a name="l00064"></a>00064         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">assign</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);
-<a name="l00065"></a>00065 
-<a name="l00070"></a>00070         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">update</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);
-<a name="l00071"></a>00071 
-<a name="l00076"></a>00076         <span class="comment">//double &amp; operator()(int i, int j);</span>
-<a name="l00077"></a>00077 
-<a name="l00083"></a>00083         <a class="code" href="classMatrix.html">Matrix</a> &amp;  <a class="code" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">insertRow</a>(<span class="keywordtype">double</span> * row, <span class="keywordtype">int</span> rowSize, <span class="keywordtype">int</span> rowNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>);
-<a name="l00084"></a>00084 
-<a name="l00090"></a>00090         <a class="code" href="classMatrix.html">Matrix</a> &amp;  <a class="code" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">insertColumn</a>(<span class="keywordtype">double</span> * col, <span class="keywordtype">int</span> colSize, <span class="keywordtype">int</span> colNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>);
-<a name="l00091"></a>00091         
-<a name="l00094"></a>00094         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount</a>();
-<a name="l00095"></a>00095         
-<a name="l00098"></a>00098         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount</a>();
-<a name="l00099"></a>00099 
-<a name="l00101"></a>00101         <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(<span class="keywordtype">int</span> row, <span class="keywordtype">int</span> column);
+<a name="l00049"></a>00049 <span class="comment">/*class SingularError: public std::runtime_error</span>
+<a name="l00050"></a>00050 <span class="comment">{</span>
+<a name="l00051"></a>00051 <span class="comment">        public:</span>
+<a name="l00052"></a>00052 <span class="comment">        SingularError(char* error=&quot;Operation could not be performed--perhaps matrix is singular?&quot;):std::runtime_error(error){}</span>
+<a name="l00053"></a>00053 <span class="comment">        </span>
+<a name="l00054"></a>00054 <span class="comment">};*/</span>
+<a name="l00055"></a>00055 
+<a name="l00057"></a><a class="code" href="classLapackError.html">00057</a> <span class="keyword">class </span><a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>: <span class="keyword">public</span> std::runtime_error
+<a name="l00058"></a>00058 {
+<a name="l00059"></a>00059         <span class="keyword">public</span>:
+<a name="l00060"></a><a class="code" href="classLapackError.html#a2825c6c836f5bfe13ec0dacf643cb33d">00060</a>         <a class="code" href="classLapackError.html#a2825c6c836f5bfe13ec0dacf643cb33d">LapackError</a>(<span class="keywordtype">char</span>* error=<span class="stringliteral">&quot;Operation could not be performed--error in call to lapacke&quot;</span>):std::runtime_error(error){}
+<a name="l00061"></a>00061         
+<a name="l00062"></a>00062 };
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a><a class="code" href="classMatrix.html">00065</a> <span class="keyword">class </span><a class="code" href="classMatrix.html">Matrix</a>
+<a name="l00066"></a>00066 {
+<a name="l00067"></a>00067         <span class="keyword">public</span>:
+<a name="l00069"></a><a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">00069</a>         <span class="keyword">enum</span> <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a>{<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">ROW_MAJOR</a>, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485aced329f1fc491f4ead5c083ee994d384">COLUMN_MAJOR</a> };
+<a name="l00070"></a>00070 
+<a name="l00072"></a>00072         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>();
+<a name="l00073"></a>00073 
+<a name="l00077"></a>00077         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m);
+<a name="l00078"></a>00078 
+<a name="l00082"></a>00082         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">double</span> di[], <span class="keywordtype">int</span> len);
+<a name="l00083"></a>00083 
+<a name="l00089"></a>00089         <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(<span class="keywordtype">double</span> a[], <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a> major);
+<a name="l00090"></a>00090 
+<a name="l00095"></a>00095         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">assign</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);
+<a name="l00096"></a>00096 
+<a name="l00101"></a>00101         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">update</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);
 <a name="l00102"></a>00102 
-<a name="l00105"></a>00105         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">inv</a>() throw (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>, <a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>);
-<a name="l00106"></a>00106 
-<a name="l00110"></a>00110         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; m);
-<a name="l00111"></a>00111 
-<a name="l00113"></a>00113         <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">det</a>() throw (LapackError, SizeError);
-<a name="l00114"></a>00114 
-<a name="l00117"></a>00117         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">covar</a>();
-<a name="l00118"></a>00118         
-<a name="l00122"></a>00122         std::vector&lt;<span class="keywordtype">double</span>&gt; <a class="code" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">getCopyOfRow</a>(<span class="keywordtype">int</span> rowOffset) throw (SizeError);
-<a name="l00123"></a>00123 
-<a name="l00127"></a>00127         std::vector&lt;<span class="keywordtype">double</span>&gt; <a class="code" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">getCopyOfColumn</a>(<span class="keywordtype">int</span> colOffset) throw (SizeError);
-<a name="l00128"></a>00128 
-<a name="l00133"></a>00133         <span class="keywordtype">double</span>* <a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">average</a>(<span class="keywordtype">int</span> axis, <span class="keywordtype">double</span> *weights);
-<a name="l00134"></a>00134 
-<a name="l00139"></a>00139         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">add</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis);
-<a name="l00140"></a>00140 
-<a name="l00143"></a>00143         <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B);
-<a name="l00144"></a>00144 
-<a name="l00149"></a>00149         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis);
-<a name="l00150"></a>00150 
-<a name="l00152"></a>00152         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">print</a>();
-<a name="l00153"></a>00153         
-<a name="l00155"></a>00155         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">clear</a>();
-<a name="l00156"></a>00156 
-<a name="l00158"></a>00158         ~<a class="code" href="classMatrix.html">Matrix</a>();
+<a name="l00107"></a>00107         <span class="comment">//double &amp; operator()(int i, int j);</span>
+<a name="l00108"></a>00108 
+<a name="l00114"></a>00114         <a class="code" href="classMatrix.html">Matrix</a> &amp;  <a class="code" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">insertRow</a>(<span class="keywordtype">double</span> * row, <span class="keywordtype">int</span> rowSize, <span class="keywordtype">int</span> rowNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>);
+<a name="l00115"></a>00115 
+<a name="l00121"></a>00121         <a class="code" href="classMatrix.html">Matrix</a> &amp;  <a class="code" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">insertColumn</a>(<span class="keywordtype">double</span> * col, <span class="keywordtype">int</span> colSize, <span class="keywordtype">int</span> colNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>);
+<a name="l00122"></a>00122         
+<a name="l00125"></a>00125         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount</a>();
+<a name="l00126"></a>00126         
+<a name="l00129"></a>00129         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount</a>();
+<a name="l00130"></a>00130 
+<a name="l00132"></a>00132         <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(<span class="keywordtype">int</span> row, <span class="keywordtype">int</span> column);
+<a name="l00133"></a>00133 
+<a name="l00136"></a>00136         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">inv</a>() throw (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>, <a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>);
+<a name="l00137"></a>00137 
+<a name="l00141"></a>00141         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; m);
+<a name="l00142"></a>00142 
+<a name="l00144"></a>00144         <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">det</a>() throw (LapackError, SizeError);
+<a name="l00145"></a>00145 
+<a name="l00148"></a>00148         <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">covar</a>();
+<a name="l00149"></a>00149         
+<a name="l00153"></a>00153         std::vector&lt;<span class="keywordtype">double</span>&gt; <a class="code" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">getCopyOfRow</a>(<span class="keywordtype">int</span> rowOffset) throw (SizeError);
+<a name="l00154"></a>00154 
+<a name="l00158"></a>00158         std::vector&lt;<span class="keywordtype">double</span>&gt; <a class="code" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">getCopyOfColumn</a>(<span class="keywordtype">int</span> colOffset) throw (SizeError);
 <a name="l00159"></a>00159 
-<a name="l00160"></a>00160         private:
-<a name="l00161"></a><a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">00161</a>         std::vector&lt; std::vector&lt;<span class="keywordtype">double</span>&gt; &gt; <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>; 
-<a name="l00162"></a>00162         
-<a name="l00165"></a><a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4">00165</a>         <span class="keywordtype">double</span> * <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> ; 
-<a name="l00166"></a>00166 
-<a name="l00167"></a>00167         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>(); 
-<a name="l00168"></a>00168 
-<a name="l00169"></a><a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">00169</a>         <span class="keywordtype">bool</span> <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>;<span class="comment">//&lt; has matrix been modified since last call to updateArray()?</span>
-<a name="l00170"></a><a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85">00170</a>         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; 
-<a name="l00171"></a><a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a">00171</a>         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; 
-<a name="l00172"></a>00172 
-<a name="l00175"></a>00175         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[]);
-<a name="l00176"></a>00176         
-<a name="l00177"></a>00177         
-<a name="l00178"></a>00178 };
-<a name="l00179"></a>00179 <span class="preprocessor">#endif //MATRIX_HEADER</span>
+<a name="l00164"></a>00164         <span class="keywordtype">double</span>* <a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">average</a>(<span class="keywordtype">int</span> axis, <span class="keywordtype">double</span> *weights);
+<a name="l00165"></a>00165 
+<a name="l00170"></a>00170         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">add</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis);
+<a name="l00171"></a>00171 
+<a name="l00174"></a>00174         <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B);
+<a name="l00175"></a>00175 
+<a name="l00180"></a>00180         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis);
+<a name="l00181"></a>00181 
+<a name="l00183"></a>00183         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">print</a>();
+<a name="l00184"></a>00184         
+<a name="l00186"></a>00186         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">clear</a>();
+<a name="l00187"></a>00187 
+<a name="l00189"></a>00189         ~<a class="code" href="classMatrix.html">Matrix</a>();
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191         private:
+<a name="l00192"></a><a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">00192</a>         std::vector&lt; std::vector&lt;<span class="keywordtype">double</span>&gt; &gt; <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>; 
+<a name="l00193"></a>00193         
+<a name="l00196"></a><a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4">00196</a>         <span class="keywordtype">double</span> * <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> ; 
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>(); 
+<a name="l00199"></a>00199 
+<a name="l00200"></a><a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">00200</a>         <span class="keywordtype">bool</span> <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>;<span class="comment">//&lt; has matrix been modified since last call to updateArray()?</span>
+<a name="l00201"></a><a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85">00201</a>         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; 
+<a name="l00202"></a><a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a">00202</a>         <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; 
+<a name="l00203"></a>00203 
+<a name="l00206"></a>00206         <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[]);
+<a name="l00207"></a>00207         
+<a name="l00208"></a>00208         
+<a name="l00209"></a>00209 };
+<a name="l00210"></a>00210 <span class="preprocessor">#endif //MATRIX_HEADER</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -157,7 +185,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 16 Aug 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

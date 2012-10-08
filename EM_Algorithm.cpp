@@ -26,46 +26,37 @@
 **********************************************************************************/
 
 /*! \file EM_Algorithm.cpp
-    \brief core em algorithm method implementations.
+    \brief core libGaussMix++ em algorithm method implementations.
 */
 
-/*! \mainpage Expectation Maximization Algorithm Index Page
+/*! \mainpage libGaussMix++: An Expectation Maximization Algorithm for Training Gaussian Mixture Models
 *
 *\section intro_sec Introduction
 *
-* In statistics, a mixture model is a probabilistic model for representing the sub-populations within a population, without requiring that the observed data set should itself identify its own sub-
-* populations. Formally, a mixture model corresponds to the mixture distribution representing the probability distribution of observations in the overall population - thus mixture models are used to 
-* make inferences about the properties of these sub-populations given only information about the data set as a whole. These are sometimes referred to as the "hidden" parameters of the data set. 
+* A Gaussian mixture model is method of approximating, as a linear combination of multivariate Gaussian density functions, an unknown density function from which a given
+* data set is presumed to be drawn. The means and covariance matrices of these Gaussian densities are sometimes referred to as the "hidden" parameters of the data set.
 * 
 * Expectation Maximization (EM) is perhaps the most popular technique for discovering the parameters of a mixture with an a priori given number of components. Here's the usual scenario:
-* you have N data points in an M-dimensional space. Your goal is to "fit" this data by finding a set of K multivariate Gaussian distributions that best represent to observed distribution of the data
-* points. You fix the number of distributions (K) in advance, but the means and covariances of these distributions are unknown - the "hidden" parameters of this particular data set. This exercise falls
-* under the category of "unsupervised" learning because you don't know ahead of time which of the N data points come from which of the K Gaussians. And indeed, one of the desired outputs of this 
-* approximation is, for each data point n, an estimate of the probability that it could belong to a specific distribution k. This probability is denoted P(n|k). Thus, given the data points stored
-* (for example) as an N x M matrix whose rows are vectors of length M, there are three specific parameters EM will estimate: the K means, each a vector of length M (mu); the K covariance matrices, each
-* of size M x M (sigma); and the P(n|k)s. We will also receive a few additional estimates as by-products of this calculation - the fraction of all the data points belonging to k (denoted P(k)), the 
-* probability (actually probability density) of finding some random data point at position x (denoted P(x)), and the overall likelihood of a given estimated parameter set (denoted L).
+* one is given a set of N data points in an M-dimensional space. One seeks to fit to the data a set of K multivariate Gaussian distributions (or "clusters") that best represent the observed distribution of the data
+* points, where K is specified, but the means and covariances of the Gaussians are unknown. The desired output includes the means and covariances of the Gaussians, along with the cluster weights
+* (coefficients of the linear combination of Gaussians). One may think of the data as being drawn by first randomly choosing a particular Gaussian according to the cluster weights, and then
+* choosing a data point according to the selected distribution. The overall probability density assigned to a point is then given by the sum over k of P(n|k)P(k) where k denotes the cluster, P(k) its probability, and P(n|k) denotes
+* the probability density of the point given the cluster. The likelihood density L of the data is the product of these sums, taken over all data points (which are assumed to be independent and identically distributed). The EM algorithm produces an estimate of the P(k) and the P(n|k),
+* by attempting to maximize L. Specifically, it yields the estimated means mu(k), covariance matrices sigma(k), and weights P(k) for each Gaussian.
 *
-* The likelihood is actually the most important approximated parameter for the overall procedure of EM. L is defined, as usual, as proportional to the probability of the data set, given all the fitted
-* parameters - and we find the best values for these parameters by maximizing L. In statistics, this is similar to maximizing the posterior probability of the parameters, given uniform or even just
-* very broad priors. 
+* An overall outline of the EM calculations is best described by working backwards from L. Since the data points are (assumed) to be independent, L is the product of the probability densities of
+* each observed data point, which splits into a contribution P(n|k) from each Gaussian (these constributions are sometimes called the point "mixture weights").
+* In the language of EM, the L and P(n|k) calculations, given known mu(k), sigma(k), and P(k), comprise the algorithm's "expectation step", or E step.
+* Now if the P(n|k)'s are known, we can derive from them maximum likelihood estimates of the mu(k), sigma(k), and P(k), in a process called the "maximization step", or M step, from which we then obtain new (better) P(n|k).
 *
-* An overall outline of the EM calculations is best described by working backwards from L. Since the data points are (assumed) to be independent, L is the product of the probabilities of finding a
-* point at each observed position. We can split that probability density function (sometimes called the mixture weight of the data point) into its contributions from each of the K Gaussians, giving
-* the individual probabilities (denoted Pnk's). In the language of EM, these two calculations of L and Pnk's are called the expectation step, or E step. But you may be asking yourself - those sound
-* lovely, but where are the mu's, sigma's and P(k)'s I was promised in the beginning? Suppose we "knew" the Pnk's. If you are familiar with the one-dimensional Gaussian distribution, you will be
-* familiar with the concept of the maximum liklihood estimate, in which the mean of a given Gaussian is given as just the arithmetic mean of a set of points drawn from it. This generalizes to give
-* maximum likelihood estimates for the means (mu's) and covariance matrices (sigma's) of multivariate Gaussians. A further generalization is that, since we know only whether a particular point comes
-* from a particular Gaussian (the Pnk's), we should count only the appropriate fraction of each point. These maximum likelihood estimates of mu and sigma are called the maximization step, or M step.
-*
-* The particular power of the EM algorithm comes from a more powerful theorem (beyond our scope to prove here) stating that, starting from any parameter values, an iteration of E step followed by an M
-* step will always increase the likelihood value of L; and that repeated iterations between these two steps will converge to (at least) a local maximum. Often, the convergence is indeed to the
+* The power of the EM algorithm comes from a theorem (see the first reference) stating that, starting from any reasonable guess of parameter values, an iteration of an E step followed by an M
+* step will always increase the likelihood value of L, and that repeated iterations between these two steps will converge to (at least) a local maximum. Often, the convergence is indeed to the
 * global maximum. The EM algorithm, in brief, goes like this: 
-* - Guess starting values for the mu's, sigma's and P(k)s for each of your Gaussians
-* - Repeat: an E step to get new L's and Pnk's, followed by an M step to get new mu's, sigma's and P(k)s
-* - Stop when the value of L is no longer changing, which in this scope defines convergence
+* - Guess starting values for the mu(k), sigma(k) and P(k) for each Gaussian,
+* - Repeat: an E step to get a new L and new P(n|k)s, followed by an M step to get new mu(k)s, sigma(k)s, and P(k)s,
+* - Stop when the value of L is no longer meaningfully changing.
 *
-* In this particular implementation of EM, we use the clustering algorithm Kmeans to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
+* The libGaussMix++ implementation of the EM algorithm uses the "KMeans" clustering algorithm to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
 * EM. 
 *
 * One important detail to note is that often, the values of the Gaussian density function will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of 
@@ -73,17 +64,40 @@
 *
 * \section usage_sec Usage
 *
-* The following is a workflow outline of sorts, detailing the steps necessary to successfully implement this EM algorithm.
+* libGaussMix++ does not actually build as a library. The main training algorithm is provided in EM_Algorithm.h/ EM_Algorithm.cpp. It uses helper routines provided in
+* Matrix.h/ Matrix.cpp which in turn wraps LAPACK linear algebra functions. To build these files into an executable with a sample driver function provided in
+* sample_main.cpp, follow these steps:
 *
-* - 1. Install BLAS and LAPACK on your machine if they're not already there.
-* - 2. Update the makefile/change the EM_Algorithm.cpp header to point to where you downloaded this code and your copies of BLAS and LAPACK are - this is specific to each box.
-* - 3. Edit EM_Algorithm.h to point to the correct location of Matrix.h.
-* - 4. make
-* - 5. ./em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>
+* - 1. Install BLAS and LAPACK on your machine if they're not already there (c.f. http://www.netlib.org/lapack/, which bundles a reference vesion of BLAS).
+* - 2. Update the environment variables in the libGaussMix++ makefile to point to your environment's BLAS and LAPACK header and library locations.
+* - 3. run make on the libGaussMix++ makefile.
+* - 4. run the resulting executable via: "em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>". \n
+*      Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "em_algorithm multid_data_1.csv 3 20 2".
+*
+* The libGaussMix++ has been built and tested on SL6.2 using gcc 4.4.5.
 * 
+*
 * \section example_sec Caller Example
 *
-* For an example "main" that will run EM, see the README.
+* For an example "main" that will run EM, see sample_main.cpp.
+*
+* \section Data Formats
+*
+* libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files
+* (multid_data_1.csv and multid_data_2.svm, respectively) are provided for convenience. The former consists of 20
+* three-dimensional data points falling into two clusters centered on (1,1,1) and (100,100,100). The second is similarly
+* distributed, with a "+1" cluster centered on (10,10,10) and "-1" cluster centered on (50,50,50).
+*
+* \section References
+*
+*  Numerical Recipes 3rd Edition: The Art of Scientific Computing,
+*  Cambridge University Press New York, NY, USA ©2007,
+*  ISBN:0521880688 9780521880688
+*  (c.f. chapter 16).
+*
+*  Douglas A. Reynolds, et. al., "Speaker Verication Using Adapated Gaussian Mixture Models,"
+*  Digital Signal Processing 10, 19-24 (2000).
+*
 */
 
 
