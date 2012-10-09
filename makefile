@@ -22,7 +22,7 @@ debug: em_algorithm
 #///// LINK STEPS /////
 
 
-OBJS = Matrix.o EM_Algorithm.o  sample_main.o
+OBJS = Matrix.o Adapt.o KMeans.o EM_Algorithm.o sample_main.o
 
 
 #-- Build-only target --
@@ -37,6 +37,12 @@ em_algorithm: $(OBJS)
 Matrix.o: $(EM_DIR)/Matrix.cpp $(EM_DIR)/Matrix.h
 	@echo LAPACK_INC_PATH is set to $(LAPACK_INC_PATH)
 	$(CXX) -c $(EM_DIR)/Matrix.cpp -I$(LAPACK_INC_PATH) 
+
+KMeans.o: $(EM_DIR)/KMeans.cpp $(EM_DIR)/KMeans.h
+	$(CXX) -c $(EM_DIR)/KMeans.cpp 
+
+Adapt.o: $(EM_DIR)/Adapt.cpp $(EM_DIR)/Adapt.h
+	$(CXX) -c $(EM_DIR)/Adapt.cpp 
 
 EM_Algorithm.o: $(EM_DIR)/EM_Algorithm.cpp $(EM_DIR)/EM_Algorithm.h
 	$(CXX) -c $(EM_DIR)/EM_Algorithm.cpp 

@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	// create an array of doubles that is n by m dimensional
 	double * data = new double[n*m];
 
-	if (ParseCSV(argv[1], data, n, m) != 1)
+	if (ParseCSV(argv[1], n, m, data, NULL) != 1)
 	{
 			cout << "Invalid input file; must be csv, one sample per row, data points as floats" << endl;
 			return 1;

@@ -172,7 +172,7 @@ Matrix::Matrix(double a[], int nRows, int nCols, Orientation major=COLUMN_MAJOR)
 /**
 @return the element in ith row, jth column (indexed from 0)
 */
-double Matrix::getValue(int i, int j)
+double Matrix::getValue(int i, int j) const
 {
 	std::vector<double> col = columns[j];
 	return col[i];
@@ -182,7 +182,7 @@ double Matrix::getValue(int i, int j)
 How many rows are in the matrix?
 @return the number of rows
 */
-int Matrix::rowCount()
+int Matrix::rowCount() const
 {
 	return numRows;
 }
@@ -191,7 +191,7 @@ int Matrix::rowCount()
 How many columns are in the matrix?
 @return the number of columns
 */
-int Matrix::colCount()
+int Matrix::colCount() const
 {
 	return numCols;
 }
@@ -413,7 +413,7 @@ Matrix multiplication this*B
 @param B matrix to multiply by
 @return product of matrix multiplication: this*B
 */
-Matrix & Matrix::dot(Matrix& B)
+Matrix & Matrix::dot(Matrix& B) const
 {
 	
 	if (numCols!=B.rowCount()) throw SizeError((char*)"Error: Attempted to multiply matrices with mismatched sizes");
@@ -700,7 +700,7 @@ void Matrix::updateArray()
 {
 	if (changed)
 	{	
-		delete[] entries; // this may be causing trouble?
+		delete[] entries;
 		entries = new double[numRows*numCols];
 		for (int j=0; j< numCols; j++)
 		{

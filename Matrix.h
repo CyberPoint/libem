@@ -122,14 +122,14 @@ class Matrix
 	
 	/** How many rows are in the matrix?
 	@return the number of rows*/
-	int rowCount();
+	int rowCount() const;
 	
 	/**  How many columns are in the matrix?
 	@return the number of columns*/
-	int colCount();
+	int colCount() const;
 
 	/**@return the element in ith row, jth column (indexed from 0)*/
-	double getValue(int row, int column);
+	double getValue(int row, int column) const;
 
 	/**Invert the matrix
 	@return the inverse of this matrix*/
@@ -138,7 +138,7 @@ class Matrix
 	/**Matrix multiplication -- this*B
 	@param B matrix to multiply by
 	@return product of matrix multiplication: this*B  */
-	Matrix & dot(Matrix& m);
+	Matrix & dot(Matrix& m) const;
 
 	/**@return the determinant. Note: only works for square matrices*/
 	double det() throw (LapackError, SizeError);
