@@ -33,8 +33,14 @@
 #ifndef ADAPT_H_
 #define ADAPT_H_
 
+#include <vector>
 
 #include "Matrix.h"
+
+
+namespace gaussmix
+{
+
 
 /*! \brief adapt: adapt a Gaussian Mixture model to a given sub-population.
 *
@@ -49,9 +55,11 @@
 @param [in] adapted_Pks cluster weights returned by EM call
 @return 1 on success, 0 on error
 */
-int adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
-		Matrix &mu_matrix, Matrix &Pks, vector<Matrix*> &adapted_sigma_matrix,
+int adapt(const double *X, int n, std::vector<Matrix*> &sigma_matrix,
+		Matrix &mu_matrix, Matrix &Pks, std::vector<Matrix*> &adapted_sigma_matrix,
 		Matrix &adapted_mu_matrix, Matrix &adapted_Pks);
 
 
 #endif /* ADAPT_H_ */
+
+}

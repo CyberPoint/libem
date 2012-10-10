@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <vector>
 #include <iostream>
-#include "EM_Algorithm.h"
+#include "GaussMix.h"
 
 using namespace std;
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	// create an array of doubles that is n by m dimensional
 	double * data = new double[n*m];
 
-	if (ParseCSV(argv[1], n, m, data, NULL) != 1)
+	if (gaussmix::gaussmix_parse(argv[1], n, m, data, NULL) != 1)
 	{
 			cout << "Invalid input file; must be csv, one sample per row, data points as floats" << endl;
 			return 1;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	double log_likelihood = 0;
 	try
 	{
-		log_likelihood = EM(n, m, k, data, sigma_vector, mu_local, Pk_matrix);
+		log_likelihood = gaussmix::gaussmix_train(n, m, k, data, sigma_vector, mu_local, Pk_matrix);
 
 		//print out results
 		cout << "The matrix of mu's approximated by the EM algorithm is " << endl;

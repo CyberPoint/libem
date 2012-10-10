@@ -13,7 +13,7 @@ BLAS_PATH=
 CXX = g++ -g3 -gdwarf-2 -fopenmp
 CC = gcc -g3 -gdwarf-2 -fopenmp
 
-all: em_algorithm
+all: gaussmix
 
 debug: CXX = g++ -g3 -gdwarf-2 -fopenmp -DDEBUG -g
 debug: CC = gcc -g3 -gdwarf-2 -fopenmp -DDEBUG -g
@@ -22,11 +22,11 @@ debug: em_algorithm
 #///// LINK STEPS /////
 
 
-OBJS = Matrix.o Adapt.o KMeans.o EM_Algorithm.o sample_main.o
+OBJS = Matrix.o Adapt.o KMeans.o GaussMix.o sample_main.o
 
 
 #-- Build-only target --
-em_algorithm: $(OBJS)
+gaussmix: $(OBJS)
 	@echo LAPACK_PATH is set to $(LAPACK_PATH)
 	@echo BLAS_PATH is set to $(BLAS_PATH)
 	$(CXX) -o em_algorithm $(OBJS) -L$(LAPACK_PATH) -llapacke -llapack -L$(BLAS_PATH) -lrefblas -lgfortran 
@@ -44,13 +44,13 @@ KMeans.o: $(EM_DIR)/KMeans.cpp $(EM_DIR)/KMeans.h
 Adapt.o: $(EM_DIR)/Adapt.cpp $(EM_DIR)/Adapt.h
 	$(CXX) -c $(EM_DIR)/Adapt.cpp 
 
-EM_Algorithm.o: $(EM_DIR)/EM_Algorithm.cpp $(EM_DIR)/EM_Algorithm.h
-	$(CXX) -c $(EM_DIR)/EM_Algorithm.cpp 
+GaussMix.o: $(EM_DIR)/GaussMix.cpp $(EM_DIR)/GaussMix.h
+	$(CXX) -c $(EM_DIR)/GaussMix.cpp 
 
-sample_main.o: $(EM_DIR)/sample_main.cpp $(EM_DIR)/EM_Algorithm.h $(EM_DIR)/Matrix.h
+sample_main.o: $(EM_DIR)/sample_main.cpp $(EM_DIR)/GaussMix.h $(EM_DIR)/Matrix.h
 	$(CXX) -c $(EM_DIR)/sample_main.cpp -I $(EM_DIR)
 		
 
 #///// clean-up /////
 clean:
-	rm -f *.o em_algorithm
+	rm -f *.o gaussmix

@@ -25,7 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********************************************************************************/
 
-/*! \file EM_Algorithm.cpp
+/*! \file GuassMix.cpp
     \brief core libGaussMix++ em algorithm method implementations.
     \author Elizabeth Garbee
     \date Summer 2012
@@ -66,22 +66,22 @@
 *
 * \section usage_sec Usage
 *
-* libGaussMix++ does not actually build as a library. The main training algorithm is provided in EM_Algorithm.h/ EM_Algorithm.cpp. It uses helper routines provided in
-* Matrix.h/ Matrix.cpp which in turn wraps LAPACK linear algebra functions. It uses KMeans.h/ KMeans.cpp for initial model parameter guesses.
+* libGaussMix++ does not actually build as a library. The API is provided in GaussMix.h; API implementations are contained in GaussMix.cpp. The implementations
+* use helper routines provided in Matrix.h/ Matrix.cpp, which in turn wrap LAPACK linear algebra functions, and in KMeans.h/ KMeans.cpp, to generate initial model parameter guesses.
 * To build these files into an executable with a sample driver function provided in sample_main.cpp, follow these steps:
 *
 * - 1. Install BLAS and LAPACK on your machine if they're not already there (c.f. http://www.netlib.org/lapack/, which bundles a reference vesion of BLAS).
 * - 2. Update the environment variables in the libGaussMix++ makefile to point to your environment's BLAS and LAPACK header and library locations.
 * - 3. run make on the libGaussMix++ makefile.
-* - 4. run the resulting executable via: "em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>". \n
-*      Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "em_algorithm multid_data_1.csv 3 20 2".
+* - 4. run the resulting executable via: "gaussmix <data_file> <num_dimensions> <num_data_points> <num_clusters>". \n
+*      Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "gaussmix multid_data_1.csv 3 20 2".
 *
-* The libGaussMix++ has been built and tested on SL6.2 using gcc 4.4.5.
+* The libGaussMix++ source code has been built and tested on SL6.2 using gcc 4.4.5.
 * 
 *
 * \section example_sec Caller Example
 *
-* For an example "main" that will run EM, see sample_main.cpp.
+* For an example "main" that invokes the libGaussMix++ API routines, see sample_main.cpp.
 *
 * \section Data Formats
 *
@@ -128,10 +128,14 @@
 #include <omp.h>
 #endif
 
+// for kmeans utils
 #include "KMeans.h"
 
-//EM specific header
-#include "EM_Algorithm.h"
+// for adaptation utils
+#include "Adapt.h"
+
+//API header file
+#include "GaussMix.h"
 
 //#define statements - change #debug to 1 if you want to see EM's calculations as it goes
 #define sqr(x) ((x)*(x))
@@ -162,7 +166,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_ma
 
 
 /******************************************************************************************
- * 					         PRIVATE FUNCTIONS
+ * 					        IMPLEMENTATION OF PRIVATE FUNCTIONS
  *******************************************************************************************/
 /*! \brief estep is the function that calculates the L and Pnk for a given data point(n) and gaussian(k).
 *
@@ -554,8 +558,123 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 }
 
 
+/*******************************************************************************************
+ * 						IMPLEMENTATIONS OF PUBLIC FUNCTIONS
+ ******************************************************************************************/
 
-double EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
+/*! \brief adapt: adapt a Gaussian Mixture model to a given sub-population.
+*
+*
+@param[in] X subpopulation data (dimensionality = sigma_matrix.num_cols)
+@param[in] n number of data points in sub-pop
+@param[in] sigma_matrix vector of covariance matrices from EM call
+@param [in] mu_matrix cluster means returned from EM call
+@param [in] Pks cluster weights returned by EM call
+@param[in] adapted_sigma_matrix vector of covariance matrices from EM call
+@param [in] adapted_mu_matrix cluster means returned from EM call
+@param [in] adapted_Pks cluster weights returned by EM call
+@return 1 on success, 0 on error
+*/
+int gaussmix::gaussmix_adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
+		Matrix &mu_matrix, Matrix &Pks, vector<Matrix*> &adapted_sigma_matrix,
+		Matrix &adapted_mu_matrix, Matrix &adapted_Pks)
+{
+	return gaussmix::adapt(X,n,sigma_matrix,mu_matrix,Pks,adapted_sigma_matrix,adapted_mu_matrix,adapted_Pks);
+}
+
+int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * labels )
+{
+	char buffer[MAX_LINE_SIZE];
+	FILE *f = fopen(file_name, "r");
+	if (f == NULL)
+	{
+		cout << "Could not open file" << endl;
+		return 0;
+	}
+	memset(buffer, 0, MAX_LINE_SIZE);
+	int row = 0;
+	int cols = 0;
+	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
+	{
+		if (buffer[MAX_LINE_SIZE - 1] != 0)
+		{
+			cout << "Max line size exceeded at zero relative line " << row << endl;
+			return 0;
+		}
+
+		int errno = 0;
+		if (char * plabel = strstr(buffer,":"))
+		{
+			sscanf(plabel,"%d",&(labels[row]));
+			if (errno != 0)
+			{
+				cout << "Could not convert label at row " << row << endl;
+				return 0;
+			}
+			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
+			char *ptok = strtok(buffer, " ");	// bump past label
+			if (ptok)
+			{
+				for (cols = 0; cols < m; cols++)
+				{
+					if (strtok(NULL, ":"))
+					{
+						sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
+
+						if (errno != 0)
+						{
+							cout << "Could not convert data at index " << row << " and " << cols << endl;
+							return 0;
+						}
+					}
+					else
+					{
+						cout << "expecting <label>:<data> format at index " << row << " and " << cols << endl;
+						return 0;
+					}
+				}
+			}
+			else
+			{
+				cout << "expecting <label><space> at index start of line" << row << endl;
+				return 0;
+			}
+		}
+		else
+		{
+			// csv-style input (data_point_1,data_point_2, etc.)
+			char *ptok = strtok(buffer, ",");
+			if (ptok) sscanf(ptok, "%lf", &data[row*m]);
+			if (errno != 0)
+			{
+				cout << "Could not convert data at index " << row << " and " << cols << endl;
+				return 0;
+			}
+
+			for (cols = 1; cols < m; cols++)
+			{
+				sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
+
+				if (errno != 0)
+				{
+					cout << "Could not convert data at index " << row << " and " << cols << endl;
+					return 0;
+				}
+			}
+		}
+		row++;
+		memset(buffer, 0, MAX_LINE_SIZE);
+	}
+	return 1;
+}
+
+double gaussmix::gaussmix_pdf(int m, int k, const double *X, const vector<Matrix*> &sigma_matrix,
+		const Matrix &mu_matrix, const Matrix &Pks)
+{
+	return 0.0;
+}
+
+double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
 
 {
 	//create an iteration variable
@@ -581,7 +700,7 @@ double EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix 
 	//take the cluster centroids from kmeans as initial mus 
 	if (debug) printf("i will call kmeans \n");
 	fflush(stdout);
-	double *kmeans_mu = kmeans(m, X, n, k); 
+	double *kmeans_mu = gaussmix::kmeans(m, X, n, k);
 	
 	if (debug) printf("i called kmeans \n");
 	fflush(stdout);
@@ -678,94 +797,4 @@ double EM(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix 
 }
 
 
-int ParseCSV(char *file_name, int n, int m, double *data, int * labels )
-{
-	char buffer[MAX_LINE_SIZE];
-	FILE *f = fopen(file_name, "r");
-	if (f == NULL)
-	{
-		cout << "Could not open file" << endl;
-		return 0;
-	}
-	memset(buffer, 0, MAX_LINE_SIZE);
-	int row = 0;
-	int cols = 0;
-	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
-	{
-		if (buffer[MAX_LINE_SIZE - 1] != 0)
-		{
-			cout << "Max line size exceeded at zero relative line " << row << endl;
-			return 0;
-		}
 
-		int errno = 0;
-		if (char * plabel = strstr(buffer,":"))
-		{
-			sscanf(plabel,"%d",&(labels[row]));
-			if (errno != 0)
-			{
-				cout << "Could not convert label at row " << row << endl;
-				return 0;
-			}
-			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
-			char *ptok = strtok(buffer, " ");	// bump past label
-			if (ptok)
-			{
-				for (cols = 0; cols < m; cols++)
-				{
-					if (strtok(NULL, ":"))
-					{
-						sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
-
-						if (errno != 0)
-						{
-							cout << "Could not convert data at index " << row << " and " << cols << endl;
-							return 0;
-						}
-					}
-					else
-					{
-						cout << "expecting <label>:<data> format at index " << row << " and " << cols << endl;
-						return 0;
-					}
-				}
-			}
-			else
-			{
-				cout << "expecting <label><space> at index start of line" << row << endl;
-				return 0;
-			}
-		}
-		else
-		{
-			// csv-style input (data_point_1,data_point_2, etc.)
-			char *ptok = strtok(buffer, ",");
-			if (ptok) sscanf(ptok, "%lf", &data[row*m]);
-			if (errno != 0)
-			{
-				cout << "Could not convert data at index " << row << " and " << cols << endl;
-				return 0;
-			}
-
-			for (cols = 1; cols < m; cols++)
-			{
-				sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
-
-				if (errno != 0)
-				{
-					cout << "Could not convert data at index " << row << " and " << cols << endl;
-					return 0;
-				}
-			}
-		}
-		row++;
-		memset(buffer, 0, MAX_LINE_SIZE);
-	}
-	return 1;
-}
-
-double pdf(int m, int k, const double *X, const vector<Matrix*> &sigma_matrix,
-		const Matrix &mu_matrix, const Matrix &Pks)
-{
-	return 0.0;
-}

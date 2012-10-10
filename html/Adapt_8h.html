@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>EM: Matrix.cpp File Reference</title>
+<title>EM: Adapt.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -43,89 +43,73 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>Matrix.cpp File Reference</h1><code>#include &lt;lapacke.h&gt;</code><br/>
-<code>#include &lt;stdio.h&gt;</code><br/>
-<code>#include &lt;vector&gt;</code><br/>
-<code>#include &lt;omp.h&gt;</code><br/>
-<code>#include &lt;iostream&gt;</code><br/>
+<h1>Adapt.h File Reference</h1>
+<p>definitions for GMM adaptation  
+<a href="#_details">More...</a></p>
 <code>#include &quot;<a class="el" href="Matrix_8h_source.html">Matrix.h</a>&quot;</code><br/>
 
-<p><a href="Matrix_8cpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="Adapt_8h_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
-<tr><td colspan="2"><h2>Defines</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a> (int i, int j, int dim)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">lapack_logical&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a> (const double *a, const double *b)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">matrixIndex</a> (int k, int dim, int &amp;i, int &amp;j)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Adapt_8h.html#ae962ac59319aa3a19bd469b31e9f58da">adapt</a> (const double *X, int n, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;Pks, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;adapted_sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;adapted_mu_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;adapted_Pks)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">adapt: adapt a Gaussian Mixture model to a given sub-population.  <a href="#ae962ac59319aa3a19bd469b31e9f58da"></a><br/></td></tr>
 </table>
-<hr/><h2>Define Documentation</h2>
-<a class="anchor" id="a2f30f2925d601cb9a2e1d50ecdc995a8"></a><!-- doxytag: member="Matrix.cpp::matrix_debug" ref="a2f30f2925d601cb9a2e1d50ecdc995a8" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define matrix_debug&nbsp;&nbsp;&nbsp;1</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
+<hr/><a name="_details"></a><h2>Detailed Description</h2>
+<p>definitions for GMM adaptation </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00043">43</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
-
-</div>
-</div>
+<p>Definition in file <a class="el" href="Adapt_8h_source.html">Adapt.h</a>.</p>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="a06282eeb4fe8b2f42ace26e53251b7f8"></a><!-- doxytag: member="Matrix.cpp::cmIndex" ref="a06282eeb4fe8b2f42ace26e53251b7f8" args="(int i, int j, int dim)" -->
+<a class="anchor" id="ae962ac59319aa3a19bd469b31e9f58da"></a><!-- doxytag: member="Adapt.h::adapt" ref="ae962ac59319aa3a19bd469b31e9f58da" args="(const double *X, int n, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, Matrix &amp;Pks, vector&lt; Matrix * &gt; &amp;adapted_sigma_matrix, Matrix &amp;adapted_mu_matrix, Matrix &amp;adapted_Pks)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int cmIndex </td>
-          <td>(</td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>dim</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00049">49</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="af011232216fb95ef498b89e63085e6a1"></a><!-- doxytag: member="Matrix.cpp::leq" ref="af011232216fb95ef498b89e63085e6a1" args="(const double *a, const double *b)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lapack_logical leq </td>
+          <td class="memname">int adapt </td>
           <td>(</td>
           <td class="paramtype">const double *&nbsp;</td>
-          <td class="paramname"> <em>a</em>, </td>
+          <td class="paramname"> <em>X</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const double *&nbsp;</td>
-          <td class="paramname"> <em>b</em></td><td>&nbsp;</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>sigma_matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>mu_matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>Pks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>adapted_sigma_matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>adapted_mu_matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>adapted_Pks</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -136,48 +120,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00334">334</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a23488557b20e2433bc5854da388cfaa6"></a><!-- doxytag: member="Matrix.cpp::matrixIndex" ref="a23488557b20e2433bc5854da388cfaa6" args="(int k, int dim, int &amp;i, int &amp;j)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void matrixIndex </td>
-          <td>(</td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>k</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>dim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int &amp;&nbsp;</td>
-          <td class="paramname"> <em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int &amp;&nbsp;</td>
-          <td class="paramname"> <em>j</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00754">754</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>adapt: adapt a Gaussian Mixture model to a given sub-population. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>subpopulation data (dimensionality = sigma_matrix.num_cols) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points in sub-pop </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
 </div>
 </div>

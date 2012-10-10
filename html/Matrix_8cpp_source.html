@@ -191,19 +191,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00169"></a>00169 
 <a name="l00170"></a>00170 }
 <a name="l00171"></a>00171 
-<a name="l00175"></a><a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">00175</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">Matrix::getValue</a>(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)
-<a name="l00176"></a>00176 {
+<a name="l00175"></a><a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">00175</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">Matrix::getValue</a>(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)<span class="keyword"> const</span>
+<a name="l00176"></a>00176 <span class="keyword"></span>{
 <a name="l00177"></a>00177         std::vector&lt;double&gt; col = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j];
 <a name="l00178"></a>00178         <span class="keywordflow">return</span> col[i];
 <a name="l00179"></a>00179 }
 <a name="l00180"></a>00180 
-<a name="l00185"></a><a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">00185</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">Matrix::rowCount</a>()
-<a name="l00186"></a>00186 {
+<a name="l00185"></a><a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">00185</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">Matrix::rowCount</a>()<span class="keyword"> const</span>
+<a name="l00186"></a>00186 <span class="keyword"></span>{
 <a name="l00187"></a>00187         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
 <a name="l00188"></a>00188 }
 <a name="l00189"></a>00189 
-<a name="l00194"></a><a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">00194</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">Matrix::colCount</a>()
-<a name="l00195"></a>00195 {
+<a name="l00194"></a><a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">00194</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">Matrix::colCount</a>()<span class="keyword"> const</span>
+<a name="l00195"></a>00195 <span class="keyword"></span>{
 <a name="l00196"></a>00196         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
 <a name="l00197"></a>00197 }
 <a name="l00198"></a>00198 
@@ -385,14 +385,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00408"></a>00408 
 <a name="l00409"></a>00409 
 <a name="l00410"></a>00410 
-<a name="l00416"></a><a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">00416</a> <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">Matrix::dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)
-<a name="l00417"></a>00417 {
+<a name="l00416"></a><a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">00416</a> <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)<span class="keyword"> const</span>
+<a name="l00417"></a>00417 <span class="keyword"></span>{
 <a name="l00418"></a>00418         
-<a name="l00419"></a>00419         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount</a>()) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to multiply matrices with mismatched sizes&quot;</span>);
+<a name="l00419"></a>00419         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>()) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to multiply matrices with mismatched sizes&quot;</span>);
 <a name="l00420"></a>00420         <span class="keywordtype">int</span> cols1 = <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
 <a name="l00421"></a>00421         <span class="keywordtype">int</span> rows2 = cols1;
 <a name="l00422"></a>00422         <span class="keywordtype">int</span> rows1 = <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00423"></a>00423         <span class="keywordtype">int</span> cols2 = B.<a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount</a>();
+<a name="l00423"></a>00423         <span class="keywordtype">int</span> cols2 = B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>();
 <a name="l00424"></a>00424         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[rows1*cols2];
 <a name="l00425"></a>00425         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
 <a name="l00426"></a>00426         {
@@ -401,7 +401,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00429"></a>00429                         <span class="keywordtype">double</span> sum=0;
 <a name="l00430"></a>00430                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt;cols1; k++)
 <a name="l00431"></a>00431                         {
-<a name="l00432"></a>00432                                 sum+=<a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(i, k)*B.<a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(k, j);
+<a name="l00432"></a>00432                                 sum+=<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i, k)*B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(k, j);
 <a name="l00433"></a>00433                         }       
 <a name="l00434"></a>00434                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, rows1)] = sum;
 <a name="l00435"></a>00435                 }
@@ -413,19 +413,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00441"></a>00441 
 <a name="l00444"></a><a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">00444</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">Matrix::subtract</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)
 <a name="l00445"></a>00445 {
-<a name="l00446"></a>00446         <span class="keywordflow">if</span> ( (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=B.<a class="code" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount</a>())|| (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount</a>()) ) 
+<a name="l00446"></a>00446         <span class="keywordflow">if</span> ( (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>())|| (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>()) ) 
 <a name="l00447"></a>00447                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to subtract matrices with mismatched sizes&quot;</span>);
 <a name="l00448"></a>00448         <span class="keywordtype">double</span> * result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
 <a name="l00449"></a>00449         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
 <a name="l00450"></a>00450                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
-<a name="l00451"></a>00451                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numRows)] = <a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(i,j) - B.<a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(i,j);
+<a name="l00451"></a>00451                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numRows)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j) - B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j);
 <a name="l00452"></a>00452         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, numRows, numCols));
 <a name="l00453"></a>00453         <span class="keyword">delete</span>[] result;
 <a name="l00454"></a>00454         <span class="keywordflow">return</span> R;
 <a name="l00455"></a>00455 }
 <a name="l00456"></a>00456 
 <a name="l00457"></a>00457 
-<a name="l00461"></a><a class="code" href="classMatrix.html#a570ac6a4c79cca24589b667a5cfe8ae1">00461</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">Matrix::dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[])
+<a name="l00461"></a><a class="code" href="classMatrix.html#a570ac6a4c79cca24589b667a5cfe8ae1">00461</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[])
 <a name="l00462"></a>00462 {
 <a name="l00463"></a>00463         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
 <a name="l00464"></a>00464         {
@@ -454,12 +454,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00492"></a>00492         {
 <a name="l00493"></a>00493                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; j++)
 <a name="l00494"></a>00494                 {
-<a name="l00495"></a>00495                         matrixArrayT[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = <a class="code" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a>(j, i);
+<a name="l00495"></a>00495                         matrixArrayT[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(j, i);
 <a name="l00496"></a>00496                 }
 <a name="l00497"></a>00497         }
 <a name="l00498"></a>00498         <span class="keywordtype">double</span>* m = <span class="keyword">new</span> <span class="keywordtype">double</span>[numCols*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
 <a name="l00499"></a>00499 
-<a name="l00500"></a>00500         <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(ones, matrixArrayT,  numCols, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, m);
+<a name="l00500"></a>00500         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(ones, matrixArrayT,  numCols, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, m);
 <a name="l00501"></a>00501 
 <a name="l00502"></a>00502         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; i++)
 <a name="l00503"></a>00503         {
@@ -478,7 +478,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00516"></a>00516                 }
 <a name="l00517"></a>00517         }
 <a name="l00518"></a>00518         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
-<a name="l00519"></a>00519         <a class="code" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a>(mTrans, m, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, result);
+<a name="l00519"></a>00519         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(mTrans, m, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, result);
 <a name="l00520"></a>00520         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
 <a name="l00521"></a>00521         {
 <a name="l00522"></a>00522                 result[i] = result[i]/(numRows-1);
@@ -640,7 +640,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00700"></a>00700 {
 <a name="l00701"></a>00701         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>)
 <a name="l00702"></a>00702         {       
-<a name="l00703"></a>00703                 <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>; <span class="comment">// this may be causing trouble?</span>
+<a name="l00703"></a>00703                 <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
 <a name="l00704"></a>00704                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
 <a name="l00705"></a>00705                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt; <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
 <a name="l00706"></a>00706                 {
@@ -709,7 +709,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

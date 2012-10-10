@@ -55,13 +55,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">assign</a> (double val, int i, int j)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">average</a> (int axis, double *weights)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">clear</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">covar</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">det</a> ()  throw (LapackError, SizeError)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a105df9f36fff01ab75d41aa355603fe3">dot</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;m)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;m) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">getCopyOfColumn</a> (int colOffset)  throw (SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">getCopyOfRow</a> (int rowOffset)  throw (SizeError)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a58cb8d7bcdb63beba454502b8b5bb3d4">getValue</a> (int row, int column)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a> (int row, int column) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">insertColumn</a> (double *col, int colSize, int colNum)  throw (SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">insertRow</a> (double *row, int rowSize, int rowNum)  throw (SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">inv</a> ()  throw (SizeError, LapackError)</td></tr>
@@ -70,7 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ae157f910061b3e1155b17b62583bde57">Matrix</a> (int n, int m)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">print</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#af79c73861d85304c15e10252d613f170">subtract</a> (double vector[], int m, int axis)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;B)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">update</a> (double val, int i, int j)</td></tr>
@@ -448,7 +448,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="a346da725314b5c1ec458bb36ab995aa7"></a><!-- doxytag: member="Matrix::colCount" ref="a346da725314b5c1ec458bb36ab995aa7" args="()" -->
+<a class="anchor" id="a645117a6ae6085be1a2fed2042d1f5d7"></a><!-- doxytag: member="Matrix::colCount" ref="a645117a6ae6085be1a2fed2042d1f5d7" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -457,7 +457,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td>(</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div>
@@ -565,7 +565,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="a105df9f36fff01ab75d41aa355603fe3"></a><!-- doxytag: member="Matrix::dot" ref="a105df9f36fff01ab75d41aa355603fe3" args="(Matrix &amp;m)" -->
+<a class="anchor" id="a90457f219f60dfb3ea0adcea7cf0a59f"></a><!-- doxytag: member="Matrix::dot" ref="a90457f219f60dfb3ea0adcea7cf0a59f" args="(Matrix &amp;m) const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -575,7 +575,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>B</em></td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div>
@@ -657,7 +657,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="a58cb8d7bcdb63beba454502b8b5bb3d4"></a><!-- doxytag: member="Matrix::getValue" ref="a58cb8d7bcdb63beba454502b8b5bb3d4" args="(int row, int column)" -->
+<a class="anchor" id="a8e231dba49f57179a2e29fc6f4a95953"></a><!-- doxytag: member="Matrix::getValue" ref="a8e231dba49f57179a2e29fc6f4a95953" args="(int row, int column) const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -676,7 +676,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td> const</td>
         </tr>
       </table>
 </div>
@@ -722,7 +722,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>col</em>&nbsp;</td><td>the column to insert </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>colSize</em>&nbsp;</td><td>the length of col (should be the same as <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows()</a> for non-empty matrix) </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>colNum</em>&nbsp;</td><td>location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0) (0 &lt;= colNum &lt;= <a class="el" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colNum</em>&nbsp;</td><td>location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0) (0 &lt;= colNum &lt;= <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount()</a>) </td></tr>
   </table>
   </dd>
 </dl>
@@ -759,20 +759,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Overload [] so that i-j th entry can be accessed and assigned by matrix[i, j] </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>row number </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>column number </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>reference to value in ith row, jth column Insert row as the rowNum'th row in the matrix (indexed from 0) </dd></dl>
+<p>Insert row as the rowNum'th row in the matrix (indexed from 0) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>row</em>&nbsp;</td><td>the row to insert </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>rowSize</em>&nbsp;</td><td>the length of row (should be the same as <a class="el" href="classMatrix.html#a346da725314b5c1ec458bb36ab995aa7">colCount()</a> for non-empty matrix) </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>rowNum</em>&nbsp;</td><td>location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 &lt;= rowNum &lt;= <a class="el" href="classMatrix.html#a298c8759b38ccbfe5f5a6de9e06373a6">rowCount()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowSize</em>&nbsp;</td><td>the length of row (should be the same as <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount()</a> for non-empty matrix) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowNum</em>&nbsp;</td><td>location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 &lt;= rowNum &lt;= <a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount()</a>) </td></tr>
   </table>
   </dd>
 </dl>
@@ -821,7 +813,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="a298c8759b38ccbfe5f5a6de9e06373a6"></a><!-- doxytag: member="Matrix::rowCount" ref="a298c8759b38ccbfe5f5a6de9e06373a6" args="()" -->
+<a class="anchor" id="ab777e161b5ecca071ee5d14145966244"></a><!-- doxytag: member="Matrix::rowCount" ref="ab777e161b5ecca071ee5d14145966244" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -830,7 +822,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td>(</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div>
@@ -999,7 +991,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00200">200</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00196">196</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1014,7 +1006,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00192">192</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00188">188</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1024,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>columns of matrix--this is kept up to date as matrix is modified </p>
 <p>representation of matrix as 1-d array in column major order. This is not kept up to date as matrix is created/modified, but only updated when needed for an operation </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00196">196</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00192">192</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1049,7 +1041,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>number of columns in matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00202">202</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00198">198</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1066,7 +1058,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>number of rows in matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00201">201</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00197">197</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1089,7 +1081,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -52,18 +52,18 @@ Introduction</a></h2>
 <p>One important detail to note is that often, the values of the Gaussian density functions will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.</p>
 <h2><a class="anchor" id="usage_sec">
 Usage</a></h2>
-<p>libGaussMix++ does not actually build as a library. The main training algorithm is provided in <a class="el" href="EM__Algorithm_8h.html" title="Function prototypes for EM algorithm routines.">EM_Algorithm.h</a>/ <a class="el" href="EM__Algorithm_8cpp.html" title="core libGaussMix++ em algorithm method implementations.">EM_Algorithm.cpp</a>. It uses helper routines provided in <a class="el" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>/ <a class="el" href="Matrix_8cpp.html">Matrix.cpp</a> which in turn wraps LAPACK linear algebra functions. To build these files into an executable with a sample driver function provided in <a class="el" href="sample__main_8cpp.html" title="sample main file to show exercise of EM routines.">sample_main.cpp</a>, follow these steps:</p>
+<p>libGaussMix++ does not actually build as a library. The API is provided in <a class="el" href="GaussMix_8h.html" title="Function prototypes for libGaussMix++ routines.">GaussMix.h</a>; API implementations are contained in <a class="el" href="GaussMix_8cpp.html">GaussMix.cpp</a>. The implementations use helper routines provided in <a class="el" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>/ <a class="el" href="Matrix_8cpp.html">Matrix.cpp</a>, which in turn wrap LAPACK linear algebra functions, and in <a class="el" href="KMeans_8h.html" title="definitions for kmeans clustering algorithm">KMeans.h</a>/ <a class="el" href="KMeans_8cpp.html" title="implementations for kmeans clustering algorithm">KMeans.cpp</a>, to generate initial model parameter guesses. To build these files into an executable with a sample driver function provided in <a class="el" href="sample__main_8cpp.html" title="sample main file to show exercise of EM routines.">sample_main.cpp</a>, follow these steps:</p>
 <ul>
 <li>1. Install BLAS and LAPACK on your machine if they're not already there (c.f. <a href="http://www.netlib.org/lapack/,">http://www.netlib.org/lapack/,</a> which bundles a reference vesion of BLAS).</li>
 <li>2. Update the environment variables in the libGaussMix++ makefile to point to your environment's BLAS and LAPACK header and library locations.</li>
 <li>3. run make on the libGaussMix++ makefile.</li>
-<li>4. run the resulting executable via: "em_algorithm &lt;data_file&gt; &lt;num_dimensions&gt; &lt;num_data_points&gt; &lt;num_clusters&gt;". <br/>
- Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "em_algorithm multid_data_1.csv 3 20 2".</li>
+<li>4. run the resulting executable via: "gaussmix &lt;data_file&gt; &lt;num_dimensions&gt; &lt;num_data_points&gt; &lt;num_clusters&gt;". <br/>
+ Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "gaussmix multid_data_1.csv 3 20 2".</li>
 </ul>
-<p>The libGaussMix++ has been built and tested on SL6.2 using gcc 4.4.5.</p>
+<p>The libGaussMix++ source code has been built and tested on SL6.2 using gcc 4.4.5.</p>
 <h2><a class="anchor" id="example_sec">
 Caller Example</a></h2>
-<p>For an example "main" that will run EM, see <a class="el" href="sample__main_8cpp.html" title="sample main file to show exercise of EM routines.">sample_main.cpp</a>.</p>
+<p>For an example "main" that invokes the libGaussMix++ API routines, see <a class="el" href="sample__main_8cpp.html" title="sample main file to show exercise of EM routines.">sample_main.cpp</a>.</p>
 <h2><a class="anchor" id="Data">
 Formats</a></h2>
 <p>libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files (multid_data_1.csv and multid_data_2.svm, respectively) are provided for convenience. The former consists of 20 three-dimensional data points falling into two clusters centered on (1,1,1) and (100,100,100). The second is similarly distributed, with a "+1" cluster centered on (10,10,10) and "-1" cluster centered on (50,50,50).</p>
@@ -86,7 +86,7 @@ References</a></h2>
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -35,6 +35,8 @@
 #ifndef K_MEANS_H_
 #define K_MEANS_H_
 
+namespace gaussmix
+{
 
 /*! \brief kmeans cluster the given data
 *
@@ -45,5 +47,5 @@
 */
 double * kmeans(int dim, double *X, int n, int k);
 
-
+}
 #endif /* K_MEANS_H_ */

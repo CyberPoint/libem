@@ -37,6 +37,8 @@
 
 #include <stdio.h>
 
+#include "KMeans.h"
+
 /*! \file KMeans.cpp
 *   \brief implementations for kmeans clustering algorithm
 */
@@ -309,7 +311,7 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
  *    IMPLEMENTATIONS OF PUBLIC FUNCTIONS
  ******************************************************************/
 
-double * kmeans(int m, double *X, int n, int k)
+double * gaussmix::kmeans(int m, double *X, int n, int k)
 {
 	//holds the computed cluster_centroids to pass to EM later
     	double *cluster_centroid = new double[m*k];

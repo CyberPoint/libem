@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>EM: Data Fields - Variables</title>
+<title>EM: KMeans.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -18,8 +18,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <img id="MSearchSelect" src="search/search.png"
@@ -37,38 +37,81 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div class="tabs">
     <ul>
-      <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
-      <li class="current"><a href="functions.html"><span>Data&nbsp;Fields</span></a></li>
-    </ul>
-  </div>
-  <div class="tabs">
-    <ul>
-      <li><a href="functions.html"><span>All</span></a></li>
-      <li><a href="functions_func.html"><span>Functions</span></a></li>
-      <li class="current"><a href="functions_vars.html"><span>Variables</span></a></li>
-      <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
-      <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
+      <li><a href="files.html"><span>File&nbsp;List</span></a></li>
+      <li><a href="globals.html"><span>Globals</span></a></li>
     </ul>
   </div>
 </div>
 <div class="contents">
-&nbsp;<ul>
-<li>changed
-: <a class="el" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">Matrix</a>
-</li>
-<li>columns
-: <a class="el" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">Matrix</a>
-</li>
-<li>entries
-: <a class="el" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4">Matrix</a>
-</li>
-<li>numCols
-: <a class="el" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a">Matrix</a>
-</li>
-<li>numRows
-: <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85">Matrix</a>
-</li>
-</ul>
+<h1>KMeans.h File Reference</h1>
+<p>definitions for kmeans clustering algorithm  
+<a href="#_details">More...</a></p>
+
+<p><a href="KMeans_8h_source.html">Go to the source code of this file.</a></p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="KMeans_8h.html#a041ba789115da38d2274df4f8639fd65">kmeans</a> (int dim, double *X, int n, int k)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">kmeans cluster the given data  <a href="#a041ba789115da38d2274df4f8639fd65"></a><br/></td></tr>
+</table>
+<hr/><a name="_details"></a><h2>Detailed Description</h2>
+<p>definitions for kmeans clustering algorithm </p>
+<dl class="author"><dt><b>Author:</b></dt><dd>Elizabeth Garbee </dd></dl>
+<dl class="date"><dt><b>Date:</b></dt><dd>Summer 2012 </dd></dl>
+
+<p>Definition in file <a class="el" href="KMeans_8h_source.html">KMeans.h</a>.</p>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a041ba789115da38d2274df4f8639fd65"></a><!-- doxytag: member="KMeans.h::kmeans" ref="a041ba789115da38d2274df4f8639fd65" args="(int dim, double *X, int n, int k)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double* kmeans </td>
+          <td>(</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>X</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>k</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>kmeans cluster the given data </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dim</em>&nbsp;</td><td>dimensionality of data </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>pointer to n * dim array of data to be clustered </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>desired number of clusters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>heap-allocated k * dim array of cluster centroids (call must free) or 0 on error </dd></dl>
+
+<p>Definition at line <a class="el" href="KMeans_8cpp_source.html#l00312">312</a> of file <a class="el" href="KMeans_8cpp_source.html">KMeans.cpp</a>.</p>
+
+</div>
+</div>
 </div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"

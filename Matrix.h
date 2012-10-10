@@ -100,11 +100,7 @@ class Matrix
 	@param j column number*/
 	void update(double val, int i, int j);
 
-	/**Overload [] so that i-j th entry can be accessed and assigned by matrix[i, j]
-	@param i row number
-	@param j column number
-	@return reference to value in ith row, jth column*/
-	//double & operator()(int i, int j);
+
 
 	/**Insert row as the rowNum'th row in the matrix (indexed from 0)
 	@param row the row to insert 
