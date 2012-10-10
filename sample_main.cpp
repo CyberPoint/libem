@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	// throw an error if the command line arguments don't match ParseCSV's inputs
 	if (argc != 5)
 	{
-		cout << " Usage: em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
+		cout << " Usage: gaussmix <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
 		return 1;
 	}
 	int errno = 0;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	if (errno != 0)
 	{
 			cout << "Invalid inputs:" << endl;
-			cout << " Usage: em_algorithm <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
+			cout << " Usage: gaussmix <data_file> <num_dimensions> <num_data_points> <num_clusters>" << endl;
 			return 1;
 	}
 	// reading in and parsing the data

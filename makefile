@@ -29,7 +29,7 @@ OBJS = Matrix.o Adapt.o KMeans.o GaussMix.o sample_main.o
 gaussmix: $(OBJS)
 	@echo LAPACK_PATH is set to $(LAPACK_PATH)
 	@echo BLAS_PATH is set to $(BLAS_PATH)
-	$(CXX) -o em_algorithm $(OBJS) -L$(LAPACK_PATH) -llapacke -llapack -L$(BLAS_PATH) -lrefblas -lgfortran 
+	$(CXX) -o gaussmix $(OBJS) -L$(LAPACK_PATH) -llapacke -llapack -L$(BLAS_PATH) -lrefblas -lgfortran 
 
 #///// COMPILE STEPS /////
 
