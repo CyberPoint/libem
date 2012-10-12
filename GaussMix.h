@@ -76,7 +76,20 @@ int gaussmix_adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
 */
 int gaussmix_parse(char *file_name,  int n, int m, double *data, int * labels = NULL);
 
-/*! \brief gaussmix_pdf: compute the log of the probability of the given data point
+
+/*! \brief gaussmix_pdf: compute the log of the  probability of the given data point
+*
+*
+@param[in] m dimensionality of data
+@param[in] X data point
+@param[in] covar covariance matrix for cluster
+@param [in] mu  mean for cluster
+@return log likelihood
+*/
+double gaussmix_pdf(int m, const double *X,Matrix &sigma_matrix,std::vector<double> &mu_vector);
+
+
+/*! \brief gaussmix_pdf_mix: compute the log of the mixture probability of the given data point
 *
 *
 @param[in] m dimensionality of data
@@ -85,10 +98,12 @@ int gaussmix_parse(char *file_name,  int n, int m, double *data, int * labels = 
 @param[in] sigma_matrix vector of covariance matrices from EM or adpated call
 @param [in] mu_matrix cluster means returned from EM or adapted call
 @param [in] Pks cluster weights returned by EM or adapted call
-@return log likelihood or (or std::numeric_limits::infinity() on error)
+@return log likelihood
 */
-double gaussmix_pdf(int m, int k, const double *X, const vector<Matrix*> &sigma_matrix,
-		const Matrix &mu_matrix, const Matrix &Pks);
+double gaussmix_pdf_mix(int m, int k, const double *X, vector<Matrix*> &sigma_matrix,
+						Matrix &mu_matrix, Matrix &Pks);
+
+
 
 
 /*! \brief gaussmix_train: train a Gaussian Mixture model on a given data set.

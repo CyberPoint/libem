@@ -105,6 +105,7 @@
 
 
 //header brick
+#include <math.h>
 #include <iostream>
 #include <ostream>
 #include <cstdlib>
@@ -603,8 +604,10 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 		}
 
 		int errno = 0;
-		if (char * plabel = strstr(buffer,":"))
+		if (strstr(buffer,":"))
 		{
+			// we have svm format (labelled data)
+			char * plabel = strtok(buffer," ");
 			sscanf(plabel,"%d",&(labels[row]));
 			if (errno != 0)
 			{
@@ -612,32 +615,15 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 				return 0;
 			}
 			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
-			char *ptok = strtok(buffer, " ");	// bump past label
-			if (ptok)
+			for (cols = 0; cols < m; cols++)
 			{
-				for (cols = 0; cols < m; cols++)
+				strtok(NULL, ":");	// bump past position label
+				sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
+				if (errno != 0)
 				{
-					if (strtok(NULL, ":"))
-					{
-						sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
-
-						if (errno != 0)
-						{
-							cout << "Could not convert data at index " << row << " and " << cols << endl;
-							return 0;
-						}
-					}
-					else
-					{
-						cout << "expecting <label>:<data> format at index " << row << " and " << cols << endl;
-						return 0;
-					}
+					cout << "Could not convert data at index " << row << " and " << cols << endl;
+					return 0;
 				}
-			}
-			else
-			{
-				cout << "expecting <label><space> at index start of line" << row << endl;
-				return 0;
 			}
 		}
 		else
@@ -668,10 +654,55 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 	return 1;
 }
 
-double gaussmix::gaussmix_pdf(int m, int k, const double *X, const vector<Matrix*> &sigma_matrix,
-		const Matrix &mu_matrix, const Matrix &Pks)
+
+double gaussmix::gaussmix_pdf(int m, const double *X, Matrix &sigma_matrix,std::vector<double> &mu_vector)
 {
-	return 0.0;
+
+	const double pi = 2*acos(0.0);
+	const double pi_fac = pow(2 * pi, m * 0.5);
+
+	// set up our normalizing factor
+	double det = sigma_matrix.det();
+	double norm_fac = ( 1.0 / (pi_fac * pow(det, 0.5)));
+
+	// compute the difference of feature and mean vectors
+	double meanDiff[m];
+
+	for (int j = 0; j < m; j++)
+	{
+		meanDiff[j] = X[j] - mu_vector[j];
+	}
+
+	// convert to row and column vector
+	Matrix meanDiffRowVec(meanDiff, 1, m, Matrix::ROW_MAJOR);
+	Matrix meanDiffColVec(meanDiff, m, 1, Matrix::COLUMN_MAJOR);
+
+	// get inverted covariance matrix
+	Matrix & inv = sigma_matrix.inv();
+
+	// get exp of inner product
+	Matrix & innerAsMatrix = meanDiffRowVec.dot(inv.dot(meanDiffColVec));
+	double exp_inner = -0.5 * innerAsMatrix.getValue(0,0);
+
+	// roll in weighted sum
+	double result = log(norm_fac) +  exp_inner;
+	return result;
+}
+
+double gaussmix::gaussmix_pdf_mix(int m, int k, const double *X, vector<Matrix*> &sigma_matrix,
+		Matrix &mu_matrix, Matrix &Pks)
+{
+	double sum_probs = 0.0;
+
+	for (int i = 0; i < k; i++)
+	{
+		std:vector<double> mean_vec;
+		mu_matrix.getCopyOfRow(i,mean_vec);
+		sum_probs = Pks.getValue(0,i)*
+				exp(gaussmix::gaussmix_pdf(m,X,*(sigma_matrix[i]),mean_vec));
+	}
+	return log(sum_probs);
+
 }
 
 double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)

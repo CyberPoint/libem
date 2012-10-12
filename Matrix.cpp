@@ -40,7 +40,7 @@
 
 #include "Matrix.h"
 
-#define matrix_debug 1
+#define matrix_debug 0
 
 
 using namespace std;
@@ -77,16 +77,12 @@ Matrix::Matrix(int n, int m)
 	changed = false;
 	for (int j=0; j<m; j++)
 	{
-		//printf("initing %d th column \n", j);
-		fflush(stdout);
+
 		std::vector<double> temp;
 		columns.push_back(temp);
 
 		for (int i=0; i<n; i++)
 		{
-			//printf("initing %d th row \n", i);
-			fflush(stdout);
-
 			columns[j].push_back(0);
 		}
 	}
@@ -295,38 +291,35 @@ Matrix & Matrix::insertColumn(double col[], int colSize, int colNum) throw (Size
 	changed = true;
 }
 
-/**
-return a copy of rowOffset'th row of the matrix
+
+/**return a copy of rowOffset'th row of the matrix
 @param rowOffset number of the row to retrieve (indexed from 0)
-@return vector representation of the specified row
-*/
-std::vector<double> Matrix::getCopyOfRow(int rowOffset) throw (SizeError)
+@param vec empty  vector in whuch to return row data
+@return ref to vector representation of the specified row*/
+std::vector<double> & Matrix::getCopyOfRow(int rowOffset,std::vector<double> & vec) throw (SizeError)
 {
 	if (rowOffset<0 || rowOffset > numRows)
 		throw SizeError((char*)"Error: attempted to get copy of non-existent row");
-	std::vector<double> row;
+
 	for (int j=0; j<numCols; j++)
-		row.push_back(columns[j][rowOffset]);
-	return row;
+		vec.push_back(columns[j][rowOffset]);
+	return vec;
 }
 
-/**
-return a copy of colOffset'th row of the matrix
+/** return a copy of colOffset'th row of the matrix
 @param colOffset number of the column to retrieve (indexed from 0)
-@return vector representation of the specified column
-*/
-std::vector<double> Matrix::getCopyOfColumn(int colOffset) throw (SizeError)
+@param vec empty  vector in whuch to return row data
+@return ref to vector representation of the specified column*/
+std::vector<double> & Matrix::getCopyOfColumn(int colOffset, std::vector<double> & vec) throw (SizeError)
 {
 	if (colOffset<0 || colOffset > numCols)
 		throw SizeError((char*)"Error: attempted to get copy of non-existent column");
-	std::vector<double> col;
+
 	for (int i=0; i<numRows; i++)
 	{
-		col.push_back(columns[colOffset][i]);
-		//printf("%f ", columns[colOffset][i]);
+		vec.push_back(columns[colOffset][i]);
 	}
-	fflush(stdout);
-	return col;
+	return vec;
 }
 
 
@@ -726,7 +719,7 @@ void Matrix::print()
 	{
 		for (int j=0; j<numCols; j++)
 		{
-			printf(" %f", columns[j][i]);
+			printf(" %lf", columns[j][i]);
 		}
 		printf("\n");
 		fflush(stdout);

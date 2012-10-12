@@ -45,13 +45,6 @@ class SizeError: public std::runtime_error
 	
 };
 
-//! class for returning errors when attempting an operation exclusive to nonsingular matrices on a singular matrix */
-/*class SingularError: public std::runtime_error
-{
-	public:
-	SingularError(char* error="Operation could not be performed--perhaps matrix is singular?"):std::runtime_error(error){}
-	
-};*/
 
 //! Exception thrown when there is an error in a call through lapacke */
 class LapackError: public std::runtime_error
@@ -96,8 +89,8 @@ class Matrix
 
 	/**Overwrite val in the ith row, jth column of the matrix
 	@param val double value to write
-	@param i row number
-	@param j column number*/
+	@param 0-rel i row number
+	@param 0-rel j column number*/
 	void update(double val, int i, int j);
 
 
@@ -145,13 +138,15 @@ class Matrix
 	
 	/**return a copy of rowOffset'th row of the matrix
 	@param rowOffset number of the row to retrieve (indexed from 0)
-	@return vector representation of the specified row*/
-	std::vector<double> getCopyOfRow(int rowOffset) throw (SizeError);
+	@param vec empty  vector in whuch to return row data
+	@return ref to vector representation of the specified row*/
+	std::vector<double> & getCopyOfRow(int rowOffset,std::vector<double> & vec) throw (SizeError);
 
 	/** return a copy of colOffset'th row of the matrix
 	@param colOffset number of the column to retrieve (indexed from 0)
-	@return vector representation of the specified column*/
-	std::vector<double> getCopyOfColumn(int colOffset) throw (SizeError);
+	@param vec empty  vector in whuch to return row data
+	@return ref to vector representation of the specified column*/
+	std::vector<double> & getCopyOfColumn(int colOffset, std::vector<double> & vec) throw (SizeError);
 
 	/**compute the weighted average value of each row or column
 	@param axis row by row (0) or column by column (1)
