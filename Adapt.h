@@ -50,9 +50,9 @@ namespace gaussmix
 @param[in] sigma_matrix vector of covariance matrices from EM call
 @param [in] mu_matrix cluster means returned from EM call
 @param [in] Pks cluster weights returned by EM call
-@param[in] adapted_sigma_matrix vector of covariance matrices from EM call
-@param [in] adapted_mu_matrix cluster means returned from EM call
-@param [in] adapted_Pks cluster weights returned by EM call
+@param[out] adapted_sigma_matrix vector of covariance matrices
+@param [out] adapted_mu_matrix cluster means
+@param [out] adapted_Pks cluster weight
 @return 1 on success, 0 on error
 */
 int adapt(const double *X, int n, std::vector<Matrix*> &sigma_matrix,

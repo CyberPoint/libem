@@ -131,9 +131,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>cluster means </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_Pks</em>&nbsp;</td><td>cluster weight </td></tr>
   </table>
   </dd>
 </dl>
@@ -212,9 +212,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices from EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>cluster means returned from EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_Pks</em>&nbsp;</td><td>cluster weights returned by EM call </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>vector of covariance matrices (caller allocates) </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>cluster means (caller allocates) </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_Pks</em>&nbsp;</td><td>cluster weights (caller allocates) </td></tr>
   </table>
   </dd>
 </dl>
