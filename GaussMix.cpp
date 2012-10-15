@@ -26,9 +26,11 @@
 **********************************************************************************/
 
 /*! \file GuassMix.cpp
+    \version 1.0
     \brief core libGaussMix++ em algorithm method implementations.
-    \author Elizabeth Garbee
+    \author Elizabeth Garbee and CyberPoint Labs, CyberPoint International LLC
     \date Summer 2012
+
 */
 
 /*! \mainpage libGaussMix++: An Expectation Maximization Algorithm for Training Gaussian Mixture Models
