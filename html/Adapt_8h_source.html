@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -72,22 +73,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00033"></a>00033 <span class="preprocessor">#ifndef ADAPT_H_</span>
 <a name="l00034"></a>00034 <span class="preprocessor"></span><span class="preprocessor">#define ADAPT_H_</span>
 <a name="l00035"></a>00035 <span class="preprocessor"></span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>&quot;</span>
-<a name="l00038"></a>00038 
-<a name="l00052"></a>00052 <span class="keywordtype">int</span> <a class="code" href="Adapt_8cpp.html#aed8bfbd4b77e4e3e0dccdc6adcc5217c">adapt</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *X, <span class="keywordtype">int</span> n, vector&lt;Matrix*&gt; &amp;sigma_matrix,
-<a name="l00053"></a>00053                 <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks, vector&lt;Matrix*&gt; &amp;adapted_sigma_matrix,
-<a name="l00054"></a>00054                 <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_Pks);
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057 <span class="preprocessor">#endif </span><span class="comment">/* ADAPT_H_ */</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>&quot;</span>
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 
+<a name="l00041"></a><a class="code" href="namespacegaussmix.html">00041</a> <span class="keyword">namespace </span>gaussmix
+<a name="l00042"></a>00042 {
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 
+<a name="l00058"></a>00058 <span class="keywordtype">int</span> <a class="code" href="namespacegaussmix.html#a371a2b7088eaa1abffe06f1718383e82" title="adapt: adapt a Gaussian Mixture model to a given sub-population.">adapt</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *X, <span class="keywordtype">int</span> n, std::vector&lt;Matrix*&gt; &amp;sigma_matrix,
+<a name="l00059"></a>00059                 <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks, std::vector&lt;Matrix*&gt; &amp;adapted_sigma_matrix,
+<a name="l00060"></a>00060                 <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_Pks);
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 <span class="preprocessor">#endif </span><span class="comment">/* ADAPT_H_ */</span>
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 }
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -96,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

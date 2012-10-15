@@ -64,6 +64,11 @@
 * One important detail to note is that often, the values of the Gaussian density functions will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of
 * these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.
 *
+* The libGaussMix++ code base also includes support for adapation of a GMM to a specific subpopulation of the population on which it was trained. In a sense, this
+* "biases" the model towards the subpopulation. If the population splits into distinct subpopulations, one may then classify a sample as belonging to a particular
+* subpopulation, by assiging it to the subpopulation  under whose adapted GMM it has the highest likelihood density. One often normalizes
+* these scores by the unadapted GMM density. See reference 2 for details. This functionality is provided by the adapt() method of the GaussMix API.
+*
 * \section usage_sec Usage
 *
 * libGaussMix++ does not actually build as a library. The API is provided in GaussMix.h; API implementations are contained in GaussMix.cpp. The implementations
@@ -92,12 +97,12 @@
 *
 * \section References
 *
-*  Numerical Recipes 3rd Edition: The Art of Scientific Computing,
+*  1. Press, et. al., Numerical Recipes 3rd Edition: The Art of Scientific Computing,
 *  Cambridge University Press New York, NY, USA ©2007,
 *  ISBN:0521880688 9780521880688
 *  (c.f. chapter 16).
 *
-*  Douglas A. Reynolds, et. al., "Speaker Verication Using Adapated Gaussian Mixture Models,"
+*  2. Douglas A. Reynolds, et. al., "Speaker Verication Using Adapated Gaussian Mixture Models,"
 *  Digital Signal Processing 10, 19-24 (2000).
 *
 */

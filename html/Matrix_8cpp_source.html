@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -80,7 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00040"></a>00040 
 <a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>&quot;</span>
 <a name="l00042"></a>00042 
-<a name="l00043"></a><a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">00043</a> <span class="preprocessor">#define matrix_debug 1</span>
+<a name="l00043"></a><a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">00043</a> <span class="preprocessor">#define matrix_debug 0</span>
 <a name="l00044"></a>00044 <span class="preprocessor"></span>
 <a name="l00045"></a>00045 
 <a name="l00046"></a>00046 <span class="keyword">using namespace </span>std;
@@ -111,596 +112,591 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00077"></a>00077         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
 <a name="l00078"></a>00078         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;m; j++)
 <a name="l00079"></a>00079         {
-<a name="l00080"></a>00080                 <span class="comment">//printf(&quot;initing %d th column \n&quot;, j);</span>
-<a name="l00081"></a>00081                 fflush(stdout);
-<a name="l00082"></a>00082                 std::vector&lt;double&gt; temp;
-<a name="l00083"></a>00083                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(temp);
-<a name="l00084"></a>00084 
-<a name="l00085"></a>00085                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;n; i++)
-<a name="l00086"></a>00086                 {
-<a name="l00087"></a>00087                         <span class="comment">//printf(&quot;initing %d th row \n&quot;, i);</span>
-<a name="l00088"></a>00088                         fflush(stdout);
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].push_back(0);
-<a name="l00091"></a>00091                 }
-<a name="l00092"></a>00092         }
-<a name="l00093"></a>00093         
-<a name="l00094"></a>00094 }
-<a name="l00095"></a>00095 
-<a name="l00101"></a><a class="code" href="classMatrix.html#ab6dd5e2d7e76b1ca5cad1ef72c6f1a7b">00101</a> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix::Matrix</a>(<span class="keywordtype">double</span> di[], <span class="keywordtype">int</span> len)
-<a name="l00102"></a>00102 {
-<a name="l00103"></a>00103         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[len*len];
-<a name="l00104"></a>00104         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
-<a name="l00105"></a>00105         <span class="keywordtype">int</span> index=0;
-<a name="l00106"></a>00106         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;len; i++)
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081                 std::vector&lt;double&gt; temp;
+<a name="l00082"></a>00082                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(temp);
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;n; i++)
+<a name="l00085"></a>00085                 {
+<a name="l00086"></a>00086                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].push_back(0);
+<a name="l00087"></a>00087                 }
+<a name="l00088"></a>00088         }
+<a name="l00089"></a>00089         
+<a name="l00090"></a>00090 }
+<a name="l00091"></a>00091 
+<a name="l00097"></a><a class="code" href="classMatrix.html#ab6dd5e2d7e76b1ca5cad1ef72c6f1a7b">00097</a> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix::Matrix</a>(<span class="keywordtype">double</span> di[], <span class="keywordtype">int</span> len)
+<a name="l00098"></a>00098 {
+<a name="l00099"></a>00099         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[len*len];
+<a name="l00100"></a>00100         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
+<a name="l00101"></a>00101         <span class="keywordtype">int</span> index=0;
+<a name="l00102"></a>00102         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;len; i++)
+<a name="l00103"></a>00103         {
+<a name="l00104"></a>00104                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(std::vector&lt;double&gt;());
+<a name="l00105"></a>00105         }
+<a name="l00106"></a>00106         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; len; i++)
 <a name="l00107"></a>00107         {
-<a name="l00108"></a>00108                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(std::vector&lt;double&gt;());
-<a name="l00109"></a>00109         }
-<a name="l00110"></a>00110         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; len; i++)
-<a name="l00111"></a>00111         {
-<a name="l00112"></a>00112                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;len; j++)
-<a name="l00113"></a>00113                 {
-<a name="l00114"></a>00114                         <span class="keywordflow">if</span> (i==j) 
-<a name="l00115"></a>00115                         {
-<a name="l00116"></a>00116                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, di[i]);
-<a name="l00117"></a>00117                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[index++] = di[i];
-<a name="l00118"></a>00118                         }
-<a name="l00119"></a>00119                         <span class="keywordflow">else</span> 
-<a name="l00120"></a>00120                         {
-<a name="l00121"></a>00121                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() +i, 0);
-<a name="l00122"></a>00122                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[index++] = 0;
-<a name="l00123"></a>00123                         }
-<a name="l00124"></a>00124                 }
-<a name="l00125"></a>00125         }
-<a name="l00126"></a>00126         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> = len;
-<a name="l00127"></a>00127         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> = len;
-<a name="l00128"></a>00128 }
-<a name="l00129"></a>00129 
-<a name="l00137"></a><a class="code" href="classMatrix.html#a5bcf53e91149fbede2313e31792e6990">00137</a> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix::Matrix</a>(<span class="keywordtype">double</span> a[], <span class="keywordtype">int</span> nRows, <span class="keywordtype">int</span> nCols, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a> major=COLUMN_MAJOR)
-<a name="l00138"></a>00138 {
-<a name="l00139"></a>00139         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> = nRows;
-<a name="l00140"></a>00140         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> = nCols;
-<a name="l00141"></a>00141         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
-<a name="l00142"></a>00142         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; i++)
+<a name="l00108"></a>00108                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;len; j++)
+<a name="l00109"></a>00109                 {
+<a name="l00110"></a>00110                         <span class="keywordflow">if</span> (i==j) 
+<a name="l00111"></a>00111                         {
+<a name="l00112"></a>00112                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, di[i]);
+<a name="l00113"></a>00113                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[index++] = di[i];
+<a name="l00114"></a>00114                         }
+<a name="l00115"></a>00115                         <span class="keywordflow">else</span> 
+<a name="l00116"></a>00116                         {
+<a name="l00117"></a>00117                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() +i, 0);
+<a name="l00118"></a>00118                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[index++] = 0;
+<a name="l00119"></a>00119                         }
+<a name="l00120"></a>00120                 }
+<a name="l00121"></a>00121         }
+<a name="l00122"></a>00122         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> = len;
+<a name="l00123"></a>00123         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> = len;
+<a name="l00124"></a>00124 }
+<a name="l00125"></a>00125 
+<a name="l00133"></a><a class="code" href="classMatrix.html#a5bcf53e91149fbede2313e31792e6990">00133</a> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix::Matrix</a>(<span class="keywordtype">double</span> a[], <span class="keywordtype">int</span> nRows, <span class="keywordtype">int</span> nCols, <a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a> major=COLUMN_MAJOR)
+<a name="l00134"></a>00134 {
+<a name="l00135"></a>00135         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> = nRows;
+<a name="l00136"></a>00136         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> = nCols;
+<a name="l00137"></a>00137         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
+<a name="l00138"></a>00138         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; i++)
+<a name="l00139"></a>00139         {
+<a name="l00140"></a>00140                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(std::vector&lt;double&gt;());
+<a name="l00141"></a>00141         }
+<a name="l00142"></a>00142         <span class="keywordflow">if</span> (major==<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485aced329f1fc491f4ead5c083ee994d384">COLUMN_MAJOR</a>)
 <a name="l00143"></a>00143         {
-<a name="l00144"></a>00144                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.push_back(std::vector&lt;double&gt;());
-<a name="l00145"></a>00145         }
-<a name="l00146"></a>00146         <span class="keywordflow">if</span> (major==<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485aced329f1fc491f4ead5c083ee994d384">COLUMN_MAJOR</a>)
-<a name="l00147"></a>00147         {
-<a name="l00148"></a>00148                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols];
-<a name="l00149"></a>00149                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; k++)
-<a name="l00150"></a>00150                 {
-<a name="l00151"></a>00151                         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[k] = a[k];
-<a name="l00152"></a>00152                         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
-<a name="l00153"></a>00153                         <span class="keywordtype">int</span> j = k/<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00154"></a>00154                         <span class="keywordtype">int</span> i = k%<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00155"></a>00155                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, a[k]);
-<a name="l00156"></a>00156                 }
-<a name="l00157"></a>00157         }
-<a name="l00158"></a>00158         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (major==<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">ROW_MAJOR</a>)
-<a name="l00159"></a>00159         {
-<a name="l00160"></a>00160                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[0]; <span class="comment">// will fill in later when needed</span>
-<a name="l00161"></a>00161                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; k++)
-<a name="l00162"></a>00162                 {
-<a name="l00163"></a>00163                         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
-<a name="l00164"></a>00164                         <span class="keywordtype">int</span> i = k/numCols;
-<a name="l00165"></a>00165                         <span class="keywordtype">int</span> j = k%numCols;
-<a name="l00166"></a>00166                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, a[k]);
-<a name="l00167"></a>00167                 }
-<a name="l00168"></a>00168         }
-<a name="l00169"></a>00169 
-<a name="l00170"></a>00170 }
-<a name="l00171"></a>00171 
-<a name="l00175"></a><a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">00175</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">Matrix::getValue</a>(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)<span class="keyword"> const</span>
-<a name="l00176"></a>00176 <span class="keyword"></span>{
-<a name="l00177"></a>00177         std::vector&lt;double&gt; col = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j];
-<a name="l00178"></a>00178         <span class="keywordflow">return</span> col[i];
-<a name="l00179"></a>00179 }
-<a name="l00180"></a>00180 
-<a name="l00185"></a><a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">00185</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">Matrix::rowCount</a>()<span class="keyword"> const</span>
-<a name="l00186"></a>00186 <span class="keyword"></span>{
-<a name="l00187"></a>00187         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00188"></a>00188 }
-<a name="l00189"></a>00189 
-<a name="l00194"></a><a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">00194</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">Matrix::colCount</a>()<span class="keyword"> const</span>
-<a name="l00195"></a>00195 <span class="keyword"></span>{
-<a name="l00196"></a>00196         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
-<a name="l00197"></a>00197 }
-<a name="l00198"></a>00198 
-<a name="l00202"></a><a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">00202</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">Matrix::assign</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)
-<a name="l00203"></a>00203 {
-<a name="l00204"></a>00204         <span class="keywordflow">if</span> (j&gt;=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> || j&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to assign value to a non-existent column&quot;</span>);
-<a name="l00205"></a>00205         <span class="keywordflow">if</span> (i&gt;=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> || i&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to assign value to a non-existent row&quot;</span>);
-<a name="l00206"></a>00206         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, val);
-<a name="l00207"></a>00207         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
-<a name="l00208"></a>00208 }
-<a name="l00209"></a>00209 
-<a name="l00214"></a><a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">00214</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">Matrix::update</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)
-<a name="l00215"></a>00215 {
-<a name="l00216"></a>00216         <span class="keywordflow">if</span> (j&gt;=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> || j&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to write value to a non-existent column&quot;</span>);
-<a name="l00217"></a>00217         <span class="keywordflow">if</span> (i&gt;=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> || i&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to write value to a non-existent row&quot;</span>);
-<a name="l00218"></a>00218         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = val;
-<a name="l00219"></a>00219         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
-<a name="l00220"></a>00220 }
+<a name="l00144"></a>00144                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols];
+<a name="l00145"></a>00145                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; k++)
+<a name="l00146"></a>00146                 {
+<a name="l00147"></a>00147                         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[k] = a[k];
+<a name="l00148"></a>00148                         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">false</span>;
+<a name="l00149"></a>00149                         <span class="keywordtype">int</span> j = k/<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00150"></a>00150                         <span class="keywordtype">int</span> i = k%<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00151"></a>00151                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, a[k]);
+<a name="l00152"></a>00152                 }
+<a name="l00153"></a>00153         }
+<a name="l00154"></a>00154         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (major==<a class="code" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485a1cbae099145298f98cb3155fd2ce95b2">ROW_MAJOR</a>)
+<a name="l00155"></a>00155         {
+<a name="l00156"></a>00156                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[0]; <span class="comment">// will fill in later when needed</span>
+<a name="l00157"></a>00157                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; k++)
+<a name="l00158"></a>00158                 {
+<a name="l00159"></a>00159                         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
+<a name="l00160"></a>00160                         <span class="keywordtype">int</span> i = k/numCols;
+<a name="l00161"></a>00161                         <span class="keywordtype">int</span> j = k%numCols;
+<a name="l00162"></a>00162                         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, a[k]);
+<a name="l00163"></a>00163                 }
+<a name="l00164"></a>00164         }
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166 }
+<a name="l00167"></a>00167 
+<a name="l00171"></a><a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">00171</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">Matrix::getValue</a>(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)<span class="keyword"> const</span>
+<a name="l00172"></a>00172 <span class="keyword"></span>{
+<a name="l00173"></a>00173         std::vector&lt;double&gt; col = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j];
+<a name="l00174"></a>00174         <span class="keywordflow">return</span> col[i];
+<a name="l00175"></a>00175 }
+<a name="l00176"></a>00176 
+<a name="l00181"></a><a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">00181</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">Matrix::rowCount</a>()<span class="keyword"> const</span>
+<a name="l00182"></a>00182 <span class="keyword"></span>{
+<a name="l00183"></a>00183         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00184"></a>00184 }
+<a name="l00185"></a>00185 
+<a name="l00190"></a><a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">00190</a> <span class="keywordtype">int</span> <a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">Matrix::colCount</a>()<span class="keyword"> const</span>
+<a name="l00191"></a>00191 <span class="keyword"></span>{
+<a name="l00192"></a>00192         <span class="keywordflow">return</span> <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
+<a name="l00193"></a>00193 }
+<a name="l00194"></a>00194 
+<a name="l00198"></a><a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">00198</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">Matrix::assign</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)
+<a name="l00199"></a>00199 {
+<a name="l00200"></a>00200         <span class="keywordflow">if</span> (j&gt;=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> || j&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to assign value to a non-existent column&quot;</span>);
+<a name="l00201"></a>00201         <span class="keywordflow">if</span> (i&gt;=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> || i&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to assign value to a non-existent row&quot;</span>);
+<a name="l00202"></a>00202         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].insert(<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j].begin() + i, val);
+<a name="l00203"></a>00203         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00210"></a><a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">00210</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">Matrix::update</a>(<span class="keywordtype">double</span> val, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j)
+<a name="l00211"></a>00211 {
+<a name="l00212"></a>00212         <span class="keywordflow">if</span> (j&gt;=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a> || j&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to write value to a non-existent column&quot;</span>);
+<a name="l00213"></a>00213         <span class="keywordflow">if</span> (i&gt;=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a> || i&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempt to write value to a non-existent row&quot;</span>);
+<a name="l00214"></a>00214         <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = val;
+<a name="l00215"></a>00215         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
+<a name="l00216"></a>00216 }
+<a name="l00217"></a>00217 
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220 
 <a name="l00221"></a>00221 
-<a name="l00222"></a>00222 
-<a name="l00223"></a>00223 
-<a name="l00224"></a>00224 
-<a name="l00225"></a>00225 
-<a name="l00232"></a>00232 <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">Matrix::insertRow</a>(<span class="keywordtype">double</span> row[], <span class="keywordtype">int</span> rowSize, <span class="keywordtype">int</span> rowNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
-<a name="l00233"></a>00233 {
-<a name="l00234"></a>00234         <span class="keywordflow">if</span> (rowNum&gt;numRows)
+<a name="l00228"></a>00228 <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">Matrix::insertRow</a>(<span class="keywordtype">double</span> row[], <span class="keywordtype">int</span> rowSize, <span class="keywordtype">int</span> rowNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
+<a name="l00229"></a>00229 {
+<a name="l00230"></a>00230         <span class="keywordflow">if</span> (rowNum&gt;numRows)
+<a name="l00231"></a>00231         {
+<a name="l00232"></a>00232                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a row without inserting prior rows is not supported.&quot;</span>); <span class="comment">// shouldn&apos;t be skipping rows</span>
+<a name="l00233"></a>00233         }
+<a name="l00234"></a>00234         <span class="keywordflow">if</span> (rowNum&lt;0)
 <a name="l00235"></a>00235         {
-<a name="l00236"></a>00236                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a row without inserting prior rows is not supported.&quot;</span>); <span class="comment">// shouldn&apos;t be skipping rows</span>
+<a name="l00236"></a>00236                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a row without inserting successive rows is not supported.&quot;</span>);
 <a name="l00237"></a>00237         }
-<a name="l00238"></a>00238         <span class="keywordflow">if</span> (rowNum&lt;0)
+<a name="l00238"></a>00238         <span class="keywordflow">if</span> ((numCols &gt; 0) &amp;&amp; (rowSize!=numCols))
 <a name="l00239"></a>00239         {
-<a name="l00240"></a>00240                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a row without inserting successive rows is not supported.&quot;</span>);
+<a name="l00240"></a>00240                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempted to insert row whose size does not match current number of columns in matrix.&quot;</span>);
 <a name="l00241"></a>00241         }
-<a name="l00242"></a>00242         <span class="keywordflow">if</span> ((numCols &gt; 0) &amp;&amp; (rowSize!=numCols))
-<a name="l00243"></a>00243         {
-<a name="l00244"></a>00244                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempted to insert row whose size does not match current number of columns in matrix.&quot;</span>);
-<a name="l00245"></a>00245         }
-<a name="l00246"></a>00246 
-<a name="l00247"></a>00247         <span class="keywordflow">if</span> (numCols == 0)
-<a name="l00248"></a>00248         {
-<a name="l00249"></a>00249                 <span class="comment">// need to first create empty column entries</span>
-<a name="l00250"></a>00250                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; rowSize; i++)
-<a name="l00251"></a>00251                 {
-<a name="l00252"></a>00252                         columns.push_back(std::vector&lt;double&gt;());
-<a name="l00253"></a>00253                 }
-<a name="l00254"></a>00254                 numCols = rowSize;
-<a name="l00255"></a>00255         }
-<a name="l00256"></a>00256         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rowSize; i++)
-<a name="l00257"></a>00257         {
-<a name="l00258"></a>00258 
-<a name="l00259"></a>00259                 std::vector&lt;double&gt; &amp; col = columns[i];
-<a name="l00260"></a>00260                 std::vector&lt;double&gt;::iterator iter = col.begin();
-<a name="l00261"></a>00261                 col.insert(iter+rowNum, row[i]);
-<a name="l00262"></a>00262         }
-<a name="l00263"></a>00263         numRows++;
-<a name="l00264"></a>00264         changed = <span class="keyword">true</span>;
-<a name="l00265"></a>00265         
-<a name="l00266"></a>00266 }
-<a name="l00267"></a>00267         
-<a name="l00275"></a>00275 <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">Matrix::insertColumn</a>(<span class="keywordtype">double</span> col[], <span class="keywordtype">int</span> colSize, <span class="keywordtype">int</span> colNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
-<a name="l00276"></a>00276 {
-<a name="l00277"></a>00277         <span class="keywordflow">if</span> (colNum&gt;numCols)
+<a name="l00242"></a>00242 
+<a name="l00243"></a>00243         <span class="keywordflow">if</span> (numCols == 0)
+<a name="l00244"></a>00244         {
+<a name="l00245"></a>00245                 <span class="comment">// need to first create empty column entries</span>
+<a name="l00246"></a>00246                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; rowSize; i++)
+<a name="l00247"></a>00247                 {
+<a name="l00248"></a>00248                         columns.push_back(std::vector&lt;double&gt;());
+<a name="l00249"></a>00249                 }
+<a name="l00250"></a>00250                 numCols = rowSize;
+<a name="l00251"></a>00251         }
+<a name="l00252"></a>00252         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rowSize; i++)
+<a name="l00253"></a>00253         {
+<a name="l00254"></a>00254 
+<a name="l00255"></a>00255                 std::vector&lt;double&gt; &amp; col = columns[i];
+<a name="l00256"></a>00256                 std::vector&lt;double&gt;::iterator iter = col.begin();
+<a name="l00257"></a>00257                 col.insert(iter+rowNum, row[i]);
+<a name="l00258"></a>00258         }
+<a name="l00259"></a>00259         numRows++;
+<a name="l00260"></a>00260         changed = <span class="keyword">true</span>;
+<a name="l00261"></a>00261         
+<a name="l00262"></a>00262 }
+<a name="l00263"></a>00263         
+<a name="l00271"></a>00271 <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">Matrix::insertColumn</a>(<span class="keywordtype">double</span> col[], <span class="keywordtype">int</span> colSize, <span class="keywordtype">int</span> colNum) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
+<a name="l00272"></a>00272 {
+<a name="l00273"></a>00273         <span class="keywordflow">if</span> (colNum&gt;numCols)
+<a name="l00274"></a>00274         {
+<a name="l00275"></a>00275                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a column without inserting prior columns is not supported.&quot;</span>); <span class="comment">// shouldn&apos;t be skipping cols</span>
+<a name="l00276"></a>00276         }
+<a name="l00277"></a>00277         <span class="keywordflow">if</span> (colNum&lt;0)
 <a name="l00278"></a>00278         {
-<a name="l00279"></a>00279                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a column without inserting prior columns is not supported.&quot;</span>); <span class="comment">// shouldn&apos;t be skipping cols</span>
+<a name="l00279"></a>00279                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a column without inserting successive columns is not supported.&quot;</span>);
 <a name="l00280"></a>00280         }
-<a name="l00281"></a>00281         <span class="keywordflow">if</span> (colNum&lt;0)
+<a name="l00281"></a>00281         <span class="keywordflow">if</span> ((numRows &gt; 0) &amp;&amp; (colSize!=numRows))
 <a name="l00282"></a>00282         {
-<a name="l00283"></a>00283                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: inserting a column without inserting successive columns is not supported.&quot;</span>);
+<a name="l00283"></a>00283                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempted to insert a column whose size doesn&apos;t match current number of rows in matrix&quot;</span>);
 <a name="l00284"></a>00284         }
-<a name="l00285"></a>00285         <span class="keywordflow">if</span> ((numRows &gt; 0) &amp;&amp; (colSize!=numRows))
-<a name="l00286"></a>00286         {
-<a name="l00287"></a>00287                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: attempted to insert a column whose size doesn&apos;t match current number of rows in matrix&quot;</span>);
-<a name="l00288"></a>00288         }
-<a name="l00289"></a>00289 
-<a name="l00290"></a>00290         <span class="keywordflow">if</span> (numRows==0) numRows = colSize;
-<a name="l00291"></a>00291         std::vector&lt;double&gt; newCol(col, col+colSize);
-<a name="l00292"></a>00292         columns.insert(columns.begin() + colNum, newCol);
-<a name="l00293"></a>00293         
-<a name="l00294"></a>00294         numCols++;
-<a name="l00295"></a>00295         changed = <span class="keyword">true</span>;
-<a name="l00296"></a>00296 }
-<a name="l00297"></a>00297 
-<a name="l00303"></a><a class="code" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">00303</a> std::vector&lt;double&gt; <a class="code" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">Matrix::getCopyOfRow</a>(<span class="keywordtype">int</span> rowOffset) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
-<a name="l00304"></a>00304 {
-<a name="l00305"></a>00305         <span class="keywordflow">if</span> (rowOffset&lt;0 || rowOffset &gt; numRows)
-<a name="l00306"></a>00306                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: attempted to get copy of non-existent row&quot;</span>);
-<a name="l00307"></a>00307         std::vector&lt;double&gt; row;
-<a name="l00308"></a>00308         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;numCols; j++)
-<a name="l00309"></a>00309                 row.push_back(columns[j][rowOffset]);
-<a name="l00310"></a>00310         <span class="keywordflow">return</span> row;
-<a name="l00311"></a>00311 }
-<a name="l00312"></a>00312 
-<a name="l00318"></a><a class="code" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">00318</a> std::vector&lt;double&gt; <a class="code" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">Matrix::getCopyOfColumn</a>(<span class="keywordtype">int</span> colOffset) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
-<a name="l00319"></a>00319 {
-<a name="l00320"></a>00320         <span class="keywordflow">if</span> (colOffset&lt;0 || colOffset &gt; numCols)
-<a name="l00321"></a>00321                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: attempted to get copy of non-existent column&quot;</span>);
-<a name="l00322"></a>00322         std::vector&lt;double&gt; col;
-<a name="l00323"></a>00323         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numRows; i++)
-<a name="l00324"></a>00324         {
-<a name="l00325"></a>00325                 col.push_back(columns[colOffset][i]);
-<a name="l00326"></a>00326                 <span class="comment">//printf(&quot;%f &quot;, columns[colOffset][i]);</span>
-<a name="l00327"></a>00327         }
-<a name="l00328"></a>00328         fflush(stdout);
-<a name="l00329"></a>00329         <span class="keywordflow">return</span> col;
-<a name="l00330"></a>00330 }
-<a name="l00331"></a>00331 
+<a name="l00285"></a>00285 
+<a name="l00286"></a>00286         <span class="keywordflow">if</span> (numRows==0) numRows = colSize;
+<a name="l00287"></a>00287         std::vector&lt;double&gt; newCol(col, col+colSize);
+<a name="l00288"></a>00288         columns.insert(columns.begin() + colNum, newCol);
+<a name="l00289"></a>00289         
+<a name="l00290"></a>00290         numCols++;
+<a name="l00291"></a>00291         changed = <span class="keyword">true</span>;
+<a name="l00292"></a>00292 }
+<a name="l00293"></a>00293 
+<a name="l00294"></a>00294 
+<a name="l00299"></a><a class="code" href="classMatrix.html#abd2a6ee4f3314c88ea6c623a90cb3933">00299</a> std::vector&lt;double&gt; &amp; <a class="code" href="classMatrix.html#abd2a6ee4f3314c88ea6c623a90cb3933">Matrix::getCopyOfRow</a>(<span class="keywordtype">int</span> rowOffset,std::vector&lt;double&gt; &amp; vec) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
+<a name="l00300"></a>00300 {
+<a name="l00301"></a>00301         <span class="keywordflow">if</span> (rowOffset&lt;0 || rowOffset &gt; numRows)
+<a name="l00302"></a>00302                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: attempted to get copy of non-existent row&quot;</span>);
+<a name="l00303"></a>00303 
+<a name="l00304"></a>00304         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;numCols; j++)
+<a name="l00305"></a>00305                 vec.push_back(columns[j][rowOffset]);
+<a name="l00306"></a>00306         <span class="keywordflow">return</span> vec;
+<a name="l00307"></a>00307 }
+<a name="l00308"></a>00308 
+<a name="l00313"></a><a class="code" href="classMatrix.html#ad412c750b3a123d41aa9046fe396dc40">00313</a> std::vector&lt;double&gt; &amp; <a class="code" href="classMatrix.html#ad412c750b3a123d41aa9046fe396dc40">Matrix::getCopyOfColumn</a>(<span class="keywordtype">int</span> colOffset, std::vector&lt;double&gt; &amp; vec) <span class="keywordflow">throw</span> (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
+<a name="l00314"></a>00314 {
+<a name="l00315"></a>00315         <span class="keywordflow">if</span> (colOffset&lt;0 || colOffset &gt; numCols)
+<a name="l00316"></a>00316                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: attempted to get copy of non-existent column&quot;</span>);
+<a name="l00317"></a>00317 
+<a name="l00318"></a>00318         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numRows; i++)
+<a name="l00319"></a>00319         {
+<a name="l00320"></a>00320                 vec.push_back(columns[colOffset][i]);
+<a name="l00321"></a>00321         }
+<a name="l00322"></a>00322         <span class="keywordflow">return</span> vec;
+<a name="l00323"></a>00323 }
+<a name="l00324"></a>00324 
+<a name="l00325"></a>00325 
+<a name="l00326"></a>00326 <span class="comment">// this is only used as a dummy function for LAPACK</span>
+<a name="l00327"></a><a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">00327</a> lapack_logical <a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a>(<span class="keyword">const</span> <span class="keywordtype">double</span>* a, <span class="keyword">const</span> <span class="keywordtype">double</span>* b)
+<a name="l00328"></a>00328 {
+<a name="l00329"></a>00329         <span class="keywordflow">if</span> (*a&lt;=*b) <span class="keywordflow">return</span> 1;
+<a name="l00330"></a>00330         <span class="keywordflow">else</span> <span class="keywordflow">return</span> 0;
+<a name="l00331"></a>00331 }
 <a name="l00332"></a>00332 
-<a name="l00333"></a>00333 <span class="comment">// this is only used as a dummy function for LAPACK</span>
-<a name="l00334"></a><a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">00334</a> lapack_logical <a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a>(<span class="keyword">const</span> <span class="keywordtype">double</span>* a, <span class="keyword">const</span> <span class="keywordtype">double</span>* b)
-<a name="l00335"></a>00335 {
-<a name="l00336"></a>00336         <span class="keywordflow">if</span> (*a&lt;=*b) <span class="keywordflow">return</span> 1;
-<a name="l00337"></a>00337         <span class="keywordflow">else</span> <span class="keywordflow">return</span> 0;
-<a name="l00338"></a>00338 }
-<a name="l00339"></a>00339 
+<a name="l00333"></a>00333 
+<a name="l00338"></a><a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">00338</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">Matrix::det</a>() throw (<a class="code" href="classLapackError.html" title="Exception thrown when there is an error in a call through lapacke */.">LapackError</a>, <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
+<a name="l00339"></a>00339 {
 <a name="l00340"></a>00340 
-<a name="l00345"></a><a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">00345</a> <span class="keywordtype">double</span> <a class="code" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">Matrix::det</a>() throw (<a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>, <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>)
-<a name="l00346"></a>00346 {
-<a name="l00347"></a>00347 
-<a name="l00348"></a>00348 <span class="preprocessor">#ifdef _OPENMP</span>
-<a name="l00349"></a>00349 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
-<a name="l00350"></a>00350 {
-<a name="l00351"></a>00351         cout &lt;&lt; <span class="stringliteral">&quot;det: hi from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
-<a name="l00352"></a>00352 }
-<a name="l00353"></a>00353 <span class="preprocessor">#endif</span>
-<a name="l00354"></a>00354 <span class="preprocessor"></span>
-<a name="l00355"></a>00355         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>) <span class="keywordflow">throw</span> SizeError((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Attempt to compute determinant of a non-square matrix&quot;</span>);
-<a name="l00356"></a>00356         <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>(); <span class="comment">// update column-major array representation of the matrix, to include any recent changes</span>
-<a name="l00357"></a>00357         <span class="keywordtype">char</span> JOBVS = <span class="charliteral">&apos;N&apos;</span>; <span class="comment">// don&apos;t need Schur vectors</span>
-<a name="l00358"></a>00358         <span class="keywordtype">char</span> SORT =<span class="charliteral">&apos;N&apos;</span>; <span class="comment">// don&apos;t need eigenvalues ordered</span>
-<a name="l00359"></a>00359         LAPACK_D_SELECT2 SELECT= &amp;<a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a>;   <span class="comment">// not referenced if SORT == &apos;N&apos;</span>
-<a name="l00360"></a>00360         lapack_int N=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; 
-<a name="l00361"></a>00361         <span class="comment">// make a copy of entries, as LAPACK will overwrite</span>
-<a name="l00362"></a>00362         <span class="keywordtype">double</span>* A = <span class="keyword">new</span> <span class="keywordtype">double</span>[N*N];
-<a name="l00363"></a>00363         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;N*N; i++)
-<a name="l00364"></a>00364         {
-<a name="l00365"></a>00365                 A[i] = <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[i];
-<a name="l00366"></a>00366         }
-<a name="l00367"></a>00367         <span class="keywordtype">int</span> LDA=N;
-<a name="l00368"></a>00368         lapack_int SDIM; <span class="comment">// output</span>
-<a name="l00369"></a>00369         <span class="keywordtype">double</span> *WR, *WI, *VS; <span class="comment">// output (VS should not be referenced if JOBVS ==&apos;N&apos;)</span>
-<a name="l00370"></a>00370         lapack_int LDVS=1; <span class="comment">// leading dimension for VS; not used</span>
-<a name="l00371"></a>00371 
-<a name="l00372"></a>00372         WR= <span class="keyword">new</span> <span class="keywordtype">double</span>[N]; <span class="comment">// will be filled with the real part of eigenvalues</span>
-<a name="l00373"></a>00373         WI= <span class="keyword">new</span> <span class="keywordtype">double</span>[N]; <span class="comment">// will be filled with the imaginary part of eigenvalues</span>
-<a name="l00374"></a>00374         VS = <span class="keyword">new</span> <span class="keywordtype">double</span>[N];<span class="comment">// shouldn&apos;t have to do this</span>
+<a name="l00341"></a>00341 <span class="preprocessor">#ifdef _OPENMP</span>
+<a name="l00342"></a>00342 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
+<a name="l00343"></a>00343 {
+<a name="l00344"></a>00344         cout &lt;&lt; <span class="stringliteral">&quot;det: hi from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
+<a name="l00345"></a>00345 }
+<a name="l00346"></a>00346 <span class="preprocessor">#endif</span>
+<a name="l00347"></a>00347 <span class="preprocessor"></span>
+<a name="l00348"></a>00348         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>) <span class="keywordflow">throw</span> SizeError((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Attempt to compute determinant of a non-square matrix&quot;</span>);
+<a name="l00349"></a>00349         <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>(); <span class="comment">// update column-major array representation of the matrix, to include any recent changes</span>
+<a name="l00350"></a>00350         <span class="keywordtype">char</span> JOBVS = <span class="charliteral">&apos;N&apos;</span>; <span class="comment">// don&apos;t need Schur vectors</span>
+<a name="l00351"></a>00351         <span class="keywordtype">char</span> SORT =<span class="charliteral">&apos;N&apos;</span>; <span class="comment">// don&apos;t need eigenvalues ordered</span>
+<a name="l00352"></a>00352         LAPACK_D_SELECT2 SELECT= &amp;<a class="code" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a>;   <span class="comment">// not referenced if SORT == &apos;N&apos;</span>
+<a name="l00353"></a>00353         lapack_int N=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; 
+<a name="l00354"></a>00354         <span class="comment">// make a copy of entries, as LAPACK will overwrite</span>
+<a name="l00355"></a>00355         <span class="keywordtype">double</span>* A = <span class="keyword">new</span> <span class="keywordtype">double</span>[N*N];
+<a name="l00356"></a>00356         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;N*N; i++)
+<a name="l00357"></a>00357         {
+<a name="l00358"></a>00358                 A[i] = <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[i];
+<a name="l00359"></a>00359         }
+<a name="l00360"></a>00360         <span class="keywordtype">int</span> LDA=N;
+<a name="l00361"></a>00361         lapack_int SDIM; <span class="comment">// output</span>
+<a name="l00362"></a>00362         <span class="keywordtype">double</span> *WR, *WI, *VS; <span class="comment">// output (VS should not be referenced if JOBVS ==&apos;N&apos;)</span>
+<a name="l00363"></a>00363         lapack_int LDVS=1; <span class="comment">// leading dimension for VS; not used</span>
+<a name="l00364"></a>00364 
+<a name="l00365"></a>00365         WR= <span class="keyword">new</span> <span class="keywordtype">double</span>[N]; <span class="comment">// will be filled with the real part of eigenvalues</span>
+<a name="l00366"></a>00366         WI= <span class="keyword">new</span> <span class="keywordtype">double</span>[N]; <span class="comment">// will be filled with the imaginary part of eigenvalues</span>
+<a name="l00367"></a>00367         VS = <span class="keyword">new</span> <span class="keywordtype">double</span>[N];<span class="comment">// shouldn&apos;t have to do this</span>
+<a name="l00368"></a>00368 
+<a name="l00369"></a>00369 
+<a name="l00370"></a>00370         <span class="comment">// get the eigenvalues from LAPACKE</span>
+<a name="l00371"></a>00371         <span class="keywordtype">int</span> code = LAPACKE_dgees(LAPACK_COL_MAJOR, JOBVS, SORT, SELECT, N, A, LDA, &amp;SDIM, WR, WI, VS, LDVS);
+<a name="l00372"></a>00372         <span class="keywordflow">if</span> (code!=0) {<span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;failed to get eigenvalues through LAPACKE_dgees&quot;</span>);}
+<a name="l00373"></a>00373 
+<a name="l00374"></a>00374         <span class="comment">// now WR holds the real portion of our eigenvalues, WI the imaginary portion</span>
 <a name="l00375"></a>00375 
-<a name="l00376"></a>00376 
-<a name="l00377"></a>00377         <span class="comment">// get the eigenvalues from LAPACKE</span>
-<a name="l00378"></a>00378         <span class="keywordtype">int</span> code = LAPACKE_dgees(LAPACK_COL_MAJOR, JOBVS, SORT, SELECT, N, A, LDA, &amp;SDIM, WR, WI, VS, LDVS);
-<a name="l00379"></a>00379         <span class="keywordflow">if</span> (code!=0) {<span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;failed to get eigenvalues through LAPACKE_dgees&quot;</span>);}
-<a name="l00380"></a>00380 
-<a name="l00381"></a>00381         <span class="comment">// now WR holds the real portion of our eigenvalues, WI the imaginary portion</span>
-<a name="l00382"></a>00382 
-<a name="l00383"></a>00383         <span class="comment">// multiply the eigenvalues</span>
-<a name="l00384"></a>00384         <span class="keywordtype">double</span> prodR=WR[0]; <span class="comment">//real part</span>
-<a name="l00385"></a>00385         <span class="keywordtype">double</span> prodI=WI[0]; <span class="comment">// imaginary part </span>
-<a name="l00386"></a>00386         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=1; i&lt;N; i++)
-<a name="l00387"></a>00387         {
-<a name="l00388"></a>00388                 <span class="keywordtype">double</span> re = prodR*WR[i] - prodI*WI[i];
-<a name="l00389"></a>00389                 <span class="keywordtype">double</span> im = prodR*WI[i] + prodI*WR[i];
-<a name="l00390"></a>00390                 prodR =re;
-<a name="l00391"></a>00391                 prodI =im;
-<a name="l00392"></a>00392         }
-<a name="l00393"></a>00393         <span class="comment">// clean up</span>
-<a name="l00394"></a>00394         <span class="keyword">delete</span>[] A;
-<a name="l00395"></a>00395         <span class="keyword">delete</span>[] WR;
-<a name="l00396"></a>00396         <span class="keyword">delete</span>[] WI;
-<a name="l00397"></a>00397         <span class="keyword">delete</span>[] VS;
-<a name="l00398"></a>00398 
-<a name="l00399"></a>00399 <span class="preprocessor">#ifdef _OPENMP</span>
-<a name="l00400"></a>00400 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
-<a name="l00401"></a>00401 {
-<a name="l00402"></a>00402         cout &lt;&lt; <span class="stringliteral">&quot;det: bye from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
-<a name="l00403"></a>00403 }
-<a name="l00404"></a>00404 <span class="preprocessor">#endif</span>
-<a name="l00405"></a>00405 <span class="preprocessor"></span>
-<a name="l00406"></a>00406         <span class="keywordflow">return</span> prodR; <span class="comment">// prodI will always be 0 (complex eigenvalues will be complex conjugates)</span>
-<a name="l00407"></a>00407 }
-<a name="l00408"></a>00408 
-<a name="l00409"></a>00409 
-<a name="l00410"></a>00410 
-<a name="l00416"></a><a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">00416</a> <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)<span class="keyword"> const</span>
-<a name="l00417"></a>00417 <span class="keyword"></span>{
-<a name="l00418"></a>00418         
-<a name="l00419"></a>00419         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>()) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to multiply matrices with mismatched sizes&quot;</span>);
-<a name="l00420"></a>00420         <span class="keywordtype">int</span> cols1 = <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
-<a name="l00421"></a>00421         <span class="keywordtype">int</span> rows2 = cols1;
-<a name="l00422"></a>00422         <span class="keywordtype">int</span> rows1 = <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00423"></a>00423         <span class="keywordtype">int</span> cols2 = B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>();
-<a name="l00424"></a>00424         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[rows1*cols2];
-<a name="l00425"></a>00425         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
-<a name="l00426"></a>00426         {
-<a name="l00427"></a>00427                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;cols2; j++)
-<a name="l00428"></a>00428                 {
-<a name="l00429"></a>00429                         <span class="keywordtype">double</span> sum=0;
-<a name="l00430"></a>00430                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt;cols1; k++)
-<a name="l00431"></a>00431                         {
-<a name="l00432"></a>00432                                 sum+=<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i, k)*B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(k, j);
-<a name="l00433"></a>00433                         }       
-<a name="l00434"></a>00434                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, rows1)] = sum;
-<a name="l00435"></a>00435                 }
-<a name="l00436"></a>00436         }
-<a name="l00437"></a>00437         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, rows1, cols2));
-<a name="l00438"></a>00438         <span class="keyword">delete</span>[] result;
-<a name="l00439"></a>00439         <span class="keywordflow">return</span> R;
-<a name="l00440"></a>00440 }
-<a name="l00441"></a>00441 
-<a name="l00444"></a><a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">00444</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">Matrix::subtract</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)
-<a name="l00445"></a>00445 {
-<a name="l00446"></a>00446         <span class="keywordflow">if</span> ( (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>())|| (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>()) ) 
-<a name="l00447"></a>00447                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to subtract matrices with mismatched sizes&quot;</span>);
-<a name="l00448"></a>00448         <span class="keywordtype">double</span> * result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
-<a name="l00449"></a>00449         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
-<a name="l00450"></a>00450                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
-<a name="l00451"></a>00451                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numRows)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j) - B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j);
-<a name="l00452"></a>00452         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, numRows, numCols));
-<a name="l00453"></a>00453         <span class="keyword">delete</span>[] result;
-<a name="l00454"></a>00454         <span class="keywordflow">return</span> R;
-<a name="l00455"></a>00455 }
-<a name="l00456"></a>00456 
-<a name="l00457"></a>00457 
-<a name="l00461"></a><a class="code" href="classMatrix.html#a570ac6a4c79cca24589b667a5cfe8ae1">00461</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[])
-<a name="l00462"></a>00462 {
-<a name="l00463"></a>00463         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
-<a name="l00464"></a>00464         {
-<a name="l00465"></a>00465                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;cols2; j++)
-<a name="l00466"></a>00466                 {
-<a name="l00467"></a>00467                         <span class="keywordtype">double</span> sum=0;
-<a name="l00468"></a>00468                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt;cols1; k++)
-<a name="l00469"></a>00469                         {
-<a name="l00470"></a>00470                                 sum+=A[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, k, rows1)]*B[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(k, j, cols1)];
-<a name="l00471"></a>00471                         }       
-<a name="l00472"></a>00472                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, rows1)] = sum;
-<a name="l00473"></a>00473                 }
-<a name="l00474"></a>00474         }
-<a name="l00475"></a>00475 }
-<a name="l00476"></a>00476 
-<a name="l00477"></a>00477 
-<a name="l00478"></a>00478 
-<a name="l00484"></a><a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">00484</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">Matrix::covar</a>()
-<a name="l00485"></a>00485 {
-<a name="l00486"></a>00486         <span class="keywordtype">double</span>* ones = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
-<a name="l00487"></a>00487         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; i++)
-<a name="l00488"></a>00488                 ones[i] =1.0/numCols;
-<a name="l00489"></a>00489         
-<a name="l00490"></a>00490         <span class="keywordtype">double</span>* matrixArrayT = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols]; <span class="comment">// transpose of Matrix</span>
-<a name="l00491"></a>00491         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numCols; i++)
-<a name="l00492"></a>00492         {
-<a name="l00493"></a>00493                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; j++)
-<a name="l00494"></a>00494                 {
-<a name="l00495"></a>00495                         matrixArrayT[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(j, i);
-<a name="l00496"></a>00496                 }
-<a name="l00497"></a>00497         }
-<a name="l00498"></a>00498         <span class="keywordtype">double</span>* m = <span class="keyword">new</span> <span class="keywordtype">double</span>[numCols*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
-<a name="l00499"></a>00499 
-<a name="l00500"></a>00500         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(ones, matrixArrayT,  numCols, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, m);
-<a name="l00501"></a>00501 
-<a name="l00502"></a>00502         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; i++)
-<a name="l00503"></a>00503         {
-<a name="l00504"></a>00504                 m[i] = matrixArrayT[i] - m[i];
-<a name="l00505"></a>00505         }
-<a name="l00506"></a>00506         <span class="keyword">delete</span>[] ones;
-<a name="l00507"></a>00507         <span class="keyword">delete</span>[] matrixArrayT;
-<a name="l00508"></a>00508         <span class="comment">// m is now the deviation matrix</span>
-<a name="l00509"></a>00509         <span class="comment">//compute m&apos;*m /n</span>
-<a name="l00510"></a>00510         <span class="keywordtype">double</span>* mTrans = <span class="keyword">new</span> <span class="keywordtype">double</span>[numCols*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
-<a name="l00511"></a>00511         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numCols; i++)
-<a name="l00512"></a>00512         {
-<a name="l00513"></a>00513                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; j++)
-<a name="l00514"></a>00514                 {
-<a name="l00515"></a>00515                         mTrans[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = m[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(j, i, numRows)];
-<a name="l00516"></a>00516                 }
-<a name="l00517"></a>00517         }
-<a name="l00518"></a>00518         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
-<a name="l00519"></a>00519         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(mTrans, m, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, result);
-<a name="l00520"></a>00520         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
-<a name="l00521"></a>00521         {
-<a name="l00522"></a>00522                 result[i] = result[i]/(numRows-1);
-<a name="l00523"></a>00523         }
-<a name="l00524"></a>00524         
-<a name="l00525"></a>00525         <span class="keyword">delete</span>[] m;
-<a name="l00526"></a>00526         <span class="keyword">delete</span>[] mTrans;
-<a name="l00527"></a>00527         <a class="code" href="classMatrix.html">Matrix</a>&amp; ret = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, numRows, numRows));
-<a name="l00528"></a>00528         <span class="keyword">delete</span>[] result;
-<a name="l00529"></a>00529         <span class="keywordflow">return</span> ret;
-<a name="l00530"></a>00530 }
-<a name="l00531"></a>00531 
-<a name="l00536"></a><a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">00536</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">Matrix::inv</a>() throw (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>, <a class="code" href="classLapackError.html" title="class for returning errors when attempting an operation exclusive to nonsingular...">LapackError</a>)
-<a name="l00537"></a>00537 {
-<a name="l00538"></a>00538 <span class="preprocessor">#ifdef _OPENMP</span>
-<a name="l00539"></a>00539 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
-<a name="l00540"></a>00540 {
-<a name="l00541"></a>00541         cout &lt;&lt; <span class="stringliteral">&quot;inv: hi from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
-<a name="l00542"></a>00542 }
-<a name="l00543"></a>00543 <span class="preprocessor">#endif</span>
-<a name="l00544"></a>00544 <span class="preprocessor"></span>
-<a name="l00545"></a>00545         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>) <span class="keywordflow">throw</span> SizeError((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: tried to invert a non-square matrix&quot;</span>);
-<a name="l00546"></a>00546         <span class="keywordtype">int</span> dim = <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00547"></a>00547         <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>();
-<a name="l00548"></a>00548         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[dim*dim];
-<a name="l00549"></a>00549         <span class="comment">// copy matrixArray into result, as it&apos;s going to get overwritten </span>
-<a name="l00550"></a>00550         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;dim*dim; i++)
-<a name="l00551"></a>00551         {
-<a name="l00552"></a>00552                 result[i] = <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[i];
-<a name="l00553"></a>00553         }
-<a name="l00554"></a>00554         lapack_int lda=dim;
-<a name="l00555"></a>00555         lapack_int* ipiv = <span class="keyword">new</span> lapack_int[dim];
-<a name="l00556"></a>00556         <span class="comment">// put result in LU form</span>
-<a name="l00557"></a>00557         lapack_int code = LAPACKE_dgetrf(LAPACK_COL_MAJOR, dim, dim, result, lda, ipiv );
-<a name="l00558"></a>00558         <span class="keywordflow">if</span> (code!=0)
-<a name="l00559"></a>00559         {
-<a name="l00560"></a>00560                 <span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;ERROR in LU factorization in Matrix::inv&quot;</span>); 
-<a name="l00561"></a>00561         }
-<a name="l00562"></a>00562         <span class="comment">// use LU form to find inverse, put in result</span>
-<a name="l00563"></a>00563         code = LAPACKE_dgetri(LAPACK_COL_MAJOR, dim, result, lda, ipiv);
-<a name="l00564"></a>00564         <span class="keywordflow">if</span> (code!=0)
-<a name="l00565"></a>00565         {
-<a name="l00566"></a>00566                 <span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in inversion in Matrix::inv&quot;</span>); 
-<a name="l00567"></a>00567         }
-<a name="l00568"></a>00568         
-<a name="l00569"></a>00569         <span class="keyword">delete</span>[] ipiv;
-<a name="l00570"></a>00570         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, dim, dim));
-<a name="l00571"></a>00571         <span class="keyword">delete</span>[] result;
-<a name="l00572"></a>00572 <span class="preprocessor">#ifdef _OPENMP</span>
-<a name="l00573"></a>00573 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
-<a name="l00574"></a>00574         {
-<a name="l00575"></a>00575                 cout &lt;&lt; <span class="stringliteral">&quot;inv: bye from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
-<a name="l00576"></a>00576         }
-<a name="l00577"></a>00577 <span class="preprocessor">#endif</span>
-<a name="l00578"></a>00578 <span class="preprocessor"></span>        <span class="keywordflow">return</span> R;
-<a name="l00579"></a>00579 }
-<a name="l00580"></a>00580 
-<a name="l00587"></a><a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">00587</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">Matrix::add</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis)
-<a name="l00588"></a>00588 {
-<a name="l00589"></a>00589         <span class="keywordflow">if</span> (axis==0)
-<a name="l00590"></a>00590         {
-<a name="l00591"></a>00591                 <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=m){<span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in Matrix::add: row size doesn&apos;t match number of columns in matrix.&quot;</span>);}
-<a name="l00592"></a>00592                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// ith row</span>
-<a name="l00593"></a>00593                 {
-<a name="l00594"></a>00594                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// jth column</span>
-<a name="l00595"></a>00595                         {
-<a name="l00596"></a>00596                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] + vector[j];
-<a name="l00597"></a>00597                         }
-<a name="l00598"></a>00598                 }
-<a name="l00599"></a>00599         }
-<a name="l00600"></a>00600         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (axis==1)
-<a name="l00601"></a>00601         {
-<a name="l00602"></a>00602                 <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=m) {<span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in Matrix::add: column size doesn&apos;t match number of rows in matrix&quot;</span>);}
-<a name="l00603"></a>00603                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// jth column</span>
-<a name="l00604"></a>00604                 {       
-<a name="l00605"></a>00605                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// ith row</span>
-<a name="l00606"></a>00606                         {
-<a name="l00607"></a>00607                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] + vector[i]; 
-<a name="l00608"></a>00608                         }
-<a name="l00609"></a>00609                 }
-<a name="l00610"></a>00610         }
-<a name="l00611"></a>00611 }
-<a name="l00612"></a>00612 
-<a name="l00620"></a><a class="code" href="classMatrix.html#af79c73861d85304c15e10252d613f170">00620</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">Matrix::subtract</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis)
-<a name="l00621"></a>00621 {
-<a name="l00622"></a>00622         <span class="comment">// call add with negated vector</span>
-<a name="l00623"></a>00623 
-<a name="l00624"></a>00624         <span class="keywordtype">double</span>* neg = <span class="keyword">new</span> <span class="keywordtype">double</span>[m];
-<a name="l00625"></a>00625         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;m;i++)
-<a name="l00626"></a>00626         {
-<a name="l00627"></a>00627                 neg[i] = -1*vector[i];
-<a name="l00628"></a>00628         }
-<a name="l00629"></a>00629         <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">add</a>(neg, m, axis);
-<a name="l00630"></a>00630         <span class="keyword">delete</span>[] neg;
-<a name="l00631"></a>00631 }
-<a name="l00632"></a>00632 
-<a name="l00633"></a>00633 
-<a name="l00634"></a>00634 
-<a name="l00640"></a><a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">00640</a> <span class="keywordtype">double</span>* <a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">Matrix::average</a>(<span class="keywordtype">int</span> axis, <span class="keywordtype">double</span> *weights)
-<a name="l00641"></a>00641 {
-<a name="l00642"></a>00642         <span class="comment">// determine appropriate length for result and weights</span>
-<a name="l00643"></a>00643         <span class="keywordtype">int</span> wtlen=0,reslen=0;
-<a name="l00644"></a>00644         <span class="keywordflow">if</span> (axis==0) 
-<a name="l00645"></a>00645         {
-<a name="l00646"></a>00646                 wtlen=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; 
-<a name="l00647"></a>00647                 reslen=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00648"></a>00648         }
-<a name="l00649"></a>00649         <span class="keywordflow">else</span> 
-<a name="l00650"></a>00650         {
-<a name="l00651"></a>00651                 wtlen=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
-<a name="l00652"></a>00652                 reslen = <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
-<a name="l00653"></a>00653         }
-<a name="l00654"></a>00654         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[reslen];
-<a name="l00655"></a>00655         <span class="keywordtype">bool</span> allocated=<span class="keyword">false</span>;
-<a name="l00656"></a>00656         <span class="comment">// if weights are NULL, fill in equal weights</span>
-<a name="l00657"></a>00657         <span class="keywordflow">if</span> (weights==NULL)
-<a name="l00658"></a>00658         {
-<a name="l00659"></a>00659                 weights = <span class="keyword">new</span> <span class="keywordtype">double</span>[wtlen];
-<a name="l00660"></a>00660                 allocated = <span class="keyword">true</span>;
-<a name="l00661"></a>00661                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) weights[i] =1;
-<a name="l00662"></a>00662         }
-<a name="l00663"></a>00663         <span class="comment">// normalize weights so they sum to 1, in case caller didn&apos;t</span>
-<a name="l00664"></a>00664         <span class="keywordtype">double</span> wtSum=0;
-<a name="l00665"></a>00665         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) wtSum+=weights[i];
-<a name="l00666"></a>00666         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) weights[i] = weights[i]/wtSum;
-<a name="l00667"></a>00667 
-<a name="l00668"></a>00668         <span class="comment">// now do the weighted averaging</span>
-<a name="l00669"></a>00669         <span class="keywordflow">if</span> (axis==0) <span class="comment">//row by row</span>
-<a name="l00670"></a>00670         {
-<a name="l00671"></a>00671                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// row i</span>
-<a name="l00672"></a>00672                 {
-<a name="l00673"></a>00673                         <span class="keywordtype">double</span> sum=0;
-<a name="l00674"></a>00674                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// column j</span>
-<a name="l00675"></a>00675                         {
-<a name="l00676"></a>00676                                 <span class="comment">//printf(&quot;sum %f, adding %f *%f\n&quot;, sum, weights[j], columns[j][i]);</span>
-<a name="l00677"></a>00677                                 sum += weights[j]*<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
-<a name="l00678"></a>00678                         }
-<a name="l00679"></a>00679                         result[i] = sum;
-<a name="l00680"></a>00680                 }
-<a name="l00681"></a>00681         }
-<a name="l00682"></a>00682         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (axis==1) <span class="comment">// column by column</span>
-<a name="l00683"></a>00683         {
-<a name="l00684"></a>00684                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// column j</span>
-<a name="l00685"></a>00685                 {
-<a name="l00686"></a>00686                         <span class="keywordtype">double</span> sum=0;
-<a name="l00687"></a>00687                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// row i</span>
-<a name="l00688"></a>00688                         {
-<a name="l00689"></a>00689                                 sum+= weights[i]*<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
-<a name="l00690"></a>00690                         }
-<a name="l00691"></a>00691                         result[j] = sum;
-<a name="l00692"></a>00692                 }
-<a name="l00693"></a>00693         }
-<a name="l00694"></a>00694         <span class="keywordflow">if</span> (allocated) <span class="keyword">delete</span>[] weights; <span class="comment">// delete the weights only if they were created locally</span>
-<a name="l00695"></a>00695         <span class="keywordflow">return</span> result;
-<a name="l00696"></a>00696 }
-<a name="l00697"></a>00697 
-<a name="l00698"></a>00698 <span class="comment">// update the column-major array representation of matrix, in case the matrix has changed since it was last computed</span>
-<a name="l00699"></a><a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32">00699</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">Matrix::updateArray</a>() 
-<a name="l00700"></a>00700 {
-<a name="l00701"></a>00701         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>)
-<a name="l00702"></a>00702         {       
-<a name="l00703"></a>00703                 <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
-<a name="l00704"></a>00704                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
-<a name="l00705"></a>00705                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt; <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
-<a name="l00706"></a>00706                 {
-<a name="l00707"></a>00707                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
-<a name="l00708"></a>00708                         {
-<a name="l00709"></a>00709                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[j*numRows+i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
-<a name="l00710"></a>00710                         }
-<a name="l00711"></a>00711                 }
-<a name="l00712"></a>00712                 <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>=<span class="keyword">false</span>;
-<a name="l00713"></a>00713         }
-<a name="l00714"></a>00714 }
-<a name="l00715"></a>00715 
-<a name="l00719"></a><a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">00719</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">Matrix::print</a>()
-<a name="l00720"></a>00720 {
-<a name="l00721"></a>00721         printf(<span class="stringliteral">&quot;\n-----------MATRIX---------------------\n&quot;</span>);
-<a name="l00722"></a>00722         printf(<span class="stringliteral">&quot;%d rows, %d columns\n&quot;</span>, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>);
-<a name="l00723"></a>00723         printf(<span class="stringliteral">&quot;%d columns \n&quot;</span>, <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.size());
-<a name="l00724"></a>00724         fflush(stdout);
-<a name="l00725"></a>00725         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
-<a name="l00726"></a>00726         {
-<a name="l00727"></a>00727                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
-<a name="l00728"></a>00728                 {
-<a name="l00729"></a>00729                         printf(<span class="stringliteral">&quot; %f&quot;</span>, <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i]);
-<a name="l00730"></a>00730                 }
-<a name="l00731"></a>00731                 printf(<span class="stringliteral">&quot;\n&quot;</span>);
-<a name="l00732"></a>00732                 fflush(stdout);
-<a name="l00733"></a>00733         }
-<a name="l00734"></a>00734         printf(<span class="stringliteral">&quot;--------------------------------------\n&quot;</span>);
-<a name="l00735"></a>00735 }
-<a name="l00736"></a>00736 
-<a name="l00737"></a><a class="code" href="classMatrix.html#a9b1c3627f573d78a2f08623fdfef990f">00737</a> <a class="code" href="classMatrix.html#a9b1c3627f573d78a2f08623fdfef990f">Matrix::~Matrix</a>()
-<a name="l00738"></a>00738 {
-<a name="l00739"></a>00739         <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
-<a name="l00740"></a>00740 }
-<a name="l00741"></a>00741 
-<a name="l00742"></a><a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">00742</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">Matrix::clear</a>()
-<a name="l00743"></a>00743 {
-<a name="l00744"></a>00744 
-<a name="l00745"></a>00745         this-&gt;<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.clear();
-<a name="l00746"></a>00746 
-<a name="l00747"></a>00747         <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
-<a name="l00748"></a>00748         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[0];
-<a name="l00749"></a>00749         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
-<a name="l00750"></a>00750         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>=0;
-<a name="l00751"></a>00751         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>=0;
-<a name="l00752"></a>00752 }
-<a name="l00753"></a>00753 <span class="comment">// find row i and column j corresponding to array index k in column major array format</span>
-<a name="l00754"></a><a class="code" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">00754</a> <span class="keywordtype">void</span> <a class="code" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">matrixIndex</a>(<span class="keywordtype">int</span> k, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> &amp;i, <span class="keywordtype">int</span> &amp;j)
-<a name="l00755"></a>00755 {
-<a name="l00756"></a>00756         j = k/dim;
-<a name="l00757"></a>00757         i = k%dim;
-<a name="l00758"></a>00758 }
-<a name="l00759"></a>00759 
+<a name="l00376"></a>00376         <span class="comment">// multiply the eigenvalues</span>
+<a name="l00377"></a>00377         <span class="keywordtype">double</span> prodR=WR[0]; <span class="comment">//real part</span>
+<a name="l00378"></a>00378         <span class="keywordtype">double</span> prodI=WI[0]; <span class="comment">// imaginary part </span>
+<a name="l00379"></a>00379         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=1; i&lt;N; i++)
+<a name="l00380"></a>00380         {
+<a name="l00381"></a>00381                 <span class="keywordtype">double</span> re = prodR*WR[i] - prodI*WI[i];
+<a name="l00382"></a>00382                 <span class="keywordtype">double</span> im = prodR*WI[i] + prodI*WR[i];
+<a name="l00383"></a>00383                 prodR =re;
+<a name="l00384"></a>00384                 prodI =im;
+<a name="l00385"></a>00385         }
+<a name="l00386"></a>00386         <span class="comment">// clean up</span>
+<a name="l00387"></a>00387         <span class="keyword">delete</span>[] A;
+<a name="l00388"></a>00388         <span class="keyword">delete</span>[] WR;
+<a name="l00389"></a>00389         <span class="keyword">delete</span>[] WI;
+<a name="l00390"></a>00390         <span class="keyword">delete</span>[] VS;
+<a name="l00391"></a>00391 
+<a name="l00392"></a>00392 <span class="preprocessor">#ifdef _OPENMP</span>
+<a name="l00393"></a>00393 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
+<a name="l00394"></a>00394 {
+<a name="l00395"></a>00395         cout &lt;&lt; <span class="stringliteral">&quot;det: bye from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
+<a name="l00396"></a>00396 }
+<a name="l00397"></a>00397 <span class="preprocessor">#endif</span>
+<a name="l00398"></a>00398 <span class="preprocessor"></span>
+<a name="l00399"></a>00399         <span class="keywordflow">return</span> prodR; <span class="comment">// prodI will always be 0 (complex eigenvalues will be complex conjugates)</span>
+<a name="l00400"></a>00400 }
+<a name="l00401"></a>00401 
+<a name="l00402"></a>00402 
+<a name="l00403"></a>00403 
+<a name="l00409"></a><a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">00409</a> <a class="code" href="classMatrix.html">Matrix</a> &amp; <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)<span class="keyword"> const</span>
+<a name="l00410"></a>00410 <span class="keyword"></span>{
+<a name="l00411"></a>00411         
+<a name="l00412"></a>00412         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>()) <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to multiply matrices with mismatched sizes&quot;</span>);
+<a name="l00413"></a>00413         <span class="keywordtype">int</span> cols1 = <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
+<a name="l00414"></a>00414         <span class="keywordtype">int</span> rows2 = cols1;
+<a name="l00415"></a>00415         <span class="keywordtype">int</span> rows1 = <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00416"></a>00416         <span class="keywordtype">int</span> cols2 = B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>();
+<a name="l00417"></a>00417         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[rows1*cols2];
+<a name="l00418"></a>00418         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
+<a name="l00419"></a>00419         {
+<a name="l00420"></a>00420                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;cols2; j++)
+<a name="l00421"></a>00421                 {
+<a name="l00422"></a>00422                         <span class="keywordtype">double</span> sum=0;
+<a name="l00423"></a>00423                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt;cols1; k++)
+<a name="l00424"></a>00424                         {
+<a name="l00425"></a>00425                                 sum+=<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i, k)*B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(k, j);
+<a name="l00426"></a>00426                         }       
+<a name="l00427"></a>00427                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, rows1)] = sum;
+<a name="l00428"></a>00428                 }
+<a name="l00429"></a>00429         }
+<a name="l00430"></a>00430         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, rows1, cols2));
+<a name="l00431"></a>00431         <span class="keyword">delete</span>[] result;
+<a name="l00432"></a>00432         <span class="keywordflow">return</span> R;
+<a name="l00433"></a>00433 }
+<a name="l00434"></a>00434 
+<a name="l00437"></a><a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">00437</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">Matrix::subtract</a>(<a class="code" href="classMatrix.html">Matrix</a>&amp; B)
+<a name="l00438"></a>00438 {
+<a name="l00439"></a>00439         <span class="keywordflow">if</span> ( (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=B.<a class="code" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a>())|| (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=B.<a class="code" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a>()) ) 
+<a name="l00440"></a>00440                 <span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error: Attempted to subtract matrices with mismatched sizes&quot;</span>);
+<a name="l00441"></a>00441         <span class="keywordtype">double</span> * result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
+<a name="l00442"></a>00442         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
+<a name="l00443"></a>00443                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
+<a name="l00444"></a>00444                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numRows)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j) - B.<a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(i,j);
+<a name="l00445"></a>00445         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, numRows, numCols));
+<a name="l00446"></a>00446         <span class="keyword">delete</span>[] result;
+<a name="l00447"></a>00447         <span class="keywordflow">return</span> R;
+<a name="l00448"></a>00448 }
+<a name="l00449"></a>00449 
+<a name="l00450"></a>00450 
+<a name="l00454"></a><a class="code" href="classMatrix.html#a570ac6a4c79cca24589b667a5cfe8ae1">00454</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">Matrix::dot</a>(<span class="keywordtype">double</span> A[], <span class="keywordtype">double</span> B[], <span class="keywordtype">int</span> rows1, <span class="keywordtype">int</span> cols1, <span class="keywordtype">int</span> cols2, <span class="keywordtype">double</span> result[])
+<a name="l00455"></a>00455 {
+<a name="l00456"></a>00456         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;rows1; i++)
+<a name="l00457"></a>00457         {
+<a name="l00458"></a>00458                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;cols2; j++)
+<a name="l00459"></a>00459                 {
+<a name="l00460"></a>00460                         <span class="keywordtype">double</span> sum=0;
+<a name="l00461"></a>00461                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k=0; k&lt;cols1; k++)
+<a name="l00462"></a>00462                         {
+<a name="l00463"></a>00463                                 sum+=A[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, k, rows1)]*B[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(k, j, cols1)];
+<a name="l00464"></a>00464                         }       
+<a name="l00465"></a>00465                         result[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, rows1)] = sum;
+<a name="l00466"></a>00466                 }
+<a name="l00467"></a>00467         }
+<a name="l00468"></a>00468 }
+<a name="l00469"></a>00469 
+<a name="l00470"></a>00470 
+<a name="l00471"></a>00471 
+<a name="l00477"></a><a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">00477</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">Matrix::covar</a>()
+<a name="l00478"></a>00478 {
+<a name="l00479"></a>00479         <span class="keywordtype">double</span>* ones = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
+<a name="l00480"></a>00480         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; i++)
+<a name="l00481"></a>00481                 ones[i] =1.0/numCols;
+<a name="l00482"></a>00482         
+<a name="l00483"></a>00483         <span class="keywordtype">double</span>* matrixArrayT = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols]; <span class="comment">// transpose of Matrix</span>
+<a name="l00484"></a>00484         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numCols; i++)
+<a name="l00485"></a>00485         {
+<a name="l00486"></a>00486                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; j++)
+<a name="l00487"></a>00487                 {
+<a name="l00488"></a>00488                         matrixArrayT[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = <a class="code" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a>(j, i);
+<a name="l00489"></a>00489                 }
+<a name="l00490"></a>00490         }
+<a name="l00491"></a>00491         <span class="keywordtype">double</span>* m = <span class="keyword">new</span> <span class="keywordtype">double</span>[numCols*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
+<a name="l00492"></a>00492 
+<a name="l00493"></a>00493         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(ones, matrixArrayT,  numCols, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, m);
+<a name="l00494"></a>00494 
+<a name="l00495"></a>00495         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt; <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*numCols; i++)
+<a name="l00496"></a>00496         {
+<a name="l00497"></a>00497                 m[i] = matrixArrayT[i] - m[i];
+<a name="l00498"></a>00498         }
+<a name="l00499"></a>00499         <span class="keyword">delete</span>[] ones;
+<a name="l00500"></a>00500         <span class="keyword">delete</span>[] matrixArrayT;
+<a name="l00501"></a>00501         <span class="comment">// m is now the deviation matrix</span>
+<a name="l00502"></a>00502         <span class="comment">//compute m&apos;*m /n</span>
+<a name="l00503"></a>00503         <span class="keywordtype">double</span>* mTrans = <span class="keyword">new</span> <span class="keywordtype">double</span>[numCols*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
+<a name="l00504"></a>00504         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;numCols; i++)
+<a name="l00505"></a>00505         {
+<a name="l00506"></a>00506                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; j++)
+<a name="l00507"></a>00507                 {
+<a name="l00508"></a>00508                         mTrans[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(i, j, numCols)] = m[<a class="code" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a>(j, i, numRows)];
+<a name="l00509"></a>00509                 }
+<a name="l00510"></a>00510         }
+<a name="l00511"></a>00511         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>];
+<a name="l00512"></a>00512         <a class="code" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a>(mTrans, m, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, numCols, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, result);
+<a name="l00513"></a>00513         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
+<a name="l00514"></a>00514         {
+<a name="l00515"></a>00515                 result[i] = result[i]/(numRows-1);
+<a name="l00516"></a>00516         }
+<a name="l00517"></a>00517         
+<a name="l00518"></a>00518         <span class="keyword">delete</span>[] m;
+<a name="l00519"></a>00519         <span class="keyword">delete</span>[] mTrans;
+<a name="l00520"></a>00520         <a class="code" href="classMatrix.html">Matrix</a>&amp; ret = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, numRows, numRows));
+<a name="l00521"></a>00521         <span class="keyword">delete</span>[] result;
+<a name="l00522"></a>00522         <span class="keywordflow">return</span> ret;
+<a name="l00523"></a>00523 }
+<a name="l00524"></a>00524 
+<a name="l00529"></a><a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">00529</a> <a class="code" href="classMatrix.html">Matrix</a>&amp; <a class="code" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">Matrix::inv</a>() throw (<a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>, <a class="code" href="classLapackError.html" title="Exception thrown when there is an error in a call through lapacke */.">LapackError</a>)
+<a name="l00530"></a>00530 {
+<a name="l00531"></a>00531 <span class="preprocessor">#ifdef _OPENMP</span>
+<a name="l00532"></a>00532 <span class="preprocessor"></span><span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
+<a name="l00533"></a>00533 {
+<a name="l00534"></a>00534         cout &lt;&lt; <span class="stringliteral">&quot;inv: hi from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
+<a name="l00535"></a>00535 }
+<a name="l00536"></a>00536 <span class="preprocessor">#endif</span>
+<a name="l00537"></a>00537 <span class="preprocessor"></span>
+<a name="l00538"></a>00538         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>) <span class="keywordflow">throw</span> SizeError((<span class="keywordtype">char</span> *)<span class="stringliteral">&quot;Error: tried to invert a non-square matrix&quot;</span>);
+<a name="l00539"></a>00539         <span class="keywordtype">int</span> dim = <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00540"></a>00540         <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">updateArray</a>();
+<a name="l00541"></a>00541         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[dim*dim];
+<a name="l00542"></a>00542         <span class="comment">// copy matrixArray into result, as it&apos;s going to get overwritten </span>
+<a name="l00543"></a>00543         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;dim*dim; i++)
+<a name="l00544"></a>00544         {
+<a name="l00545"></a>00545                 result[i] = <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[i];
+<a name="l00546"></a>00546         }
+<a name="l00547"></a>00547         lapack_int lda=dim;
+<a name="l00548"></a>00548         lapack_int* ipiv = <span class="keyword">new</span> lapack_int[dim];
+<a name="l00549"></a>00549         <span class="comment">// put result in LU form</span>
+<a name="l00550"></a>00550         lapack_int code = LAPACKE_dgetrf(LAPACK_COL_MAJOR, dim, dim, result, lda, ipiv );
+<a name="l00551"></a>00551         <span class="keywordflow">if</span> (code!=0)
+<a name="l00552"></a>00552         {
+<a name="l00553"></a>00553                 <span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;ERROR in LU factorization in Matrix::inv&quot;</span>); 
+<a name="l00554"></a>00554         }
+<a name="l00555"></a>00555         <span class="comment">// use LU form to find inverse, put in result</span>
+<a name="l00556"></a>00556         code = LAPACKE_dgetri(LAPACK_COL_MAJOR, dim, result, lda, ipiv);
+<a name="l00557"></a>00557         <span class="keywordflow">if</span> (code!=0)
+<a name="l00558"></a>00558         {
+<a name="l00559"></a>00559                 <span class="keywordflow">throw</span> LapackError((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in inversion in Matrix::inv&quot;</span>); 
+<a name="l00560"></a>00560         }
+<a name="l00561"></a>00561         
+<a name="l00562"></a>00562         <span class="keyword">delete</span>[] ipiv;
+<a name="l00563"></a>00563         <a class="code" href="classMatrix.html">Matrix</a>&amp; R = *(<span class="keyword">new</span> <a class="code" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a>(result, dim, dim));
+<a name="l00564"></a>00564         <span class="keyword">delete</span>[] result;
+<a name="l00565"></a>00565 <span class="preprocessor">#ifdef _OPENMP</span>
+<a name="l00566"></a>00566 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (<a class="code" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>)
+<a name="l00567"></a>00567         {
+<a name="l00568"></a>00568                 cout &lt;&lt; <span class="stringliteral">&quot;inv: bye from thread &quot;</span> &lt;&lt; omp_get_thread_num() &lt;&lt; <span class="stringliteral">&quot; of &quot;</span> &lt;&lt; omp_get_num_threads() &lt;&lt; endl &lt;&lt; flush;
+<a name="l00569"></a>00569         }
+<a name="l00570"></a>00570 <span class="preprocessor">#endif</span>
+<a name="l00571"></a>00571 <span class="preprocessor"></span>        <span class="keywordflow">return</span> R;
+<a name="l00572"></a>00572 }
+<a name="l00573"></a>00573 
+<a name="l00580"></a><a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">00580</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">Matrix::add</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis)
+<a name="l00581"></a>00581 {
+<a name="l00582"></a>00582         <span class="keywordflow">if</span> (axis==0)
+<a name="l00583"></a>00583         {
+<a name="l00584"></a>00584                 <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>!=m){<span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in Matrix::add: row size doesn&apos;t match number of columns in matrix.&quot;</span>);}
+<a name="l00585"></a>00585                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// ith row</span>
+<a name="l00586"></a>00586                 {
+<a name="l00587"></a>00587                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// jth column</span>
+<a name="l00588"></a>00588                         {
+<a name="l00589"></a>00589                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] + vector[j];
+<a name="l00590"></a>00590                         }
+<a name="l00591"></a>00591                 }
+<a name="l00592"></a>00592         }
+<a name="l00593"></a>00593         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (axis==1)
+<a name="l00594"></a>00594         {
+<a name="l00595"></a>00595                 <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>!=m) {<span class="keywordflow">throw</span> <a class="code" href="classSizeError.html" title="class for returning errors due to mismatched size in matrix operations */">SizeError</a>((<span class="keywordtype">char</span>*)<span class="stringliteral">&quot;Error in Matrix::add: column size doesn&apos;t match number of rows in matrix&quot;</span>);}
+<a name="l00596"></a>00596                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// jth column</span>
+<a name="l00597"></a>00597                 {       
+<a name="l00598"></a>00598                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// ith row</span>
+<a name="l00599"></a>00599                         {
+<a name="l00600"></a>00600                                 <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i] + vector[i]; 
+<a name="l00601"></a>00601                         }
+<a name="l00602"></a>00602                 }
+<a name="l00603"></a>00603         }
+<a name="l00604"></a>00604 }
+<a name="l00605"></a>00605 
+<a name="l00613"></a><a class="code" href="classMatrix.html#af79c73861d85304c15e10252d613f170">00613</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">Matrix::subtract</a>(<span class="keywordtype">double</span> vector[], <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> axis)
+<a name="l00614"></a>00614 {
+<a name="l00615"></a>00615         <span class="comment">// call add with negated vector</span>
+<a name="l00616"></a>00616 
+<a name="l00617"></a>00617         <span class="keywordtype">double</span>* neg = <span class="keyword">new</span> <span class="keywordtype">double</span>[m];
+<a name="l00618"></a>00618         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;m;i++)
+<a name="l00619"></a>00619         {
+<a name="l00620"></a>00620                 neg[i] = -1*vector[i];
+<a name="l00621"></a>00621         }
+<a name="l00622"></a>00622         <a class="code" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">add</a>(neg, m, axis);
+<a name="l00623"></a>00623         <span class="keyword">delete</span>[] neg;
+<a name="l00624"></a>00624 }
+<a name="l00625"></a>00625 
+<a name="l00626"></a>00626 
+<a name="l00627"></a>00627 
+<a name="l00633"></a><a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">00633</a> <span class="keywordtype">double</span>* <a class="code" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">Matrix::average</a>(<span class="keywordtype">int</span> axis, <span class="keywordtype">double</span> *weights)
+<a name="l00634"></a>00634 {
+<a name="l00635"></a>00635         <span class="comment">// determine appropriate length for result and weights</span>
+<a name="l00636"></a>00636         <span class="keywordtype">int</span> wtlen=0,reslen=0;
+<a name="l00637"></a>00637         <span class="keywordflow">if</span> (axis==0) 
+<a name="l00638"></a>00638         {
+<a name="l00639"></a>00639                 wtlen=<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; 
+<a name="l00640"></a>00640                 reslen=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00641"></a>00641         }
+<a name="l00642"></a>00642         <span class="keywordflow">else</span> 
+<a name="l00643"></a>00643         {
+<a name="l00644"></a>00644                 wtlen=<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>;
+<a name="l00645"></a>00645                 reslen = <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>;
+<a name="l00646"></a>00646         }
+<a name="l00647"></a>00647         <span class="keywordtype">double</span>* result = <span class="keyword">new</span> <span class="keywordtype">double</span>[reslen];
+<a name="l00648"></a>00648         <span class="keywordtype">bool</span> allocated=<span class="keyword">false</span>;
+<a name="l00649"></a>00649         <span class="comment">// if weights are NULL, fill in equal weights</span>
+<a name="l00650"></a>00650         <span class="keywordflow">if</span> (weights==NULL)
+<a name="l00651"></a>00651         {
+<a name="l00652"></a>00652                 weights = <span class="keyword">new</span> <span class="keywordtype">double</span>[wtlen];
+<a name="l00653"></a>00653                 allocated = <span class="keyword">true</span>;
+<a name="l00654"></a>00654                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) weights[i] =1;
+<a name="l00655"></a>00655         }
+<a name="l00656"></a>00656         <span class="comment">// normalize weights so they sum to 1, in case caller didn&apos;t</span>
+<a name="l00657"></a>00657         <span class="keywordtype">double</span> wtSum=0;
+<a name="l00658"></a>00658         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) wtSum+=weights[i];
+<a name="l00659"></a>00659         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;wtlen; i++) weights[i] = weights[i]/wtSum;
+<a name="l00660"></a>00660 
+<a name="l00661"></a>00661         <span class="comment">// now do the weighted averaging</span>
+<a name="l00662"></a>00662         <span class="keywordflow">if</span> (axis==0) <span class="comment">//row by row</span>
+<a name="l00663"></a>00663         {
+<a name="l00664"></a>00664                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// row i</span>
+<a name="l00665"></a>00665                 {
+<a name="l00666"></a>00666                         <span class="keywordtype">double</span> sum=0;
+<a name="l00667"></a>00667                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// column j</span>
+<a name="l00668"></a>00668                         {
+<a name="l00669"></a>00669                                 <span class="comment">//printf(&quot;sum %f, adding %f *%f\n&quot;, sum, weights[j], columns[j][i]);</span>
+<a name="l00670"></a>00670                                 sum += weights[j]*<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
+<a name="l00671"></a>00671                         }
+<a name="l00672"></a>00672                         result[i] = sum;
+<a name="l00673"></a>00673                 }
+<a name="l00674"></a>00674         }
+<a name="l00675"></a>00675         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (axis==1) <span class="comment">// column by column</span>
+<a name="l00676"></a>00676         {
+<a name="l00677"></a>00677                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++) <span class="comment">// column j</span>
+<a name="l00678"></a>00678                 {
+<a name="l00679"></a>00679                         <span class="keywordtype">double</span> sum=0;
+<a name="l00680"></a>00680                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++) <span class="comment">// row i</span>
+<a name="l00681"></a>00681                         {
+<a name="l00682"></a>00682                                 sum+= weights[i]*<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
+<a name="l00683"></a>00683                         }
+<a name="l00684"></a>00684                         result[j] = sum;
+<a name="l00685"></a>00685                 }
+<a name="l00686"></a>00686         }
+<a name="l00687"></a>00687         <span class="keywordflow">if</span> (allocated) <span class="keyword">delete</span>[] weights; <span class="comment">// delete the weights only if they were created locally</span>
+<a name="l00688"></a>00688         <span class="keywordflow">return</span> result;
+<a name="l00689"></a>00689 }
+<a name="l00690"></a>00690 
+<a name="l00691"></a>00691 <span class="comment">// update the column-major array representation of matrix, in case the matrix has changed since it was last computed</span>
+<a name="l00692"></a><a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32">00692</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32" title="update column-major representation in entries">Matrix::updateArray</a>() 
+<a name="l00693"></a>00693 {
+<a name="l00694"></a>00694         <span class="keywordflow">if</span> (<a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>)
+<a name="l00695"></a>00695         {       
+<a name="l00696"></a>00696                 <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
+<a name="l00697"></a>00697                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>*<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>];
+<a name="l00698"></a>00698                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt; <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
+<a name="l00699"></a>00699                 {
+<a name="l00700"></a>00700                         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
+<a name="l00701"></a>00701                         {
+<a name="l00702"></a>00702                                 <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>[j*numRows+i] = <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i];
+<a name="l00703"></a>00703                         }
+<a name="l00704"></a>00704                 }
+<a name="l00705"></a>00705                 <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a>=<span class="keyword">false</span>;
+<a name="l00706"></a>00706         }
+<a name="l00707"></a>00707 }
+<a name="l00708"></a>00708 
+<a name="l00712"></a><a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">00712</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">Matrix::print</a>()
+<a name="l00713"></a>00713 {
+<a name="l00714"></a>00714         printf(<span class="stringliteral">&quot;\n-----------MATRIX---------------------\n&quot;</span>);
+<a name="l00715"></a>00715         printf(<span class="stringliteral">&quot;%d rows, %d columns\n&quot;</span>, <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>, <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>);
+<a name="l00716"></a>00716         printf(<span class="stringliteral">&quot;%d columns \n&quot;</span>, <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.size());
+<a name="l00717"></a>00717         fflush(stdout);
+<a name="l00718"></a>00718         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>; i++)
+<a name="l00719"></a>00719         {
+<a name="l00720"></a>00720                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;<a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>; j++)
+<a name="l00721"></a>00721                 {
+<a name="l00722"></a>00722                         printf(<span class="stringliteral">&quot; %lf&quot;</span>, <a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>[j][i]);
+<a name="l00723"></a>00723                 }
+<a name="l00724"></a>00724                 printf(<span class="stringliteral">&quot;\n&quot;</span>);
+<a name="l00725"></a>00725                 fflush(stdout);
+<a name="l00726"></a>00726         }
+<a name="l00727"></a>00727         printf(<span class="stringliteral">&quot;--------------------------------------\n&quot;</span>);
+<a name="l00728"></a>00728 }
+<a name="l00729"></a>00729 
+<a name="l00730"></a><a class="code" href="classMatrix.html#a9b1c3627f573d78a2f08623fdfef990f">00730</a> <a class="code" href="classMatrix.html#a9b1c3627f573d78a2f08623fdfef990f">Matrix::~Matrix</a>()
+<a name="l00731"></a>00731 {
+<a name="l00732"></a>00732         <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
+<a name="l00733"></a>00733 }
+<a name="l00734"></a>00734 
+<a name="l00735"></a><a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">00735</a> <span class="keywordtype">void</span> <a class="code" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">Matrix::clear</a>()
+<a name="l00736"></a>00736 {
+<a name="l00737"></a>00737 
+<a name="l00738"></a>00738         this-&gt;<a class="code" href="classMatrix.html#a20e26733e8c3315a5fb00fb3329976c3">columns</a>.clear();
+<a name="l00739"></a>00739 
+<a name="l00740"></a>00740         <span class="keyword">delete</span>[] <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a>;
+<a name="l00741"></a>00741         <a class="code" href="classMatrix.html#a6819338a995e9a53b0993cb0244110e4" title="columns of matrix--this is kept up to date as matrix is modified">entries</a> = <span class="keyword">new</span> <span class="keywordtype">double</span>[0];
+<a name="l00742"></a>00742         <a class="code" href="classMatrix.html#a5113236aaf0c8521f27320e03e02487e">changed</a> = <span class="keyword">true</span>;
+<a name="l00743"></a>00743         <a class="code" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows</a>=0;
+<a name="l00744"></a>00744         <a class="code" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols</a>=0;
+<a name="l00745"></a>00745 }
+<a name="l00746"></a>00746 <span class="comment">// find row i and column j corresponding to array index k in column major array format</span>
+<a name="l00747"></a><a class="code" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">00747</a> <span class="keywordtype">void</span> <a class="code" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">matrixIndex</a>(<span class="keywordtype">int</span> k, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> &amp;i, <span class="keywordtype">int</span> &amp;j)
+<a name="l00748"></a>00748 {
+<a name="l00749"></a>00749         j = k/dim;
+<a name="l00750"></a>00750         i = k%dim;
+<a name="l00751"></a>00751 }
+<a name="l00752"></a>00752 
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -709,7 +705,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

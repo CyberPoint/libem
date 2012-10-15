@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -59,8 +60,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">covar</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">det</a> ()  throw (LapackError, SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;m) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afda2166e634b1e2498f4883ef9e91248">getCopyOfColumn</a> (int colOffset)  throw (SizeError)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a25b72731a92889d837eb0d6cbde154e2">getCopyOfRow</a> (int rowOffset)  throw (SizeError)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ad412c750b3a123d41aa9046fe396dc40">getCopyOfColumn</a> (int colOffset, std::vector&lt; double &gt; &amp;vec)  throw (SizeError)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#abd2a6ee4f3314c88ea6c623a90cb3933">getCopyOfRow</a> (int rowOffset, std::vector&lt; double &gt; &amp;vec)  throw (SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a> (int row, int column) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">insertColumn</a> (double *col, int colSize, int colNum)  throw (SizeError)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">insertRow</a> (double *row, int rowSize, int rowNum)  throw (SizeError)</td></tr>
@@ -92,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00065">65</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00058">58</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 <hr/><h2>Member Enumeration Documentation</h2>
 <a class="anchor" id="a90546920e6cd622fe19cb3866dd17485"></a><!-- doxytag: member="Matrix::Orientation" ref="a90546920e6cd622fe19cb3866dd17485" args="" -->
 <div class="memitem">
@@ -114,7 +115,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00069">69</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00062">62</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -218,7 +219,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00101">101</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00097">97</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -269,7 +270,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00137">137</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00133">133</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -289,7 +290,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 <p>Destuctor </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00737">737</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00730">730</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -334,7 +335,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00587">587</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00580">580</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -379,7 +380,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <p>Assign val to row i, column j </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00202">202</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00198">198</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -424,7 +425,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00640">640</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00633">633</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -444,7 +445,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 <p>clear all entries in the matrix. leaves an empty 0 x 0 matrix. </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00742">742</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00735">735</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -465,7 +466,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>How many columns are in the matrix? </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the number of columns </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00194">194</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00190">190</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -486,7 +487,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Compute the covariance of a positive, definite matrix (numpy.covar) </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the covariance matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00484">484</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00477">477</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -506,7 +507,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 <dl class="return"><dt><b>Returns:</b></dt><dd>the determinant. Note: only works for square matrices </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00345">345</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00338">338</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -561,7 +562,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>matrix mult A*B, where A and B are matrices represented in column-major form, with dimensions rows1xcols1 and cols1xcols2 respectively.</p>
 <p>matrix multiplication for matrices already represented in column-major form </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00461">461</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00454">454</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -597,21 +598,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>product of matrix multiplication: this*B </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00416">416</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00409">409</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="afda2166e634b1e2498f4883ef9e91248"></a><!-- doxytag: member="Matrix::getCopyOfColumn" ref="afda2166e634b1e2498f4883ef9e91248" args="(int colOffset)" -->
+<a class="anchor" id="ad412c750b3a123d41aa9046fe396dc40"></a><!-- doxytag: member="Matrix::getCopyOfColumn" ref="ad412c750b3a123d41aa9046fe396dc40" args="(int colOffset, std::vector&lt; double &gt; &amp;vec)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; double &gt; Matrix::getCopyOfColumn </td>
+          <td class="memname">std::vector&lt; double &gt; &amp; Matrix::getCopyOfColumn </td>
           <td>(</td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>colOffset</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td>  throw (<a class="el" href="classSizeError.html">SizeError</a>)</td>
+          <td class="paramname"> <em>colOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>vec</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td>  throw (<a class="el" href="classSizeError.html">SizeError</a>)</td>
         </tr>
       </table>
 </div>
@@ -620,26 +630,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>colOffset</em>&nbsp;</td><td>number of the column to retrieve (indexed from 0) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vec</em>&nbsp;</td><td>empty vector in whuch to return row data </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>vector representation of the specified column </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified column </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00318">318</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00313">313</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a25b72731a92889d837eb0d6cbde154e2"></a><!-- doxytag: member="Matrix::getCopyOfRow" ref="a25b72731a92889d837eb0d6cbde154e2" args="(int rowOffset)" -->
+<a class="anchor" id="abd2a6ee4f3314c88ea6c623a90cb3933"></a><!-- doxytag: member="Matrix::getCopyOfRow" ref="abd2a6ee4f3314c88ea6c623a90cb3933" args="(int rowOffset, std::vector&lt; double &gt; &amp;vec)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; double &gt; Matrix::getCopyOfRow </td>
+          <td class="memname">std::vector&lt; double &gt; &amp; Matrix::getCopyOfRow </td>
           <td>(</td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>rowOffset</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td>  throw (<a class="el" href="classSizeError.html">SizeError</a>)</td>
+          <td class="paramname"> <em>rowOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>vec</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td>  throw (<a class="el" href="classSizeError.html">SizeError</a>)</td>
         </tr>
       </table>
 </div>
@@ -648,12 +668,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>rowOffset</em>&nbsp;</td><td>number of the row to retrieve (indexed from 0) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vec</em>&nbsp;</td><td>empty vector in whuch to return row data </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>vector representation of the specified row </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified row </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00303">303</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00299">299</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -683,7 +704,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 <dl class="return"><dt><b>Returns:</b></dt><dd>the element in ith row, jth column (indexed from 0) </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00175">175</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00171">171</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -788,7 +809,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Invert the matrix </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the inverse of this matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00536">536</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00529">529</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -809,7 +830,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Print the matrix to stdout</p>
 <p>Print out the matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00719">719</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00712">712</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -830,7 +851,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>How many rows are in the matrix? </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the number of rows </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00185">185</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00181">181</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -883,7 +904,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00620">620</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00613">613</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -910,7 +931,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00444">444</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00437">437</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -948,13 +969,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>double value to write </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>0-rel</em>&nbsp;</td><td>i row number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>0-rel</em>&nbsp;</td><td>j column number</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Overwrite val in the ith row, jth column of the matrix </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>double value to write </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>row number </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>column number </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00214">214</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00210">210</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -975,7 +1005,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>update column-major representation in entries </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00699">699</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00692">692</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -991,7 +1021,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00196">196</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00191">191</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1006,7 +1036,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00188">188</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00183">183</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1024,7 +1054,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>columns of matrix--this is kept up to date as matrix is modified </p>
 <p>representation of matrix as 1-d array in column major order. This is not kept up to date as matrix is created/modified, but only updated when needed for an operation </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00192">192</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00187">187</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1041,7 +1071,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>number of columns in matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00198">198</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00193">193</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1058,7 +1088,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>number of rows in matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00197">197</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8h_source.html#l00192">192</a> of file <a class="el" href="Matrix_8h_source.html">Matrix.h</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -1081,7 +1111,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li class="current"><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -50,6 +51,7 @@ Introduction</a></h2>
 </ul>
 <p>The libGaussMix++ implementation of the EM algorithm uses the "KMeans" clustering algorithm to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of EM.</p>
 <p>One important detail to note is that often, the values of the Gaussian density functions will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.</p>
+<p>The libGaussMix++ code base also includes support for adapation of a GMM to a specific subpopulation of the population on which it was trained. In a sense, this "biases" the model towards the subpopulation. If the population splits into distinct subpopulations, one may then classify a sample as belonging to a particular subpopulation, by assiging it to the subpopulation under whose adapted GMM it has the highest likelihood density. One often normalizes these scores by the unadapted GMM density. See reference 2 for details. This functionality is provided by the <a class="el" href="namespacegaussmix.html#a371a2b7088eaa1abffe06f1718383e82" title="adapt: adapt a Gaussian Mixture model to a given sub-population.">adapt()</a> method of the GaussMix API.</p>
 <h2><a class="anchor" id="usage_sec">
 Usage</a></h2>
 <p>libGaussMix++ does not actually build as a library. The API is provided in <a class="el" href="GaussMix_8h.html" title="Function prototypes for libGaussMix++ routines.">GaussMix.h</a>; API implementations are contained in <a class="el" href="GaussMix_8cpp.html">GaussMix.cpp</a>. The implementations use helper routines provided in <a class="el" href="Matrix_8h.html" title="Definitions for a Matrix class wrapping lapack/blas matrix routimes.">Matrix.h</a>/ <a class="el" href="Matrix_8cpp.html">Matrix.cpp</a>, which in turn wrap LAPACK linear algebra functions, and in <a class="el" href="KMeans_8h.html" title="definitions for kmeans clustering algorithm">KMeans.h</a>/ <a class="el" href="KMeans_8cpp.html" title="implementations for kmeans clustering algorithm">KMeans.cpp</a>, to generate initial model parameter guesses. To build these files into an executable with a sample driver function provided in <a class="el" href="sample__main_8cpp.html" title="sample main file to show exercise of EM routines.">sample_main.cpp</a>, follow these steps:</p>
@@ -69,15 +71,15 @@ Formats</a></h2>
 <p>libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files (multid_data_1.csv and multid_data_2.svm, respectively) are provided for convenience. The former consists of 20 three-dimensional data points falling into two clusters centered on (1,1,1) and (100,100,100). The second is similarly distributed, with a "+1" cluster centered on (10,10,10) and "-1" cluster centered on (50,50,50).</p>
 <h2><a class="anchor" id="References">
 References</a></h2>
-<p>Numerical Recipes 3rd Edition: The Art of Scientific Computing, Cambridge University Press New York, NY, USA ©2007, ISBN:0521880688 9780521880688 (c.f. chapter 16).</p>
-<p>Douglas A. Reynolds, et. al., "Speaker Verication Using Adapated Gaussian Mixture Models," Digital Signal Processing 10, 19-24 (2000). </p>
+<p>1. Press, et. al., Numerical Recipes 3rd Edition: The Art of Scientific Computing, Cambridge University Press New York, NY, USA ©2007, ISBN:0521880688 9780521880688 (c.f. chapter 16).</p>
+<p>2. Douglas A. Reynolds, et. al., "Speaker Verication Using Adapated Gaussian Mixture Models," Digital Signal Processing 10, 19-24 (2000). </p>
 </div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -86,7 +88,7 @@ References</a></h2>
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 10 Oct 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Oct 2012 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
