@@ -17,7 +17,7 @@ all: gaussmix
 
 debug: CXX = g++ -g3 -gdwarf-2 -fopenmp -DDEBUG -g
 debug: CC = gcc -g3 -gdwarf-2 -fopenmp -DDEBUG -g
-debug: em_algorithm
+debug: gaussmix    
 
 #///// LINK STEPS /////
 

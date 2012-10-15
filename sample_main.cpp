@@ -38,6 +38,41 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	/**************************************
+	double d[]  = {7.0, 3.2, 4.7 , 1.4};
+
+	std::vector<double> mu_vector;
+
+	mu_vector.push_back(5.93846154);
+	mu_vector.push_back(2.70769231);
+	mu_vector.push_back(4.26923077);
+	mu_vector.push_back(1.30769231);
+
+	Matrix sigma_matrix(4,4);
+
+
+	sigma_matrix.update(0.25621302,0,0);
+	sigma_matrix.update(0.08508876,0,1);
+	sigma_matrix.update(0.15426036,0,2);
+	sigma_matrix.update(0.05431953,0,3);
+
+	sigma_matrix.update(0.08508876 ,1,0);
+	sigma_matrix.update(0.11763314,1,1);
+	sigma_matrix.update(0.07792899,1,2);
+	sigma_matrix.update(0.03763314,1,3);
+
+	sigma_matrix.update(0.15426036,2,0);
+	sigma_matrix.update(0.07792899,2,1);
+	sigma_matrix.update(0.14982249,2,2);
+	sigma_matrix.update(0.05946746,2,3);
+
+	sigma_matrix.update(0.05431953,3,0);
+	sigma_matrix.update(0.03763314,3,1);
+	sigma_matrix.update(0.05946746,3,2);
+	sigma_matrix.update(0.04071006,3,3);
+
+	gaussmix::gaussmix_pdf(4, d, sigma_matrix,mu_vector);
+	**********************************************************/
 
 	// initialize variables
 	int i, k, m, n;
@@ -64,8 +99,15 @@ int main(int argc, char *argv[])
 	// reading in and parsing the data
 	// create an array of doubles that is n by m dimensional
 	double * data = new double[n*m];
+	int labels[n];
 
-	if (gaussmix::gaussmix_parse(argv[1], n, m, data, NULL) != 1)
+	// initialize labels
+	for (int i = 0; i < n; i++)
+	{
+		labels[i] = 0;
+	}
+
+	if (gaussmix::gaussmix_parse(argv[1], n, m, data, labels) != 1)
 	{
 			cout << "Invalid input file; must be csv, one sample per row, data points as floats" << endl;
 			return 1;
@@ -88,14 +130,81 @@ int main(int argc, char *argv[])
 	{
 		log_likelihood = gaussmix::gaussmix_train(n, m, k, data, sigma_vector, mu_local, Pk_matrix);
 
-		//print out results
-		cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
-		mu_local.print();
-
+		// print results
 		cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
 		Pk_matrix.print();
 
+		cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
+		mu_local.print();
+
+		for (int i = 0; i < k; i++)
+		{
+			cout << "Covariance matrix " << i << " approximated by the EM algorithm is " << endl;
+			sigma_vector[i]->print();
+		}
+
 		cout << "The log likelihood (density) of the data is " << log_likelihood << endl;
+
+		// now let's restrict to the -1 subpopulation, if we have labels
+		if (labels[0] != 0)  // assume 0 indicates absence of labels
+		{
+			int num_subpop = 0;
+
+			// isolate subpopulation
+			double * S = new double[n*m];
+
+			for (int i = 0; i < n; i++)
+			{
+				if (labels[i] == -1)
+				{
+					for (int j = 0; j < m; j++)
+					{
+						S[m*num_subpop + j] = data[i*m + j];
+					}
+					num_subpop++;
+				}
+			}
+			// create vectors that hold pointers to the adapted result covariance matrices
+			vector<Matrix *> adapted_sigma_vector;
+			for (int i = 0; i < k; i++)
+			{
+					Matrix*p = new Matrix(m,m);
+					adapted_sigma_vector.push_back(p);
+			}
+			//create mean and Pk matrices for adapt rtn to fill
+			Matrix adapted_mu_local(k,m);
+			Matrix adapted_Pk_matrix(1,k);
+
+			if ((num_subpop > 2) &&
+				(gaussmix::gaussmix_adapt(S,num_subpop,sigma_vector,mu_local,Pk_matrix,
+					adapted_sigma_vector,adapted_mu_local,adapted_Pk_matrix)) != 0)
+			{
+				// print results
+				cout << "The matrix of adapted -1 subpop Pk's is " << endl;
+				adapted_Pk_matrix.print();
+
+				cout << "The matrix of adapted -1 subpop mu's is " << endl;
+				adapted_mu_local.print();
+
+				for (int i = 0; i < k; i++)
+				{
+					cout << "The Covariance matrix " << i << " of adapted -1 subpop is " << endl;
+					adapted_sigma_vector[i]->print();
+				}
+
+			}
+			else
+			{
+				cout << "Error adapting to subpop -1" << endl;
+			}
+			delete S;
+		    adapted_mu_local.clear();
+		    adapted_Pk_matrix.clear();
+			for (int i = 0; i < k; i++)
+			{
+				delete adapted_sigma_vector[i];
+			}
+		}
 	}
 	catch (...)
 	{
@@ -103,8 +212,10 @@ int main(int argc, char *argv[])
 	}
 
     delete[] data;
-    mu_local.clear();
-    Pk_matrix.clear();
 
+	for (int i = 0; i < k; i++)
+	{
+		delete sigma_vector[i];
+	}
     return 0;
 }

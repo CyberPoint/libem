@@ -71,6 +71,65 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
  *                            PRIVATE FUNCTIONS
  **************************************************************************************************************/
 
+/*! \brief compute_expected_squares compute the squared-mean vectors weighted by the posteriors
+ *
+ * @param[in] X n by m array of data points
+ * @param[in] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
+ * @param[in] norm_constants the normalization constants (i-th constant is for i-th cluster)
+ * @param[out] expected_squares vector of ptrs to mean-square matrices weighted by the posteriors (caller sets matrices to 0s)
+ * @return 1 on success, 0 on error
+ *
+ *	note: the matrix we returned in the expected value (w.r.t norm constants) of a diagonal matrix
+ *	      whose i-th diagonal entry is given by the i-th component of the dot product of a data point with itself
+ */
+int compute_expected_squares(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
+		std::vector<Matrix *> &  expected_squares)
+{
+	int retcode = 0;
+
+	try
+	{
+		int num_clusters = norm_constants.size();
+		int num_points = posteriors.rowCount();
+		int num_dimensions = expected_squares[0]->colCount();
+
+		// for each cluster
+		for (int k = 0; k < num_clusters; k++)
+		{
+			Matrix * pm = expected_squares[k];
+
+			// for each data point
+			for (int n = 0; n < num_points; n++)
+			{
+				// for each dimension
+				for (int m = 0; m < num_dimensions; m++ )
+				{
+					// add in coordinate to running sum
+					pm->update(X[n*num_dimensions + m] * X[n*num_dimensions + m]*posteriors.getValue(n,k) + pm->getValue(m,m),m,m);
+				}
+			}
+
+			// now normalize
+			for (int m  = 0; m < num_dimensions; m++)
+			{
+				pm->update(pm->getValue(m,m)/norm_constants[k],m,m);
+
+			}
+		}
+		retcode = 1;
+	}
+	catch (exception e)
+	{
+		syslog(LOG_WARNING,"gaussmix: attempt to compute squared means resulted in %s: ",e.what());
+	}
+	catch (...)
+	{
+		syslog(LOG_WARNING,"gaussmix: attempt to compute squared means resulted in unknown error");
+	}
+
+	return retcode;
+}
+
 /*! \brief compute_new_covariances
  *
  * @param[in] mu_matrix matrix of old cluster means
@@ -90,9 +149,10 @@ int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & 
 	{
 
 		/*
-		 *  now compute the new covariances C_i as a_i * E_i + (1 - a_i) * ( c_i + diag(m_i) ) - c_i
-		 *  where c_i s the old covariance and diag(m_i) is the diagonal matrix w/entry (j,j) given by the
-		 *  square of the j-th component of m_i and E_i is the "expected squares" matrix
+		 *  now compute the new covariances C_i as a_i * E_i + (1 - a_i) * ( c_i + diag(m_i) ) - diag(m_i)
+		 *  where mi_is the old mean, c_i s the old covariance, diag(m_i) is the diagonal matrix w/entry (j,j)
+		 *  given by the square of the j-th component of m_i, and E_i is the "expected squares" matrix taken
+		 *  w.r.t the subpop to which we're adapting the model.
 		 */
 		int num_clusters = adapted_sigma_matrix.size();
 		int num_dimensions = mu_matrix.colCount();
@@ -111,7 +171,11 @@ int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & 
 						old_val += temp*temp;
 					}
 					old_val *= (1 - alphas[k]);
-					old_val -= sigma_matrix[k]->getValue(i,j);
+					if (i == j)
+					{
+						double temp = mu_matrix.getValue(k,j);
+						old_val -= temp*temp;
+					}
 					adapted_sigma_matrix[k]->update(new_val + old_val,i,j);
 				}
 
@@ -408,64 +472,6 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
 }
 
 
-/*! \brief compute_expected_squares compute the squared-mean vectors weighted by the posteriors
- *
- * @param[in] X n by m array of data points
- * @param[in] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
- * @param[in] norm_constants the normalization constants (i-th constant is for i-th cluster)
- * @param[out] expected_squares vector of ptrs to mean-square matrices weighted by the posteriors (caller sets matrices to 0s)
- * @return 1 on success, 0 on error
- *
- *	note: the matrix we returned in the expected value (w.r.t norm constants) of a diagonal matrix
- *	      whose i-th diagonal entry is given by the i-th component of the dot product of a data point with itself
- */
-int compute_expected_squares(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
-		std::vector<Matrix *> &  expected_squares)
-{
-	int retcode = 0;
-
-	try
-	{
-		int num_clusters = norm_constants.size();
-		int num_points = posteriors.rowCount();
-		int num_dimensions = expected_squares[0]->colCount();
-
-		// for each cluster
-		for (int k = 0; k < num_clusters; k++)
-		{
-			Matrix * pm = expected_squares[k];
-
-			// for each data point
-			for (int n = 0; n < num_points; n++)
-			{
-				// for each dimension
-				for (int m = 0; m < num_dimensions; m++ )
-				{
-					// add in coordinate to running sum
-					pm->update(X[n*num_dimensions + m] * X[n*num_dimensions + m]*posteriors.getValue(n,k) + pm->getValue(m,m),m,m);
-				}
-			}
-
-			// now normalize
-			for (int m  = 0; m < num_dimensions; m++)
-			{
-				pm->update(pm->getValue(m,m)/norm_constants[k],m,m);
-
-			}
-		}
-		retcode = 1;
-	}
-	catch (exception e)
-	{
-		syslog(LOG_WARNING,"gaussmix: attempt to compute squared means resulted in %s: ",e.what());
-	}
-	catch (...)
-	{
-		syslog(LOG_WARNING,"gaussmix: attempt to compute squared means resulted in unknown error");
-	}
-
-	return retcode;
-}
 
 /******************************************************************
  *                        IMPLEMENTATIONS OF PUBLIC FUNCTIONS
