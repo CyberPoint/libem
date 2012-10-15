@@ -92,7 +92,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00044">44</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00048">48</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -137,9 +137,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_expected_squares compute the squared-mean vectors weighted by the posteriors </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>posteriors</em>&nbsp;</td><td>n by k matrix in which posterior densities will be placed, where k is the number of clusters </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>posteriors</em>&nbsp;</td><td>n by k matrix in which posterior densities will be placed, where k is the number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>expected_squares</em>&nbsp;</td><td>vector of ptrs to mean-square matrices weighted by the posteriors (caller sets matrices to 0s) </td></tr>
   </table>
   </dd>
@@ -147,7 +147,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error</dd></dl>
 <p>note: the matrix we returned in the expected value (w.r.t norm constants) of a diagonal matrix whose i-th diagonal entry is given by the i-th component of the dot product of a data point with itself </p>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00085">85</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00089">89</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -197,17 +197,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_new_covariances </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of old cluster means </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of (ptrs to) old covariance matrices </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants used for weight computations </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adapted_means</em>&nbsp;</td><td>the new cluster means returned from compute_new_means </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of old cluster means </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of (ptrs to) old covariance matrices </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants used for weight computations </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>expected_squares</em>&nbsp;</td><td>the expected square means returned from compute_expected_squares </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_sigma_matrix</em>&nbsp;</td><td>(ptrs to) the new covariance matrices (caller inits to 0) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00142">142</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00149">149</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -251,16 +251,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_new_means compute the new cluster means </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of old cluster means </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>the</em>&nbsp;</td><td>mean vectors weighted by the posteriors </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants to use in the weight computation </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of old cluster means </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>weighted_means</em>&nbsp;</td><td>the mean vectors weighted by the posteriors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants to use in the weight computation </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>adapted_mu_matrix</em>&nbsp;</td><td>the new cluster means </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00206">206</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00217">217</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -310,17 +310,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_new_weights compute the new cluster weights </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants to use in the weight computation </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>number</em>&nbsp;</td><td>of data points </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights as a 1 X (num_clusters) <a class="el" href="classMatrix.html">Matrix</a> </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>new_Pks</em>&nbsp;</td><td>the new cluster weights as a 1 X (num_clusters) <a class="el" href="classMatrix.html">Matrix</a> </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>alphas</em>&nbsp;</td><td>the alpha constants to use in the weight computation </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_points</em>&nbsp;</td><td>number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights as a 1 X (num_clusters) <a class="el" href="classMatrix.html">Matrix</a> </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>new_weights</em>&nbsp;</td><td>the new cluster weights as a 1 X (num_clusters) <a class="el" href="classMatrix.html">Matrix</a> </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00252">252</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00267">267</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -352,14 +352,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_norm_constants compute the normalization constants for the posteriors </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>posteriors</em>&nbsp;</td><td>the matrix of posterior densities </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>posteriors</em>&nbsp;</td><td>the matrix of posterior densities </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>empty vec of normalization constants (i-th constant is for i-th cluster) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success 0 on error (norm_constants will be populated) </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00299">299</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00318">318</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -415,18 +415,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>computer_posteriors compute the poster densities for each data point for each cluster </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_points</em>&nbsp;</td><td>the number of data points </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of cluster means returned from EM call (EM_Algorithm.h) </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of pointers to covariances matrices returned from EM call </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights returned from EM call </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_points</em>&nbsp;</td><td>the number of data points </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of cluster means returned from EM call (EM_Algorithm.h) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of pointers to covariances matrices returned from EM call </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pks</em>&nbsp;</td><td>cluster weights returned from EM call </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>posteriors</em>&nbsp;</td><td>n by k matrix in which posterior densities will be placed, where k is the number of clusters </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00342">342</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00361">361</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -527,16 +527,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>compute_weighted_means compute the mean vectors weighted by the posteriors </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points (n is number of data points, m is dimensionality) </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>posteriors</em>&nbsp;</td><td>n by k matrix in which posterior densities will be placed, where k is the number of clusters </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>X</em>&nbsp;</td><td>n by m array of data points (n is number of data points, m is dimensionality) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>posteriors</em>&nbsp;</td><td>n by k matrix in which posterior densities will be placed, where k is the number of clusters </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>norm_constants</em>&nbsp;</td><td>the normalization constants (i-th constant is for i-th cluster) </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>weighted_means</em>&nbsp;</td><td>the mean vectors weighted by the posteriors (caller inits to 0s matrix of right size) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00423">423</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00445">445</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>

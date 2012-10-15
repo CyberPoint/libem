@@ -139,7 +139,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00481">481</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Adapt_8cpp_source.html#l00506">506</a> of file <a class="el" href="Adapt_8cpp_source.html">Adapt.cpp</a>.</p>
 
 </div>
 </div>
@@ -205,7 +205,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 
 <p>gaussmix_adapt: adapt a Gaussian Mixture model to a given sub-population. </p>
-<p>adapt: adapt a Gaussian Mixture model to a given sub-population.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>subpopulation data (dimensionality = sigma_matrix.num_cols) </td></tr>
@@ -221,7 +220,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00586">586</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00573">573</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -271,8 +270,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>gaussmix_parse: converts csv or svm-format data and converts it to a double array. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the d </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>file_name</em>&nbsp;</td><td>ptr to full file path </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>the number of data points </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of the data </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>data</em>&nbsp;</td><td>pointer to pre-allocated m X n double array. data returned here. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>labels</em>&nbsp;</td><td>pointer to pre-allocated array of size n, for svm format, or null, for csv format. labels returned here. </td></tr>
   </table>
@@ -280,7 +280,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>1 for success, 0 for an error or failure. </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00593">593</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00580">580</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -326,14 +326,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of data </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>data point </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>covar</em>&nbsp;</td><td>covariance matrix for cluster </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu</em>&nbsp;</td><td>mean for cluster </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>covariance matrix for cluster </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mu_vector</em>&nbsp;</td><td>mean for cluster </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>log likelihood </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00665">665</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00652">652</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -400,7 +400,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>log likelihood </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00699">699</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00686">686</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -474,7 +474,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the log likelihood (density) of the data (or std::numeric_limits::infinity() on error) </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00715">715</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00702">702</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -520,13 +520,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dim</em>&nbsp;</td><td>dimensionality of data </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>pointer to n * dim array of data to be clustered </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>desired number of clusters </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>heap-allocated k * dim array of cluster centroids (call must free) or 0 on error </dd></dl>
 
-<p>Definition at line <a class="el" href="KMeans_8cpp_source.html#l00314">314</a> of file <a class="el" href="KMeans_8cpp_source.html">KMeans.cpp</a>.</p>
+<p>Definition at line <a class="el" href="KMeans_8cpp_source.html#l00358">358</a> of file <a class="el" href="KMeans_8cpp_source.html">KMeans.cpp</a>.</p>
 
 </div>
 </div>

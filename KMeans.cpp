@@ -82,8 +82,16 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 *
 * In order to determine which data point belongs to which cluster, you calculate the distance between each point to each cluster - whichever distance
 * is the smallest from that sampling determines the cluster assignment.
-*	input - dimensionality, number of data points, number of clusters, double*s containing your data, cluster centroids and the distance calculation
-*	output - void
+*	input -
+*	@param m dimensionality of data
+*	@param n number of data points
+*	@param k number of clusters
+*	@param X ptr to data
+*	@param centroid ptr to centroids
+*
+*	output -
+*	@param distance_out array of distances (first cluster followed by second cluster etc)
+*
 */
 
 void all_distances(int m, int n, int k, double *X, double *centroid, double *distance_out)
@@ -100,6 +108,10 @@ void all_distances(int m, int n, int k, double *X, double *centroid, double *dis
 }
 
 /*! \brief assignment_change_count keeps track of how many cluster assignments have changed.
+	@param n number of data points
+	@param a old assignments
+	@param b new assignments
+	@return number of changed points
 */
 
 int assignment_change_count (int n, int a[], int b[])
@@ -116,8 +128,16 @@ int assignment_change_count (int n, int a[], int b[])
 *
 * This ensures that the cluster centroids are still the means of the data that belong to them. Here is also where the double* that
 * holds the new cluster centroids is assigned and filled in.
-*	input - data, assignment index
+*	input -
+*	@param m data dimensions
+*	@param n number of data points
+*	@param k number of clusters
+*	@param X ptr to data
+*	@param cluster_assignment_index old cluster assignments
+*
 *	output - void
+*	@param new_cluster_centroid the new centroids
+*
 */
 
 void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignment_index, double *new_cluster_centroid)
@@ -164,8 +184,14 @@ void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignm
 /*! \brief calc_total_distance computes the total distance from all their respective data points for all the clusters you initialized.
 *
 * This function also initializes the array that serves as the index of cluster assignments for each point (i.e. which cluster each point "belongs" to on this iteration).
-*	input - double*s containing your data, initial centroids
-*	output - double holding the total distances
+*	input -
+*	@param m dimensionality of data
+*	@param n number of data points
+*	@param k number of clusters
+*	@param X ptr to data
+*	@param centroids ptr to centroids
+*	@param cluster_assignment_index ptr to array of cluster assignments
+*	@return the total distance
 * note: a point with a cluster assignment of -1 is ignored.
 */
 
@@ -188,10 +214,14 @@ double calc_total_distance(int m, int n, int k, double *X, double *centroids, in
 /*! \brief choose_all_clusters_from_distances is the function that reassigns clusters based on distance to data points.
 *
 * This is the piece that smooshes clusters around to keep minimizing the distance between clusters and their data.
-*	input - data, the array that holds the distances, and the assignment index
-*	output - void
+*
+*	@param m dimensionality of data
+*	@param n number of data points
+*	@param k number of clusters
+*	@param X ptr to data
+*	@param distance_array array of distances to cluster
+*	@param[out] cluster_assignment_index the updated assignments (old assignmemnts passed in)
 */
-
 void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *distance_array, int *cluster_assignment_index)
 {
 	//for each data point
@@ -218,8 +248,12 @@ void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *
 
 /*! \brief cluster_diag diagrams the current cluster member count and centroids and prints them out for the user after each iteration.
 *
-*	input - data, assignment index, centroids
-*	output - void
+*	@param m dimensionality of data
+*	@param n number of data points
+*	@param k number of clusters
+*	@param X ptr to data
+*	@param cluster_assignment_index ptr to cluster assignments
+*	@param cluster_centroid ptr to centroids
 */
 
 void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
@@ -260,8 +294,12 @@ void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index,
 
 /*! \brief copy_assignment_array simply copies the assignment array (which point "belongs" to which cluster) so you can use it for the next iteration.
 *
-*	input - source and target
-*	output - void
+*	input -
+*	@param n number of data points
+*	@param src src data pts
+*
+*	output -
+*	@param tgt target data points
 */
 
 void copy_assignment_array(int n, int *src, int *tgt)
@@ -273,8 +311,11 @@ void copy_assignment_array(int n, int *src, int *tgt)
 /*! \brief euclid_distance calculates the euclidean distance between two points.
 *
 * This is the method used to assign data points to clusters in kmeans; the aim is to assign each point to the "closest" cluster centroid.
-*	input - the dimensionality of the data, and two double*s representing point 1 and point 2
-*	output - double which stores the calculated distance
+*
+*	@param m the dimensionality of the data
+*	@param p1 ptr to first data vector
+*	@param p2 ptr to second data vector
+*	@return the distance
 */
 
 double euclid_distance(int m, double *p1, double *p2)
@@ -289,11 +330,14 @@ double euclid_distance(int m, double *p1, double *p2)
 
 /*! \brief get_cluster_member_count takes the newly computed cluster centroids and basically takes a survey of how many points belong to each cluster.
 *
-* This is where the int* representing the number of data points for every cluster is initialized and filled in.
-*	input - assignment index
-*	output - void
+* 	This is where the int* representing the number of data points for every cluster is initialized and filled in.
+*
+*	@param n number of data points
+*	@param k number of clusters
+*	@param cluster_assignment_index ptr to cluster assignments
+*	@param[out] cluster_member_count ptr to membership counts for each cluster
+*
 */
-
 void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int * cluster_member_count)
 {
 	// initialize cluster member counts
@@ -422,7 +466,7 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 	delete[] cluster_assignment_prev;
 	delete[] point_move_score;
 
-	//return the final centroids calculated by Kmeans for use by EM later
-    	return cluster_centroid;
+	// return the final centroids calculated by Kmeans for use by EM later
+    return cluster_centroid;
 
 }

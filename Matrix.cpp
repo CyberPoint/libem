@@ -26,7 +26,7 @@
 **********************************************************************************/
 
 
-/*! \file Matrix.cc
+/*! \file Matrix.cpp
 *   \brief Matrix class method implementations.
 */
 #include <lapacke.h>
@@ -45,27 +45,32 @@
 
 using namespace std;
 
-// return the index of M[i][j] in column major array format
+/** \brief cmIndex compute array offset
+ * @param i 0-rel column index
+ * @param j 0-rel row index
+ * @param dim dimensionality of data
+ * @return offset within 1-d array representation in col-major format
+ */
 int cmIndex(int i, int j, int dim)
 {
 	return j*dim + i;
 }
 
 
-/**
-create an empty matrix
+/** \brief Matrix create an empty matrix
 */
 Matrix::Matrix()
 { 
-	//columns = new std::vector< std::vector<double> >();
+
 	entries = new double[0];
 	changed = false;
 	numRows=0;
 	numCols=0;
 }
 
-/**
-create matrix of zeroes, n rows, m columns
+/** \brief Matrix create matrix of zeroes, n rows, m columns
+* @param n number of rows
+* @param m number of columns
 */
 Matrix::Matrix(int n, int m)
 {
@@ -89,10 +94,9 @@ Matrix::Matrix(int n, int m)
 	
 }
 
-/**
-* Constructor to initialize matrix to 0's off-diagonal, and  a given vector on the diagonal (a la numpy.diag)
-@param di -- vector of length len, to be used as the diagonal
-@param len length of di
+/** \brief Matrix Constructor to initialize matrix to 0's off-diagonal, and  a given vector on the diagonal (a la numpy.diag)
+* @param di vector of length len, to be used as the diagonal
+* @param len length of di
 */
 Matrix::Matrix(double di[], int len)
 {
@@ -123,7 +127,7 @@ Matrix::Matrix(double di[], int len)
 	numCols = len;
 }
 
-/**
+/** \brief Matrix(double array, num rows, num cols, orientation)
 Create a matrix from its column-major or row-major matrix representation
 @param a array of row-major or column-major representation of matrix
 @param nRows current number of rows
@@ -165,7 +169,9 @@ Matrix::Matrix(double a[], int nRows, int nCols, Orientation major=COLUMN_MAJOR)
 
 }
 
-/**
+/** \brief get value of matrix element
+@param i the 0-rel row number
+@param j the 0-rel column number
 @return the element in ith row, jth column (indexed from 0)
 */
 double Matrix::getValue(int i, int j) const
@@ -175,7 +181,7 @@ double Matrix::getValue(int i, int j) const
 }
 
 /**
-How many rows are in the matrix?
+\brief How many rows are in the matrix?
 @return the number of rows
 */
 int Matrix::rowCount() const
@@ -184,7 +190,7 @@ int Matrix::rowCount() const
 }
 
 /**
-How many columns are in the matrix?
+\brief How many columns are in the matrix?
 @return the number of columns
 */
 int Matrix::colCount() const
@@ -193,7 +199,10 @@ int Matrix::colCount() const
 }
 
 /**
-Assign val to row i, column j
+ * \brief assign value to matrix cell
+@param val the value
+@param i 0-rel row number
+@param j 0-rel column number
 */
 void Matrix::assign(double val, int i, int j)
 {
@@ -203,10 +212,11 @@ void Matrix::assign(double val, int i, int j)
 	changed = true;
 }
 
-/**Overwrite val in the ith row, jth column of the matrix
-	@param val double value to write
-	@param i row number
-	@param j column number*/
+/** \brief Overwrite val in the ith row, jth column of the matrix
+@param val double value to write
+@param i 0-rel row number
+@param j 0-rel column number
+*/
 void Matrix::update(double val, int i, int j)
 {
 	if (j>=numCols || j<0) throw SizeError((char *)"Error: attempt to write value to a non-existent column");
@@ -218,14 +228,13 @@ void Matrix::update(double val, int i, int j)
 
 
 
-
 /**
-Insert row as the rowNum'th row in the matrix (indexed from 0)
+\brief Insert row as the rowNum'th row in the matrix (indexed from 0)
 @param row the row to insert 
 @param rowSize the length of row (should be the same as colCount())
 @param rowNum location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 <= rowNum <= rowCount())
 */
-Matrix & Matrix::insertRow(double row[], int rowSize, int rowNum) throw (SizeError)
+Matrix & Matrix::insertRow(double * row, int rowSize, int rowNum) throw (SizeError)
 {
 	if (rowNum>numRows)
 	{
@@ -262,13 +271,13 @@ Matrix & Matrix::insertRow(double row[], int rowSize, int rowNum) throw (SizeErr
 }
 	
 /**
-Insert col as the colNum'th column in the matrix (indexed from 0)
+\brief Insert col as the colNum'th column in the matrix (indexed from 0)
 @param col the column to insert
 @param colSize the length of col (should be the same as numRows())
 @param colNum location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0)
 (0  <= colNum <= colCount())
 */
-Matrix & Matrix::insertColumn(double col[], int colSize, int colNum) throw (SizeError)
+Matrix & Matrix::insertColumn(double * col, int colSize, int colNum) throw (SizeError)
 {
 	if (colNum>numCols)
 	{
@@ -292,7 +301,7 @@ Matrix & Matrix::insertColumn(double col[], int colSize, int colNum) throw (Size
 }
 
 
-/**return a copy of rowOffset'th row of the matrix
+/** \brief return a copy of rowOffset'th row of the matrix
 @param rowOffset number of the row to retrieve (indexed from 0)
 @param vec empty  vector in whuch to return row data
 @return ref to vector representation of the specified row*/
@@ -306,7 +315,7 @@ std::vector<double> & Matrix::getCopyOfRow(int rowOffset,std::vector<double> & v
 	return vec;
 }
 
-/** return a copy of colOffset'th row of the matrix
+/** \brief return a copy of colOffset'th row of the matrix
 @param colOffset number of the column to retrieve (indexed from 0)
 @param vec empty  vector in whuch to return row data
 @return ref to vector representation of the specified column*/
@@ -332,18 +341,12 @@ lapack_logical leq(const double* a, const double* b)
 
 
 /**
-* 
+* \brief det
 @return the determinant. Note: only works for square matrices
 */
 double Matrix::det() throw (LapackError, SizeError)
 {
 
-#ifdef _OPENMP
-if (matrix_debug)
-{
-	cout << "det: hi from thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-}
-#endif
 
 	if (numRows!=numCols) throw SizeError((char *)"Attempt to compute determinant of a non-square matrix");
 	updateArray(); // update column-major array representation of the matrix, to include any recent changes
@@ -389,22 +392,15 @@ if (matrix_debug)
 	delete[] WI;
 	delete[] VS;
 
-#ifdef _OPENMP
-if (matrix_debug)
-{
-	cout << "det: bye from thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-}
-#endif
-
 	return prodR; // prodI will always be 0 (complex eigenvalues will be complex conjugates)
 }
 
 
 
 /**
-Matrix multiplication this*B
+\brief Matrix multiplication this*B
 @param B matrix to multiply by
-@return product of matrix multiplication: this*B
+@return product of matrix multiplication: this*B. caller must delete.
 */
 Matrix & Matrix::dot(Matrix& B) const
 {
@@ -432,8 +428,9 @@ Matrix & Matrix::dot(Matrix& B) const
 	return R;
 }
 
-/** Subtract Matrix B from this Matrix 
-	@param B Matrix to subtract from this*/
+/** \brief Subtract Matrix B from this Matrix
+	@param B Matrix to subtract from this. caller must delete.
+*/
 Matrix& Matrix::subtract(Matrix& B)
 {
 	if ( (numRows!=B.rowCount())|| (numCols!=B.colCount()) ) 
@@ -449,7 +446,13 @@ Matrix& Matrix::subtract(Matrix& B)
 
 
 /** 
-matrix multiplication for matrices already represented in column-major form
+\brief matrix multiplication for matrices already represented in column-major form
+@param A col-major matrix
+@param B col-major matrix
+@param rows1 rows for A, cols for B
+@param cols1 cols for A
+@param cols2 cols for B
+@param[out] result column-major result array (caller allocates)
 */
 void Matrix::dot(double A[], double B[], int rows1, int cols1, int cols2, double result[])
 {
@@ -471,8 +474,8 @@ void Matrix::dot(double A[], double B[], int rows1, int cols1, int cols2, double
 
 /**
 *
-Compute the covariance of a positive, definite matrix (numpy.covar)
-@return the covariance matrix
+\brief Compute the covariance of a positive, definite matrix (numpy.covar)
+@return the covariance matrix. caller deletes.
 */
 Matrix& Matrix::covar()
 {
@@ -523,17 +526,12 @@ Matrix& Matrix::covar()
 }
 
 /**
-Invert the matrix
-@return the inverse of this matrix
+\brief Invert the matrix
+@return the inverse of this matrix. caller deletes.
 */
 Matrix& Matrix::inv() throw (SizeError, LapackError)
 {
-#ifdef _OPENMP
-if (matrix_debug)
-{
-	cout << "inv: hi from thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-}
-#endif
+
 
 	if (numRows!=numCols) throw SizeError((char *)"Error: tried to invert a non-square matrix");
 	int dim = numRows;
@@ -562,17 +560,11 @@ if (matrix_debug)
 	delete[] ipiv;
 	Matrix& R = *(new Matrix(result, dim, dim));
 	delete[] result;
-#ifdef _OPENMP
-	if (matrix_debug)
-	{
-		cout << "inv: bye from thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-	}
-#endif
 	return R;
 }
 
 /**
-Add vector to matrix row by row or column by column (in place)
+\brief Add vector to matrix row by row or column by column (in place)
 @param vector array to add
 @param m length of vector
 @param axis row by row (0) or column by column (1)
@@ -604,7 +596,7 @@ void Matrix::add(double vector[], int m, int axis)
 }
 
 /**
-Subtract vector from matrixArray row by row or column by column
+\brief Subtract vector from matrixArray row by row or column by column
 @param vector array to subtract
 @param m length of vector
 @param axis row by row (0) or column by column (1)
@@ -626,9 +618,10 @@ void Matrix::subtract(double vector[], int m, int axis)
 
 
 /**
-compute the weighted average value of each row (or column, specified by axis)
+\brief compute the weighted average value of each row (or column, specified by axis)
 @param axis row by row (0) or column by column (1)
 @param  weights optional array of weights for weighted average (if NULL, will be taken as all 1's).  (should be length numCols() for row-by-row, and length numRows() for col-by-col)
+@return prt to averages (caller deletes)
 */
 double* Matrix::average(int axis, double *weights)
 {
@@ -688,7 +681,9 @@ double* Matrix::average(int axis, double *weights)
 	return result;
 }
 
-// update the column-major array representation of matrix, in case the matrix has changed since it was last computed
+/**
+\brief update the column-major array representation of matrix, in case the matrix has changed since it was last computed
+*/
 void Matrix::updateArray() 
 {
 	if (changed)
@@ -707,7 +702,7 @@ void Matrix::updateArray()
 }
 
 /**
-Print out the matrix
+\brief Print out the matrix
 */
 void Matrix::print()
 {
@@ -732,6 +727,9 @@ Matrix::~Matrix()
 	delete[] entries;
 }
 
+/**
+ * \brief free the matrix resouces
+ */
 void Matrix::clear()
 {
 
@@ -743,7 +741,9 @@ void Matrix::clear()
 	numRows=0;
 	numCols=0;
 }
-// find row i and column j corresponding to array index k in column major array format
+/**
+ \brief find row i and column j corresponding to array index k in column major array format
+*/
 void matrixIndex(int k, int dim, int &i, int &j)
 {
 	j = k/dim;

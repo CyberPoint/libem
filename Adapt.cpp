@@ -36,6 +36,10 @@
 #include <exception>
 #include <iostream>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "Adapt.h"
 #include "GaussMix.h"  // for gaussmix_pdf()
 
@@ -73,9 +77,9 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
 
 /*! \brief compute_expected_squares compute the squared-mean vectors weighted by the posteriors
  *
- * @param[in] X n by m array of data points
- * @param[in] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
- * @param[in] norm_constants the normalization constants (i-th constant is for i-th cluster)
+ * @param X n by m array of data points
+ * @param posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
+ * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
  * @param[out] expected_squares vector of ptrs to mean-square matrices weighted by the posteriors (caller sets matrices to 0s)
  * @return 1 on success, 0 on error
  *
@@ -94,6 +98,9 @@ int compute_expected_squares(const double * X,const Matrix & posteriors,const ve
 		int num_dimensions = expected_squares[0]->colCount();
 
 		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 			Matrix * pm = expected_squares[k];
@@ -132,10 +139,10 @@ int compute_expected_squares(const double * X,const Matrix & posteriors,const ve
 
 /*! \brief compute_new_covariances
  *
- * @param[in] mu_matrix matrix of old cluster means
- * @param[in] sigma_matrix vector of (ptrs to) old covariance matrices
- * @param[in] alphas the alpha constants used for weight computations
- * @param[in] adapted_means the new cluster means returned from compute_new_means
+ * @param mu_matrix matrix of old cluster means
+ * @param sigma_matrix vector of (ptrs to) old covariance matrices
+ * @param alphas the alpha constants used for weight computations
+ * @param expected_squares the expected square means returned from compute_expected_squares
  * @param[out] adapted_sigma_matrix (ptrs to) the new covariance matrices (caller inits to 0)
  * @return 1 on success, 0 on error
  */
@@ -157,6 +164,10 @@ int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & 
 		int num_clusters = adapted_sigma_matrix.size();
 		int num_dimensions = mu_matrix.colCount();
 
+		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 			for (int i = 0; i < num_dimensions; i++)
@@ -197,9 +208,9 @@ int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & 
 
 /*! \brief compute_new_means compute the new cluster means
  *
- * @param[in] mu_matrix matrix of old cluster means
- * @param[in] the mean vectors weighted by the posteriors
- * @param[in] alphas the alpha constants to use in the weight computation
+ * @param mu_matrix matrix of old cluster means
+ * @param weighted_means the mean vectors weighted by the posteriors
+ * @param alphas the alpha constants to use in the weight computation
  * @param[out] adapted_mu_matrix the new cluster means
  * @return 1 on success, 0 on error
  */
@@ -219,6 +230,10 @@ int compute_new_means(const Matrix & mu_matrix,const Matrix & weighted_means,con
 		int num_clusters = mu_matrix.rowCount();
 		int num_dimensions = mu_matrix.colCount();
 
+		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters;k++)
 		{
 			for (int m = 0; m < num_dimensions; m++)
@@ -242,11 +257,11 @@ int compute_new_means(const Matrix & mu_matrix,const Matrix & weighted_means,con
 }
 
 /*! \brief compute_new_weights compute the new cluster weights
- * @param[in] alphas the alpha constants to use in the weight computation
- * @param[in] norm_constants the normalization constants (i-th constant is for i-th cluster)
- * @param[in] number of data points
- * @param[in] Pks cluster weights as a 1 X (num_clusters) Matrix
- * @param[out] new_Pks the new cluster weights as a 1 X (num_clusters) Matrix
+ * @param alphas the alpha constants to use in the weight computation
+ * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
+ * @param num_points number of data points
+ * @param Pks cluster weights as a 1 X (num_clusters) Matrix
+ * @param[out] new_weights the new cluster weights as a 1 X (num_clusters) Matrix
  * @return 1 on success, 0 on error
  */
 int compute_new_weights(const vector<double> & alphas,const vector<double> & norm_constants, int num_points,
@@ -264,6 +279,10 @@ int compute_new_weights(const vector<double> & alphas,const vector<double> & nor
 
 		double sum_weights = 0.0;
 
+		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 			double temp = alphas[k] * norm_constants[k]/num_points + (1 - alphas[k])*Pks.getValue(0,k);
@@ -292,7 +311,7 @@ int compute_new_weights(const vector<double> & alphas,const vector<double> & nor
 }
 
 /*! \brief compute_norm_constants compute the normalization constants for the posteriors
- *	@param[in] posteriors the matrix of posterior densities
+ *	@param posteriors the matrix of posterior densities
  *	@param[out] norm_constants empty vec of normalization constants (i-th constant is for i-th cluster)
  *	@return 1 on success 0 on error (norm_constants will be populated)
  */
@@ -331,11 +350,11 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
 
 /*! \brief computer_posteriors compute the poster densities for each data point for each cluster
  *
- * @param[in] X n by m array of data points
- * @param[in] num_points the number of data points
- * @param[in] mu_matrix matrix of cluster means returned from EM call (EM_Algorithm.h)
- * @param[in] sigma_matrix vector of pointers to covariances matrices returned from EM call
- * @param[in] Pks cluster weights returned from EM call
+ * @param X n by m array of data points
+ * @param num_points the number of data points
+ * @param mu_matrix matrix of cluster means returned from EM call (EM_Algorithm.h)
+ * @param sigma_matrix vector of pointers to covariances matrices returned from EM call
+ * @param Pks cluster weights returned from EM call
  * @param[out] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
  * @return 1 on success, 0 on error
  */
@@ -349,6 +368,9 @@ int compute_posteriors(const double * X, int num_points, Matrix & mu_matrix, vec
 	try
 	{
 		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 
@@ -413,9 +435,9 @@ int compute_posteriors(const double * X, int num_points, Matrix & mu_matrix, vec
 
 /*! \brief compute_weighted_means compute the mean vectors weighted by the posteriors
  *
- * @param[in] X n by m array of data points (n is number of data points, m is dimensionality)
- * @param[in] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
- * @param[in] norm_constants the normalization constants (i-th constant is for i-th cluster)
+ * @param X n by m array of data points (n is number of data points, m is dimensionality)
+ * @param posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
+ * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
  * @param[out] weighted_means the mean vectors weighted by the posteriors (caller inits to 0s matrix of right size)
  * @return 1 on success, 0 on error
  *
@@ -433,6 +455,9 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
 		int num_dimensions = weighted_means.colCount();
 
 		// for each cluster
+		#ifdef _OPENMP
+		# pragma omp parallel for
+		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 			double temp_vec[num_dimensions];

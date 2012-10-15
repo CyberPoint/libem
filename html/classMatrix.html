@@ -53,31 +53,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  }</td></tr>
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a0328a6de79c79d8bca2fea785b89e811">add</a> (double vector[], int m, int axis)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add vector to matrix row by row or column by column (in place).  <a href="#a0328a6de79c79d8bca2fea785b89e811"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a657faa8ff89f6ee8437fea14be1adff9">assign</a> (double val, int i, int j)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">assign value to matrix cell  <a href="#a657faa8ff89f6ee8437fea14be1adff9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afbdd50b15afa1aa9af645aa2fe1dbfbc">average</a> (int axis, double *weights)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">compute the weighted average value of each row (or column, specified by axis)  <a href="#afbdd50b15afa1aa9af645aa2fe1dbfbc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ac0e2adb05e204d5a40cd129d9fb0593f">clear</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">free the matrix resouces  <a href="#ac0e2adb05e204d5a40cd129d9fb0593f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount</a> () const </td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">How many columns are in the matrix?  <a href="#a645117a6ae6085be1a2fed2042d1f5d7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ad671d1618f2b566618cd5bb4925022f7">covar</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute the covariance of a positive, definite matrix (numpy.covar).  <a href="#ad671d1618f2b566618cd5bb4925022f7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ace95025dd985ddaa6c1ed72e8b464a0a">det</a> ()  throw (LapackError, SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">det  <a href="#ace95025dd985ddaa6c1ed72e8b464a0a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a90457f219f60dfb3ea0adcea7cf0a59f">dot</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;m) const </td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><a class="el" href="classMatrix.html">Matrix</a> multiplication this*B.  <a href="#a90457f219f60dfb3ea0adcea7cf0a59f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ad412c750b3a123d41aa9046fe396dc40">getCopyOfColumn</a> (int colOffset, std::vector&lt; double &gt; &amp;vec)  throw (SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">return a copy of colOffset'th row of the matrix  <a href="#ad412c750b3a123d41aa9046fe396dc40"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#abd2a6ee4f3314c88ea6c623a90cb3933">getCopyOfRow</a> (int rowOffset, std::vector&lt; double &gt; &amp;vec)  throw (SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">return a copy of rowOffset'th row of the matrix  <a href="#abd2a6ee4f3314c88ea6c623a90cb3933"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a8e231dba49f57179a2e29fc6f4a95953">getValue</a> (int row, int column) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a97826fc0b5b5647fbb546b30a4693db2">insertColumn</a> (double *col, int colSize, int colNum)  throw (SizeError)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a523a38dc3ffc889e07849152dfc1ae4b">insertRow</a> (double *row, int rowSize, int rowNum)  throw (SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">get value of matrix element  <a href="#a8e231dba49f57179a2e29fc6f4a95953"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#aa20b527fff4d2753d71356dcdda208a3">insertColumn</a> (double *col, int colSize, int colNum)  throw (SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Insert col as the colNum'th column in the matrix (indexed from 0).  <a href="#aa20b527fff4d2753d71356dcdda208a3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#acfe869d889346aedb806122421e48c92">insertRow</a> (double *row, int rowSize, int rowNum)  throw (SizeError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Insert row as the rowNum'th row in the matrix (indexed from 0).  <a href="#acfe869d889346aedb806122421e48c92"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#afba97a76536c7394e65d56b7032cbdc4">inv</a> ()  throw (SizeError, LapackError)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Invert the matrix.  <a href="#afba97a76536c7394e65d56b7032cbdc4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a5bcf53e91149fbede2313e31792e6990">Matrix</a> (double a[], int <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85">numRows</a>, int <a class="el" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a">numCols</a>, <a class="el" href="classMatrix.html#a90546920e6cd622fe19cb3866dd17485">Orientation</a> major)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Matrix(double array, num rows, num cols, orientation) Create a matrix from its column-major or row-major matrix representation.  <a href="#a5bcf53e91149fbede2313e31792e6990"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ab6dd5e2d7e76b1ca5cad1ef72c6f1a7b">Matrix</a> (double di[], int len)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><a class="el" href="classMatrix.html">Matrix</a> Constructor to initialize matrix to 0's off-diagonal, and a given vector on the diagonal (a la numpy.diag).  <a href="#ab6dd5e2d7e76b1ca5cad1ef72c6f1a7b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ae157f910061b3e1155b17b62583bde57">Matrix</a> (int n, int m)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><a class="el" href="classMatrix.html">Matrix</a> create matrix of zeroes, n rows, m columns.  <a href="#ae157f910061b3e1155b17b62583bde57"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a2dba13c45127354c9f75ef576f49269b">Matrix</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><a class="el" href="classMatrix.html">Matrix</a> create an empty matrix.  <a href="#a2dba13c45127354c9f75ef576f49269b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a99ba97122b8fdd54e95290caf80fc8e2">print</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Print out the matrix.  <a href="#a99ba97122b8fdd54e95290caf80fc8e2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount</a> () const </td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">How many rows are in the matrix?  <a href="#ab777e161b5ecca071ee5d14145966244"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#af79c73861d85304c15e10252d613f170">subtract</a> (double vector[], int m, int axis)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Subtract vector from matrixArray row by row or column by column.  <a href="#af79c73861d85304c15e10252d613f170"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a9ca5c767dbfaaac55009b70a9506dbc3">subtract</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;B)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Subtract <a class="el" href="classMatrix.html">Matrix</a> B from this <a class="el" href="classMatrix.html">Matrix</a>.  <a href="#a9ca5c767dbfaaac55009b70a9506dbc3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a06ec49e9d321d93932888c7ecd506349">update</a> (double val, int i, int j)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Overwrite val in the ith row, jth column of the matrix.  <a href="#a06ec49e9d321d93932888c7ecd506349"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a9b1c3627f573d78a2f08623fdfef990f">~Matrix</a> ()</td></tr>
 <tr><td colspan="2"><h2>Private Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a570ac6a4c79cca24589b667a5cfe8ae1">dot</a> (double A[], double B[], int rows1, int cols1, int cols2, double result[])</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">matrix multiplication for matrices already represented in column-major form  <a href="#a570ac6a4c79cca24589b667a5cfe8ae1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a5e5e3cbc99056e825926a45085792a32">updateArray</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">update column-major representation in entries  <a href="#a5e5e3cbc99056e825926a45085792a32"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Private Attributes</h2></td></tr>
@@ -134,10 +158,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>create an empty matrix (size 0x0)</p>
-<p>create an empty matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00058">58</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p><a class="el" href="classMatrix.html">Matrix</a> create an empty matrix. </p>
+<p>create an empty matrix (size 0x0) </p>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00062">62</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -165,17 +190,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p><a class="el" href="classMatrix.html">Matrix</a> create matrix of zeroes, n rows, m columns. </p>
 <p>create a matrix of zeroes, of size nxm </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of rows </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>number of columns</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>number of rows </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>number of columns </td></tr>
   </table>
   </dd>
 </dl>
-<p>create matrix of zeroes, n rows, m columns </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00070">70</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00075">75</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -203,23 +231,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p><a class="el" href="classMatrix.html">Matrix</a> Constructor to initialize matrix to 0's off-diagonal, and a given vector on the diagonal (a la numpy.diag). </p>
 <p>Constructor to initialize matrix to 0's off-diagonal, and a given vector on the diagonal (a la numpy.diag) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>di</em>&nbsp;</td><td>-- vector of length len, to be used as the diagonal param len length of di</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Constructor to initialize matrix to 0's off-diagonal, and a given vector on the diagonal (a la numpy.diag) </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>di</em>&nbsp;</td><td>-- vector of length len, to be used as the diagonal </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>di</em>&nbsp;</td><td>vector of length len, to be used as the diagonal </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>len</em>&nbsp;</td><td>length of di </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00097">97</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00101">101</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -259,9 +283,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Matrix(double array, num rows, num cols, orientation) Create a matrix from its column-major or row-major matrix representation. </p>
 <p>Create a matrix from its column-major or row-major matrix representation </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>a</em>&nbsp;</td><td>array of row-major or column-major representation of matrix </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>nRows</em>&nbsp;</td><td>current number of rows </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>nCols</em>&nbsp;</td><td>current number of columns </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>major</em>&nbsp;</td><td>Orientation.ROW_MAJOR or Orientation.COLUMN_MAJOR</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>a</em>&nbsp;</td><td>array of row-major or column-major representation of matrix </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>nRows</em>&nbsp;</td><td>current number of rows </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>nCols</em>&nbsp;</td><td>current number of columns </td></tr>
@@ -270,7 +300,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00133">133</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00137">137</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -290,7 +320,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 <p>Destuctor </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00730">730</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00725">725</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -325,9 +355,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Add vector to matrix row by row or column by column (in place). </p>
 <p>Add vector to matrix row by row or column by column (in place) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>vector</em>&nbsp;</td><td>array to add </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>length of vector </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1)</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>vector</em>&nbsp;</td><td>array to add </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>length of vector </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1) </td></tr>
@@ -335,7 +370,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00580">580</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00572">572</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,18 +404,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>assign value to matrix cell </p>
 <p>Assign val to the ith row, jth column of the matrix </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>double value to insert </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>row number </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>column number</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>the value </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>0-rel row number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>0-rel column number </td></tr>
   </table>
   </dd>
 </dl>
-<p>Assign val to row i, column j </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00198">198</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00207">207</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -408,24 +447,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>compute the weighted average value of each row (or column, specified by axis) </p>
 <p>compute the weighted average value of each row or column </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1) </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>weights</em>&nbsp;</td><td>optional array of weights for weighted average (if NULL, will be taken as all 1's). (should be length <a class="el" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols()</a> for row-by-row, and length <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows()</a> for col-by-col)</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>compute the weighted average value of each row (or column, specified by axis) </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1) </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>weights</em>&nbsp;</td><td>optional array of weights for weighted average (if NULL, will be taken as all 1's). (should be length <a class="el" href="classMatrix.html#a1ddb385f8482c80f98e5cdbf914ba11a" title="number of columns in matrix">numCols()</a> for row-by-row, and length <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows()</a> for col-by-col) </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>prt to averages (caller deletes) </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00633">633</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00626">626</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -443,9 +479,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>free the matrix resouces </p>
 <p>clear all entries in the matrix. leaves an empty 0 x 0 matrix. </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00735">735</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00733">733</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -463,10 +501,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>How many columns are in the matrix? </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>the number of columns </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00190">190</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>How many columns are in the matrix? </p>
+<p>How many columns are in the matrix? </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the number of columns</dd>
+<dd>
+the number of columns </dd></dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00196">196</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -484,10 +526,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Compute the covariance of a positive, definite matrix (numpy.covar) </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>the covariance matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00477">477</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Compute the covariance of a positive, definite matrix (numpy.covar). </p>
+<p>Compute the covariance of a positive, definite matrix (numpy.covar) </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the covariance matrix</dd>
+<dd>
+the covariance matrix. caller deletes. </dd></dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00480">480</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -505,9 +551,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>det </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the determinant. Note: only works for square matrices </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00338">338</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00347">347</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -559,10 +607,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>matrix mult A*B, where A and B are matrices represented in column-major form, with dimensions rows1xcols1 and cols1xcols2 respectively.</p>
-<p>matrix multiplication for matrices already represented in column-major form </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00454">454</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>matrix multiplication for matrices already represented in column-major form </p>
+<p>matrix mult A*B, where A and B are matrices represented in column-major form, with dimensions rows1xcols1 and cols1xcols2 respectively.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>A</em>&nbsp;</td><td>col-major matrix </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>B</em>&nbsp;</td><td>col-major matrix </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rows1</em>&nbsp;</td><td>rows for A, cols for B </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cols1</em>&nbsp;</td><td>cols for A </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>cols2</em>&nbsp;</td><td>cols for B </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>result</em>&nbsp;</td><td>column-major result array (caller allocates) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00457">457</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -581,6 +641,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p><a class="el" href="classMatrix.html">Matrix</a> multiplication this*B. </p>
 <p><a class="el" href="classMatrix.html">Matrix</a> multiplication -- this*B </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
@@ -589,16 +651,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>product of matrix multiplication: this*B</dd></dl>
-<p><a class="el" href="classMatrix.html">Matrix</a> multiplication this*B </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>B</em>&nbsp;</td><td>matrix to multiply by </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>product of matrix multiplication: this*B </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>product of matrix multiplication: this*B. caller must delete. </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00409">409</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00405">405</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -626,7 +687,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
 <p>return a copy of colOffset'th row of the matrix </p>
+<p>return a copy of colOffset'th row of the matrix </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>colOffset</em>&nbsp;</td><td>number of the column to retrieve (indexed from 0) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vec</em>&nbsp;</td><td>empty vector in whuch to return row data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified column</dd></dl>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>colOffset</em>&nbsp;</td><td>number of the column to retrieve (indexed from 0) </td></tr>
@@ -636,7 +707,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified column </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00313">313</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00322">322</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -664,7 +735,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
 <p>return a copy of rowOffset'th row of the matrix </p>
+<p>return a copy of rowOffset'th row of the matrix </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>rowOffset</em>&nbsp;</td><td>number of the row to retrieve (indexed from 0) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vec</em>&nbsp;</td><td>empty vector in whuch to return row data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified row</dd></dl>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>rowOffset</em>&nbsp;</td><td>number of the row to retrieve (indexed from 0) </td></tr>
@@ -674,7 +755,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>ref to vector representation of the specified row </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00299">299</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00308">308</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -702,18 +783,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>get value of matrix element </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the element in ith row, jth column (indexed from 0)</dd></dl>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>the 0-rel row number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>the 0-rel column number </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>the element in ith row, jth column (indexed from 0) </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00171">171</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00177">177</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a97826fc0b5b5647fbb546b30a4693db2"></a><!-- doxytag: member="Matrix::insertColumn" ref="a97826fc0b5b5647fbb546b30a4693db2" args="(double *col, int colSize, int colNum)" -->
+<a class="anchor" id="aa20b527fff4d2753d71356dcdda208a3"></a><!-- doxytag: member="Matrix::insertColumn" ref="aa20b527fff4d2753d71356dcdda208a3" args="(double *col, int colSize, int colNum)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a>&amp; Matrix::insertColumn </td>
+          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a> &amp; Matrix::insertColumn </td>
           <td>(</td>
           <td class="paramtype">double *&nbsp;</td>
           <td class="paramname"> <em>col</em>, </td>
@@ -738,24 +829,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Insert col as the colNum'th column in the matrix (indexed from 0). </p>
 <p>Insert col as the colNum'th column in the matrix (indexed from 0) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>col</em>&nbsp;</td><td>the column to insert </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>colSize</em>&nbsp;</td><td>the length of col (should be the same as <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows()</a> for non-empty matrix) </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>colNum</em>&nbsp;</td><td>location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0) (0 &lt;= colNum &lt;= <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colNum</em>&nbsp;</td><td>location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0) (0 &lt;= colNum &lt;= <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7" title="How many columns are in the matrix?">colCount()</a>)</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>col</em>&nbsp;</td><td>the column to insert </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colSize</em>&nbsp;</td><td>the length of col (should be the same as <a class="el" href="classMatrix.html#a0eb658c64c749da9cc9705dc232fcb85" title="number of rows in matrix">numRows()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colNum</em>&nbsp;</td><td>location at which to insert col -- col will be the colNum'th column in the matrix (indexed from 0) (0 &lt;= colNum &lt;= <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7" title="How many columns are in the matrix?">colCount()</a>) </td></tr>
   </table>
   </dd>
 </dl>
 
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00280">280</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a523a38dc3ffc889e07849152dfc1ae4b"></a><!-- doxytag: member="Matrix::insertRow" ref="a523a38dc3ffc889e07849152dfc1ae4b" args="(double *row, int rowSize, int rowNum)" -->
+<a class="anchor" id="acfe869d889346aedb806122421e48c92"></a><!-- doxytag: member="Matrix::insertRow" ref="acfe869d889346aedb806122421e48c92" args="(double *row, int rowSize, int rowNum)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a>&amp; Matrix::insertRow </td>
+          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a> &amp; Matrix::insertRow </td>
           <td>(</td>
           <td class="paramtype">double *&nbsp;</td>
           <td class="paramname"> <em>row</em>, </td>
@@ -780,15 +878,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Insert row as the rowNum'th row in the matrix (indexed from 0). </p>
 <p>Insert row as the rowNum'th row in the matrix (indexed from 0) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>row</em>&nbsp;</td><td>the row to insert </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>rowSize</em>&nbsp;</td><td>the length of row (should be the same as <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7">colCount()</a> for non-empty matrix) </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>rowNum</em>&nbsp;</td><td>location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 &lt;= rowNum &lt;= <a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244">rowCount()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowSize</em>&nbsp;</td><td>the length of row (should be the same as <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7" title="How many columns are in the matrix?">colCount()</a> for non-empty matrix) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowNum</em>&nbsp;</td><td>location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 &lt;= rowNum &lt;= <a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244" title="How many rows are in the matrix?">rowCount()</a>)</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>row</em>&nbsp;</td><td>the row to insert </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowSize</em>&nbsp;</td><td>the length of row (should be the same as <a class="el" href="classMatrix.html#a645117a6ae6085be1a2fed2042d1f5d7" title="How many columns are in the matrix?">colCount()</a>) </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rowNum</em>&nbsp;</td><td>location at which to insert row -- row will be the rowNum'th row in the matrix (indexed from 0) (0 &lt;= rowNum &lt;= <a class="el" href="classMatrix.html#ab777e161b5ecca071ee5d14145966244" title="How many rows are in the matrix?">rowCount()</a>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00237">237</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -806,10 +911,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Invert the matrix </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>the inverse of this matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00529">529</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Invert the matrix. </p>
+<p>Invert the matrix </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the inverse of this matrix</dd>
+<dd>
+the inverse of this matrix. caller deletes. </dd></dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00532">532</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -827,10 +936,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Print the matrix to stdout</p>
-<p>Print out the matrix </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00712">712</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Print out the matrix. </p>
+<p>Print the matrix to stdout </p>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00707">707</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -848,10 +958,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>How many rows are in the matrix? </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>the number of rows </dd></dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00181">181</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>How many rows are in the matrix? </p>
+<p>How many rows are in the matrix? </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the number of rows</dd>
+<dd>
+the number of rows </dd></dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00187">187</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -885,18 +999,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Subtract vector from matrixArray row by row or column by column. </p>
 <p>Subtract vector from matrix row by row or column by column (in place) </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>vector</em>&nbsp;</td><td>array to subtract </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>length of vector </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1)</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Subtract vector from matrixArray row by row or column by column </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>vector</em>&nbsp;</td><td>array to subtract </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>length of vector </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>axis</em>&nbsp;</td><td>row by row (0) or column by column (1) </td></tr>
@@ -904,7 +1014,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00613">613</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00605">605</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -923,15 +1033,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Subtract <a class="el" href="classMatrix.html">Matrix</a> B from this <a class="el" href="classMatrix.html">Matrix</a>. </p>
 <p>Subtract <a class="el" href="classMatrix.html">Matrix</a> B from this <a class="el" href="classMatrix.html">Matrix</a> </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>B</em>&nbsp;</td><td><a class="el" href="classMatrix.html">Matrix</a> to subtract from this </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>B</em>&nbsp;</td><td><a class="el" href="classMatrix.html">Matrix</a> to subtract from this</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>B</em>&nbsp;</td><td><a class="el" href="classMatrix.html">Matrix</a> to subtract from this. caller must delete. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00437">437</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00434">434</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -965,26 +1078,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>Overwrite val in the ith row, jth column of the matrix. </p>
 <p>Overwrite val in the ith row, jth column of the matrix </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>double value to write </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>0-rel</em>&nbsp;</td><td>i row number </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>0-rel</em>&nbsp;</td><td>j column number</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Overwrite val in the ith row, jth column of the matrix </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>0-rel row number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>0-rel column number</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>double value to write </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>row number </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>column number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>0-rel row number </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>0-rel column number </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00210">210</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00220">220</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -1004,8 +1113,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="memdoc">
 
 <p>update column-major representation in entries </p>
+<p>update the column-major array representation of matrix, in case the matrix has changed since it was last computed </p>
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00692">692</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00687">687</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>

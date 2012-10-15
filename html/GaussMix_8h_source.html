@@ -92,26 +92,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00066"></a>00066                 <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks, vector&lt;Matrix*&gt; &amp;adapted_sigma_matrix,
 <a name="l00067"></a>00067                 <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;adapted_Pks);
 <a name="l00068"></a>00068 
-<a name="l00077"></a>00077 <span class="keywordtype">int</span> <a class="code" href="namespacegaussmix.html#ae258c114ae1424466014119639fe9c59" title="gaussmix_parse: converts csv or svm-format data and converts it to a double array...">gaussmix_parse</a>(<span class="keywordtype">char</span> *file_name,  <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">double</span> *data, <span class="keywordtype">int</span> * labels = NULL);
-<a name="l00078"></a>00078 
+<a name="l00078"></a>00078 <span class="keywordtype">int</span> <a class="code" href="namespacegaussmix.html#ae258c114ae1424466014119639fe9c59" title="gaussmix_parse: converts csv or svm-format data and converts it to a double array...">gaussmix_parse</a>(<span class="keywordtype">char</span> *file_name,  <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">double</span> *data, <span class="keywordtype">int</span> * labels = NULL);
 <a name="l00079"></a>00079 
-<a name="l00089"></a>00089 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#a49872771c9e4d4fed7471ba5c973a463" title="gaussmix_pdf: compute the log of the probability of the given data point">gaussmix_pdf</a>(<span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> *X,<a class="code" href="classMatrix.html">Matrix</a> &amp;sigma_matrix,std::vector&lt;double&gt; &amp;mu_vector);
-<a name="l00090"></a>00090 
+<a name="l00080"></a>00080 
+<a name="l00090"></a>00090 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#a49872771c9e4d4fed7471ba5c973a463" title="gaussmix_pdf: compute the log of the probability of the given data point">gaussmix_pdf</a>(<span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> *X,<a class="code" href="classMatrix.html">Matrix</a> &amp;sigma_matrix,std::vector&lt;double&gt; &amp;mu_vector);
 <a name="l00091"></a>00091 
-<a name="l00103"></a>00103 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#aa745e1b54f76374f33e539df5b4934e7" title="gaussmix_pdf_mix: compute the log of the mixture probability of the given data point...">gaussmix_pdf_mix</a>(<span class="keywordtype">int</span> m, <span class="keywordtype">int</span> k, <span class="keyword">const</span> <span class="keywordtype">double</span> *X, vector&lt;Matrix*&gt; &amp;sigma_matrix,
-<a name="l00104"></a>00104                                                 <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks);
-<a name="l00105"></a>00105 
+<a name="l00092"></a>00092 
+<a name="l00104"></a>00104 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#aa745e1b54f76374f33e539df5b4934e7" title="gaussmix_pdf_mix: compute the log of the mixture probability of the given data point...">gaussmix_pdf_mix</a>(<span class="keywordtype">int</span> m, <span class="keywordtype">int</span> k, <span class="keyword">const</span> <span class="keywordtype">double</span> *X, vector&lt;Matrix*&gt; &amp;sigma_matrix,
+<a name="l00105"></a>00105                                                 <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks);
 <a name="l00106"></a>00106 
 <a name="l00107"></a>00107 
 <a name="l00108"></a>00108 
-<a name="l00121"></a>00121 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#a73f612af006af1e6319da5a36f725971" title="gaussmix_train: train a Gaussian Mixture model on a given data set.">gaussmix_train</a>(<span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> k, <span class="keywordtype">double</span> *X, vector&lt;Matrix*&gt; &amp;sigma_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks);
-<a name="l00122"></a>00122 
+<a name="l00109"></a>00109 
+<a name="l00122"></a>00122 <span class="keywordtype">double</span> <a class="code" href="namespacegaussmix.html#a73f612af006af1e6319da5a36f725971" title="gaussmix_train: train a Gaussian Mixture model on a given data set.">gaussmix_train</a>(<span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> k, <span class="keywordtype">double</span> *X, vector&lt;Matrix*&gt; &amp;sigma_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="code" href="classMatrix.html">Matrix</a> &amp;Pks);
 <a name="l00123"></a>00123 
 <a name="l00124"></a>00124 
 <a name="l00125"></a>00125 
-<a name="l00126"></a>00126 <span class="preprocessor">#endif //EM_ALGORITHM_HEADER</span>
-<a name="l00127"></a>00127 <span class="preprocessor"></span>
-<a name="l00128"></a>00128 }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 <span class="preprocessor">#endif //EM_ALGORITHM_HEADER</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span>
+<a name="l00129"></a>00129 }
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"

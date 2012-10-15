@@ -25,7 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********************************************************************************/
 
-/*! \file GuassMix.cpp
+/*! \file GaussMix.cpp
     \version 1.0
     \brief core libGaussMix++ em algorithm method implementations.
     \author Elizabeth Garbee and CyberPoint Labs, CyberPoint International LLC
@@ -34,6 +34,11 @@
 */
 
 /*! \mainpage libGaussMix++: An Expectation Maximization Algorithm for Training Gaussian Mixture Models
+*
+*\authors Elizabeth Garbee, CyberPoint Labs
+*\date October 15, 2012
+*
+* Copyright 2012 CyberPoint International LLC
 *
 *\section intro_sec Introduction
 *
@@ -45,8 +50,8 @@
 * points, where k is specified, but the means and covariances of the Gaussians are unknown. The desired output includes the means and covariances of the Gaussians, along with the cluster weights
 * (coefficients of the linear combination of Gaussians). One may think of the data as being drawn by first randomly choosing a particular Gaussian according to the cluster weights, and then
 * choosing a data point according to the selected distribution. The overall probability density assigned to a point is then given by the sum over k of P(n|k)P(k) where k denotes the cluster, P(k) its probability, and P(n|k) denotes
-* the probability density of the point given the cluster. The likelihood density L of the data is the product of these sums, taken over all data points (which are assumed to be independent and identically distributed). The EM algorithm produces an estimate of the P(k) and the P(n|k),
-* by attempting to maximize L. Specifically, it yields the estimated means mu(k), covariance matrices sigma(k), and weights P(k) for each Gaussian.
+* the probability density of the point given the cluster. The likelihood density L of the data is the product of these sums, taken over all data points (which are assumed to be independent and identically distributed).
+* The EM algorithm produces an estimate of the P(k) and the P(n|k),by attempting to maximize L. Specifically, it yields the estimated means mu(k), covariance matrices sigma(k), and weights P(k) for each Gaussian.
 *
 * An outline of the EM calculations is best described by working backwards from L. Since the data points are (assumed) to be independent, L is the product of the probability densities of
 * each observed data point, which splits into a contribution P(n|k) from each Gaussian (these contributions are sometimes called the data point "mixture weights").
@@ -62,9 +67,6 @@
 *
 * The libGaussMix++ implementation of the EM algorithm uses the "KMeans" clustering algorithm to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
 * EM. 
-*
-* One important detail to note is that often, the values of the Gaussian density functions will be so small as to underflow to zero. Therefore, it is very important to work with the logarithms of
-* these densities, rather than the densities themselves. This particular implementation works in log space in an attempt to avoid this issue.
 *
 * The libGaussMix++ code base also includes support for adapation of a GMM to a specific subpopulation of the population on which it was trained. In a sense, this
 * "biases" the model towards the subpopulation. If the population splits into distinct subpopulations, one may then classify a sample as belonging to a particular
@@ -90,13 +92,23 @@
 *
 * For an example "main" that invokes the libGaussMix++ API routines, see sample_main.cpp.
 *
-* \section Data Formats
+* \section Notes
 *
-* libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files
+* 1. Per the first reference, the values of the Gaussian density functions may be so small as to underflow to zero, and therefore, it is desirable to perform
+* the EM algorithm in the log domain. This implementation takes that approach.
+*
+* 2. libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files
 * (multid_data_1.csv and multid_data_2.svm, respectively) are provided for convenience. The former consists of 20
 * three-dimensional data points falling into two clusters centered on (1,1,1) and (100,100,100). The second is similarly
 * distributed, with a "+1" cluster centered on (10,10,10) and "-1" cluster centered on (50,50,50).
 *
+* 3. The Matrix.h/ cpp code wraps LAPACK routines. To work with these routines efficiently, the Matrix class maintains
+* internal buffers that may be modified by operations that, from a semantic point of view, are read-only. Hence many
+* libGauss routines take non-const Matrix arguments, where const Matrix arguments would be typically be used.
+*
+* 4. For compilers that support it, the code is configured to use open mp (www.openmp.org) to parallelize various for loops,
+* where the loop is over the cluster of the Gaussian Mixture Model.
+* .
 * \section References
 *
 *  1. Press, et. al., Numerical Recipes 3rd Edition: The Art of Scientific Computing,
@@ -182,9 +194,10 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_ma
 @param m dimensionality of data
 @param k number of clusters
 @param X data
-@param p_nk_matrix = matrix generated by the caller of EM that holds the pnk's calculated
-@param sigma_matrix = vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
-@param Pk_matrix = matrix generated by the caller of EM that holds the Pk's calculated
+@param p_nk_matrix matrix generated by the caller of EM that holds the pnk's calculated
+@param sigma_matrix vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
+@param mu_matrix matrix of mean vectors generated by caller
+@param Pk_matrix matrix generated by the caller of EM that holds the Pk's calculated
 */
 
 double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix)
@@ -263,24 +276,12 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 			//sigma^-
 			Matrix * sigma_inv;
-			//#ifdef _OPENMP
-			//# pragma omp critical(lapack)
-			//#endif
-//#ifdef _OPENMP
-//# pragma omp critical(lapack)
-//#endif
 			sigma_inv = &(sigma_matrix[gaussian]->inv());
 			if (debug) cout << "sigma_inv" << endl << flush;
 			if (debug) sigma_inv->print();
 
 			//det(sigma)
 			double determinant;
-			//#ifdef _OPENMP
-			//# pragma omp critical(lapack)
-			//#endif
-//#ifdef _OPENMP
-//# pragma omp critical(lapack)
-//#endif
 			determinant = sigma_matrix[gaussian]->det();
 
 
@@ -400,6 +401,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 @param X data
 @param p_nk_matrix matrix generated by the caller of EM that holds the pnk's calculated
 @param sigma_matrix vector of matrix pointers generated by the caller of EM that holds the sigmas calculated
+@param mu_matrix  matrix of mean vectors generated by caller
 @param Pk_matrix matrix generated by the caller of EM that holds the Pk's calculated
 */
 
@@ -509,9 +511,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			
 			//you can't have a negative determinant - if somehow you do, mstep throws up its hands and EM will terminate
 			double determinant;
-//			#ifdef _OPENMP
-//			# pragma critical(lapack)
-//			#endif
 			{
 				determinant = sigma_matrix[gaussian]->det();
 			}
@@ -570,19 +569,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
  * 						IMPLEMENTATIONS OF PUBLIC FUNCTIONS
  ******************************************************************************************/
 
-/*! \brief adapt: adapt a Gaussian Mixture model to a given sub-population.
-*
-*
-@param[in] X subpopulation data (dimensionality = sigma_matrix.num_cols)
-@param[in] n number of data points in sub-pop
-@param[in] sigma_matrix vector of covariance matrices from EM call
-@param [in] mu_matrix cluster means returned from EM call
-@param [in] Pks cluster weights returned by EM call
-@param[in] adapted_sigma_matrix vector of covariance matrices from EM call
-@param [in] adapted_mu_matrix cluster means returned from EM call
-@param [in] adapted_Pks cluster weights returned by EM call
-@return 1 on success, 0 on error
-*/
+
 int gaussmix::gaussmix_adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, Matrix &Pks, vector<Matrix*> &adapted_sigma_matrix,
 		Matrix &adapted_mu_matrix, Matrix &adapted_Pks)

@@ -89,8 +89,8 @@ class Matrix
 
 	/**Overwrite val in the ith row, jth column of the matrix
 	@param val double value to write
-	@param 0-rel i row number
-	@param 0-rel j column number*/
+	@param i 0-rel row number
+	@param j 0-rel column number*/
 	void update(double val, int i, int j);
 
 

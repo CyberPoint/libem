@@ -42,6 +42,7 @@ namespace gaussmix
 *
 @param[in] dim dimensionality of data
 @param[in] X pointer to n * dim array of data to be clustered
+@param[in] n number of data points
 @param[in] k desired number of clusters
 @return heap-allocated k * dim array of cluster centroids (call must free) or 0 on error
 */

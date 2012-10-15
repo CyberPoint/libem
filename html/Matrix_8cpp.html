@@ -44,7 +44,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>Matrix.cpp File Reference</h1><code>#include &lt;lapacke.h&gt;</code><br/>
+<h1>Matrix.cpp File Reference</h1>
+<p><a class="el" href="classMatrix.html">Matrix</a> class method implementations.  
+<a href="#_details">More...</a></p>
+<code>#include &lt;lapacke.h&gt;</code><br/>
 <code>#include &lt;stdio.h&gt;</code><br/>
 <code>#include &lt;vector&gt;</code><br/>
 <code>#include &lt;omp.h&gt;</code><br/>
@@ -57,9 +60,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a2f30f2925d601cb9a2e1d50ecdc995a8">matrix_debug</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a06282eeb4fe8b2f42ace26e53251b7f8">cmIndex</a> (int i, int j, int dim)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">cmIndex compute array offset  <a href="#a06282eeb4fe8b2f42ace26e53251b7f8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">lapack_logical&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#af011232216fb95ef498b89e63085e6a1">leq</a> (const double *a, const double *b)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="Matrix_8cpp.html#a23488557b20e2433bc5854da388cfaa6">matrixIndex</a> (int k, int dim, int &amp;i, int &amp;j)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">find row i and column j corresponding to array index k in column major array format  <a href="#a23488557b20e2433bc5854da388cfaa6"></a><br/></td></tr>
 </table>
+<hr/><a name="_details"></a><h2>Detailed Description</h2>
+<p><a class="el" href="classMatrix.html">Matrix</a> class method implementations. </p>
+
+<p>Definition in file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a2f30f2925d601cb9a2e1d50ecdc995a8"></a><!-- doxytag: member="Matrix.cpp::matrix_debug" ref="a2f30f2925d601cb9a2e1d50ecdc995a8" args="" -->
 <div class="memitem">
@@ -108,7 +117,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00049">49</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>cmIndex compute array offset </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>i</em>&nbsp;</td><td>0-rel column index </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>j</em>&nbsp;</td><td>0-rel row index </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>dim</em>&nbsp;</td><td>dimensionality of data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>offset within 1-d array representation in col-major format </dd></dl>
+
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00054">54</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -137,7 +157,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00327">327</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00336">336</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
 </div>
 </div>
@@ -177,6 +197,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
+
+<p>find row i and column j corresponding to array index k in column major array format </p>
 
 <p>Definition at line <a class="el" href="Matrix_8cpp_source.html#l00747">747</a> of file <a class="el" href="Matrix_8cpp_source.html">Matrix.cpp</a>.</p>
 
