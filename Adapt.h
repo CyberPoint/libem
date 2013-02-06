@@ -55,7 +55,7 @@ namespace gaussmix
 @param [out] adapted_Pks cluster weight
 @return 1 on success, 0 on error
 */
-int adapt(const double *X, int n, std::vector<Matrix*> &sigma_matrix,
+int adapt(Matrix & X, int n, std::vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, Matrix &Pks, std::vector<Matrix*> &adapted_sigma_matrix,
 		Matrix &adapted_mu_matrix, Matrix &adapted_Pks);
 

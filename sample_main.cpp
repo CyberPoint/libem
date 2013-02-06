@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	}
 	// reading in and parsing the data
 	// create an array of doubles that is n by m dimensional
-	double * data = new double[n*m];
+	Matrix data(n,m);
 	int labels[n];
 
 	// initialize labels
@@ -151,16 +151,17 @@ int main(int argc, char *argv[])
 			int num_subpop = 0;
 
 			// isolate subpopulation
-			double * S = new double[n*m];
-
+			Matrix S;
+			double temp[n];
 			for (int i = 0; i < n; i++)
 			{
 				if (labels[i] == -1)
 				{
 					for (int j = 0; j < m; j++)
 					{
-						S[m*num_subpop + j] = data[i*m + j];
+						temp[j] = data.getValue(i,j);
 					}
+					S.insertRow(&temp[0],n,i);
 					num_subpop++;
 				}
 			}
@@ -197,7 +198,7 @@ int main(int argc, char *argv[])
 			{
 				cout << "Error adapting to subpop -1" << endl;
 			}
-			delete S;
+
 		    adapted_mu_local.clear();
 		    adapted_Pk_matrix.clear();
 			for (int i = 0; i < k; i++)
@@ -211,7 +212,6 @@ int main(int argc, char *argv[])
 		cout << "error encountered during processing " << endl;
 	}
 
-    delete[] data;
 
 	for (int i = 0; i < k; i++)
 	{

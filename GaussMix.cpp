@@ -183,7 +183,7 @@ using namespace std;
 // EM helper functions
 double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix *> &sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
 bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, Matrix *sigma_matrix, Matrix &mu_matrix, Matrix &Pk_matrix);
-
+double * matrixToRaw(Matrix & X);
 
 /******************************************************************************************
  * 					        IMPLEMENTATION OF PRIVATE FUNCTIONS
@@ -565,21 +565,43 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 }
 
 
+
 /*******************************************************************************************
  * 						IMPLEMENTATIONS OF PUBLIC FUNCTIONS
  ******************************************************************************************/
 
 
-int gaussmix::gaussmix_adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
+int gaussmix::gaussmix_adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, Matrix &Pks, vector<Matrix*> &adapted_sigma_matrix,
 		Matrix &adapted_mu_matrix, Matrix &adapted_Pks)
 {
-	return gaussmix::adapt(X,n,sigma_matrix,mu_matrix,Pks,adapted_sigma_matrix,adapted_mu_matrix,adapted_Pks);
+
+	int result =  gaussmix::adapt(X,n,sigma_matrix,mu_matrix,Pks,adapted_sigma_matrix,adapted_mu_matrix,adapted_Pks);
+	return result;
 }
 
-int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * labels )
+double * gaussmix::gaussmix_matrixToRaw(Matrix & X)
+{
+	int rows = X.rowCount();
+	int cols = X.colCount();
+
+	double * ptr = new double[rows * cols];
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			ptr[i*cols + j] = X.getValue(i,j);
+		}
+	}
+
+	return ptr;
+}
+
+int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * labels )
 {
 	char buffer[MAX_LINE_SIZE];
+	double temp;
+
 	FILE *f = fopen(file_name, "r");
 	if (f == NULL)
 	{
@@ -591,6 +613,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 	int cols = 0;
 	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
 	{
+		cols = 0;
+
 		if (buffer[MAX_LINE_SIZE - 1] != 0)
 		{
 			cout << "Max line size exceeded at zero relative line " << row << endl;
@@ -612,34 +636,37 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 			for (cols = 0; cols < m; cols++)
 			{
 				strtok(NULL, ":");	// bump past position label
-				sscanf(strtok(NULL, " "), "%lf", &data[row*m + cols]);
+				sscanf(strtok(NULL, " "), "%lf", &temp);
 				if (errno != 0)
 				{
 					cout << "Could not convert data at index " << row << " and " << cols << endl;
 					return 0;
 				}
+				X.update(temp,row,cols);
 			}
 		}
 		else
 		{
 			// csv-style input (data_point_1,data_point_2, etc.)
 			char *ptok = strtok(buffer, ",");
-			if (ptok) sscanf(ptok, "%lf", &data[row*m]);
+			if (ptok) sscanf(ptok, "%lf", &temp);
 			if (errno != 0)
 			{
 				cout << "Could not convert data at index " << row << " and " << cols << endl;
 				return 0;
 			}
+			X.update(temp,row,cols);
 
 			for (cols = 1; cols < m; cols++)
 			{
-				sscanf(strtok(NULL, ","), "%lf", &data[row*m + cols]);
+				sscanf(strtok(NULL, ","), "%lf", &temp);
 
 				if (errno != 0)
 				{
 					cout << "Could not convert data at index " << row << " and " << cols << endl;
 					return 0;
 				}
+				X.update(temp,row,cols);
 			}
 		}
 		row++;
@@ -649,7 +676,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, double *data, int * 
 }
 
 
-double gaussmix::gaussmix_pdf(int m, const double *X, Matrix &sigma_matrix,std::vector<double> &mu_vector)
+double gaussmix::gaussmix_pdf(int m, std::vector<double> X, Matrix &sigma_matrix,std::vector<double> &mu_vector)
 {
 
 	const double pi = 2*acos(0.0);
@@ -678,14 +705,16 @@ double gaussmix::gaussmix_pdf(int m, const double *X, Matrix &sigma_matrix,std::
 	Matrix & innerAsMatrix = meanDiffRowVec.dot(inv.dot(meanDiffColVec));
 	double exp_inner = -0.5 * innerAsMatrix.getValue(0,0);
 
+
 	// roll in weighted sum
 	double result = log(norm_fac) +  exp_inner;
 	return result;
 }
 
-double gaussmix::gaussmix_pdf_mix(int m, int k, const double *X, vector<Matrix*> &sigma_matrix,
+double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, Matrix &Pks)
 {
+
 	double sum_probs = 0.0;
 
 	for (int i = 0; i < k; i++)
@@ -695,13 +724,16 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, const double *X, vector<Matrix*>
 		sum_probs = Pks.getValue(0,i)*
 				exp(gaussmix::gaussmix_pdf(m,X,*(sigma_matrix[i]),mean_vec));
 	}
+
 	return log(sum_probs);
 
 }
 
-double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
-
+double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*> &sigma_matrix, Matrix &mu_matrix, Matrix &Pks)
 {
+
+	double * X = gaussmix::gaussmix_matrixToRaw(Y);
+
 	//create an iteration variable
 	int iterations;
 
@@ -727,13 +759,17 @@ double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> 
 	fflush(stdout);
 	double *kmeans_mu = gaussmix::kmeans(m, X, n, k);
 	
-	if (debug) printf("i called kmeans \n");
-	fflush(stdout);
+	if (debug)
+	{
+		printf("i called kmeans \n");
+		fflush(stdout);
+	}
 
 	//if you don't have anything in kmeans_mu, the rest of this will be really hard
 	if (kmeans_mu == 0)
+	{
 		return std::numeric_limits<double>::infinity();
-
+	}
 	//initialize array of identity covariance matrices, 1 per k
 	for(int gaussian = 0; gaussian < k; gaussian++)
 	{
@@ -762,8 +798,11 @@ double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> 
 		Pks.update(term1,0,gaussian);
 	}
 
-	if (debug) printf("i initialized matrices successfully \n");
-	fflush (stdout);
+	if (debug)
+	{
+		printf("i initialized matrices successfully \n");
+		fflush (stdout);
+	}
 
 	//get a new likelihood from estep to have something to start with
 	new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
@@ -789,7 +828,6 @@ double gaussmix::gaussmix_train(int n, int m, int k, double *X, vector<Matrix*> 
 		//run estep again to get a new likelihood
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
 		
-		fflush (stdout);
 		
 		//brick of sanity checks
 		if (debug) cout << " " << counter << " iteration's pnk matrix is " << endl;

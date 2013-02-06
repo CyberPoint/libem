@@ -50,7 +50,7 @@ using namespace std;
 /********************************************************************************************************
  * 						PRIVATE FUNCTION PROTOTYPES
  ********************************************************************************************************/
-int compute_expected_squares(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
+int compute_expected_squares(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		std::vector<Matrix *> &  expected_squares);
 
 int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & sigma_matrix,
@@ -65,10 +65,10 @@ int compute_new_weights(const vector<double> & alphas,const vector<double> & nor
 
 int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_constants);
 
-int compute_posteriors(const double * X, int n, int m, const Matrix & mu_matrix,
+int compute_posteriors(Matrix & X, int n, int m, const Matrix & mu_matrix,
 		const vector<Matrix *> & sigma_matrix, const Matrix & Pks, Matrix & posteriors);
 
-int compute_weighted_means(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
+int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		Matrix &  weighted_means);
 
 /*************************************************************************************************************
@@ -77,7 +77,7 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
 
 /*! \brief compute_expected_squares compute the squared-mean vectors weighted by the posteriors
  *
- * @param X n by m array of data points
+ * @param X n by m Matrix of data points
  * @param posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
  * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
  * @param[out] expected_squares vector of ptrs to mean-square matrices weighted by the posteriors (caller sets matrices to 0s)
@@ -86,7 +86,7 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
  *	note: the matrix we returned in the expected value (w.r.t norm constants) of a diagonal matrix
  *	      whose i-th diagonal entry is given by the i-th component of the dot product of a data point with itself
  */
-int compute_expected_squares(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
+int compute_expected_squares(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		std::vector<Matrix *> &  expected_squares)
 {
 	int retcode = 0;
@@ -112,7 +112,8 @@ int compute_expected_squares(const double * X,const Matrix & posteriors,const ve
 				for (int m = 0; m < num_dimensions; m++ )
 				{
 					// add in coordinate to running sum
-					pm->update(X[n*num_dimensions + m] * X[n*num_dimensions + m]*posteriors.getValue(n,k) + pm->getValue(m,m),m,m);
+					double val = X.getValue(n,m);
+					pm->update(val * val *posteriors.getValue(n,k) + pm->getValue(m,m),m,m);
 				}
 			}
 
@@ -350,7 +351,7 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
 
 /*! \brief computer_posteriors compute the poster densities for each data point for each cluster
  *
- * @param X n by m array of data points
+ * @param X n by m Matrix of data points
  * @param num_points the number of data points
  * @param mu_matrix matrix of cluster means returned from EM call (EM_Algorithm.h)
  * @param sigma_matrix vector of pointers to covariances matrices returned from EM call
@@ -358,7 +359,7 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
  * @param[out] posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
  * @return 1 on success, 0 on error
  */
-int compute_posteriors(const double * X, int num_points, Matrix & mu_matrix, vector<Matrix *> & sigma_matrix,
+int compute_posteriors(Matrix & X, int num_points, Matrix & mu_matrix, vector<Matrix *> & sigma_matrix,
 						Matrix & Pks, Matrix & posteriors)
 {
 	int retcode = 0;
@@ -381,7 +382,9 @@ int compute_posteriors(const double * X, int num_points, Matrix & mu_matrix, vec
 				// get the log likelihood density for the point
 				vector<double> mean_vec;
 				mu_matrix.getCopyOfRow(k,mean_vec);
-				double lld = gaussmix::gaussmix_pdf(num_dimensions,&X[n*num_dimensions],
+
+				std::vector<double> temp;
+				double lld = gaussmix::gaussmix_pdf(num_dimensions,X.getCopyOfRow(n,temp),
 										*(sigma_matrix[k]),mean_vec);
 
 				// compute the weighted likelihood density (un-log'd)
@@ -435,14 +438,14 @@ int compute_posteriors(const double * X, int num_points, Matrix & mu_matrix, vec
 
 /*! \brief compute_weighted_means compute the mean vectors weighted by the posteriors
  *
- * @param X n by m array of data points (n is number of data points, m is dimensionality)
+ * @param X n by m matrix of data points (n is number of data points, m is dimensionality)
  * @param posteriors n by k matrix in which posterior densities will be placed, where k is the number of clusters
  * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
  * @param[out] weighted_means the mean vectors weighted by the posteriors (caller inits to 0s matrix of right size)
  * @return 1 on success, 0 on error
  *
  */
-int compute_weighted_means(const double * X,const Matrix & posteriors,const vector<double> & norm_constants,
+int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		Matrix &  weighted_means)
 {
 	int retcode = 0;
@@ -472,7 +475,7 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
 				for (int m = 0; m < num_dimensions; m++ )
 				{
 					// add in coordinate to running sum
-					temp_vec[m] +=  X[n*num_dimensions + m]*posteriors.getValue(n,k);
+					temp_vec[m] +=  X.getValue(n,m)*posteriors.getValue(n,k);
 				}
 			}
 			// now normalize
@@ -503,7 +506,7 @@ int compute_weighted_means(const double * X,const Matrix & posteriors,const vect
  ******************************************************************/
 
 
-int gaussmix::adapt(const double *X, int n, vector<Matrix*> &sigma_matrix,
+int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, Matrix &Pks,
 		vector<Matrix*> &adapted_sigma_matrix, Matrix &adapted_mu_matrix, Matrix &adapted_Pks)
 {
