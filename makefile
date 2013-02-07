@@ -39,6 +39,7 @@ LAPACK_INC_PATH=
 LAPACK_PATH=
 BLAS_PATH=
 
+
 CXX = g++ -g3 -gdwarf-2 -fopenmp
 CC = gcc -g3 -gdwarf-2 -fopenmp
 
@@ -71,14 +72,14 @@ KMeans.o: $(EM_DIR)/KMeans.cpp $(EM_DIR)/KMeans.h
 	$(CXX) -c $(EM_DIR)/KMeans.cpp 
 
 Adapt.o: $(EM_DIR)/Adapt.cpp $(EM_DIR)/Adapt.h
-	$(CXX) -c $(EM_DIR)/Adapt.cpp 
+	$(CXX) -c $(EM_DIR)/Adapt.cpp -I$(LAPACK_INC_PATH)
 
 GaussMix.o: $(EM_DIR)/GaussMix.cpp $(EM_DIR)/GaussMix.h
-	$(CXX) -c $(EM_DIR)/GaussMix.cpp 
+	$(CXX) -c $(EM_DIR)/GaussMix.cpp -I$(LAPACK_INC_PATH) 
 
 sample_main.o: $(EM_DIR)/sample_main.cpp $(EM_DIR)/GaussMix.h $(EM_DIR)/Matrix.h
-	$(CXX) -c $(EM_DIR)/sample_main.cpp -I $(EM_DIR)
-		
+	$(CXX) -c $(EM_DIR)/sample_main.cpp -I $(EM_DIR) 
+
 
 #///// clean-up /////
 clean:

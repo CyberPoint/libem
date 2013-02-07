@@ -36,6 +36,7 @@
 #include <exception>
 #include <stdexcept>
 
+
 //! class for returning errors due to mismatched size in matrix operations */
 class SizeError: public std::runtime_error
 {

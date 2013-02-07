@@ -29,14 +29,14 @@
 /*! \file Matrix.cpp
 *   \brief Matrix class method implementations.
 */
-#include <lapacke.h>
+
 #include <stdio.h>
 #include <vector>
 #include <omp.h>
 
 #include <iostream>
 
-
+#include <lapacke.h>
 
 #include "Matrix.h"
 

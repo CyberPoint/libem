@@ -169,10 +169,14 @@
 #include <string.h>
 #include <stdarg.h>
 #include <set>
+#include <exception>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
+
+#include <lapacke.h>
 
 // for kmeans utils
 #include "KMeans.h"
@@ -651,8 +655,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 	FILE *f = fopen(file_name, "r");
 	if (f == NULL)
 	{
-		cout << "Could not open file" << endl;
-		return 0;
+		return GAUSSMIX_FILE_NOT_FOUND;
 	}
 	memset(buffer, 0, MAX_LINE_SIZE);
 	int row = 0;
@@ -663,8 +666,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 
 		if (buffer[MAX_LINE_SIZE - 1] != 0)
 		{
-			cout << "Max line size exceeded at zero relative line " << row << endl;
-			return 0;
+			if (debug) cout << "Max line size exceeded at zero relative line " << row << endl;
+			return GAUSSMIX_FILE_NOT_FOUND;
 		}
 
 		int errno = 0;
@@ -675,8 +678,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 			sscanf(plabel,"%d",&(labels[row]));
 			if (errno != 0)
 			{
-				cout << "Could not convert label at row " << row << endl;
-				return 0;
+				if (debug) cout << "Could not convert label at row " << row << endl;
+				return GAUSSMIX_FILE_NOT_FOUND;
 			}
 			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
 			for (cols = 0; cols < m; cols++)
@@ -685,8 +688,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 				sscanf(strtok(NULL, " "), "%lf", &temp);
 				if (errno != 0)
 				{
-					cout << "Could not convert data at index " << row << " and " << cols << endl;
-					return 0;
+					if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+					return GAUSSMIX_FILE_NOT_FOUND;
 				}
 				X.update(temp,row,cols);
 			}
@@ -698,8 +701,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 			if (ptok) sscanf(ptok, "%lf", &temp);
 			if (errno != 0)
 			{
-				cout << "Could not convert data at index " << row << " and " << cols << endl;
-				return 0;
+				if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+				return GAUSSMIX_FILE_NOT_FOUND;
 			}
 			X.update(temp,row,cols);
 
@@ -709,8 +712,8 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 
 				if (errno != 0)
 				{
-					cout << "Could not convert data at index " << row << " and " << cols << endl;
-					return 0;
+					if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+					return GAUSSMIX_FILE_NOT_FOUND;
 				}
 				X.update(temp,row,cols);
 			}
@@ -718,7 +721,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 		row++;
 		memset(buffer, 0, MAX_LINE_SIZE);
 	}
-	return 1;
+	return GAUSSMIX_SUCCESS;
 }
 
 
@@ -776,8 +779,8 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Ma
 
 }
 
-double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*> &sigma_matrix,
-									Matrix &mu_matrix, std::vector<double> &Pks)
+int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vector<Matrix*> &sigma_matrix,
+									Matrix &mu_matrix, std::vector<double> &Pks, double * op_likelihood)
 {
 
 	double * X = gaussmix::gaussmix_matrixToRaw(Y);
@@ -788,8 +791,11 @@ double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*>
 	//epsilon is the convergence criteria - the smaller epsilon, the narrower the convergence
 	double epsilon = .001;
 
-	//initialize a counter
+	//initialize iteration counter
 	int counter = 0;
+
+	// for return code
+	int condition = GAUSSMIX_SUCCESS;
 
 	//initialize the p_nk matrix
 	Matrix p_nk_matrix(n,k);
@@ -819,6 +825,7 @@ double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*>
 	//if you don't have anything in kmeans_mu, the rest of this will be really hard
 	if (kmeans_mu == 0)
 	{
+		delete[] X;
 		return std::numeric_limits<double>::infinity();
 	}
 	//initialize array of identity covariance matrices, 1 per k
@@ -856,11 +863,32 @@ double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*>
 	}
 
 	//get a new likelihood from estep to have something to start with
-	new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+	try
+	{
+		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+	}
+	catch (std::exception e)
+	{
+		if (debug) cout << "encountered error " << e.what() << endl;
+
+		delete[] X;
+		delete[] kmeans_mu;
+
+		// if we can't do first e-step, all bets are off
+		return GAUSSMIX_GENERAL_ERROR;
+	}
+	catch ( ... )
+	{
+		// if we can't do first e-step, all bets are off
+		delete[] X;
+		delete[] kmeans_mu;
+		return GAUSSMIX_GENERAL_ERROR;
+	}
+
 	if (debug) cout << "new likelihood is " << new_likelihood << endl;
 
 	//main loop of EM - this is where the magic happens!
-	while (fabs(new_likelihood - old_likelihood) > epsilon)
+	while ( (fabs(new_likelihood - old_likelihood) > epsilon) && (counter < max_iters))
 	{
 		if (debug) cout << "new likelihood is " << new_likelihood << endl;
 		
@@ -870,10 +898,37 @@ double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*>
 		old_likelihood = new_likelihood;
 
 		//here's the mstep exception - if you have a singular matrix, you can't do anything else
-		if ( mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks) == false) 
+		try
 		{
-			cout << "Found singular matrix - terminated." << endl;
-			break;
+			if ( mstep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks) == false)
+			{
+				if (debug) cout << "Found singular matrix - terminated." << endl;
+				condition = GAUSSMIX_NONINVERTIBLE_MATRIX_REACHED;
+				break;
+			}
+		}
+		catch (LapackError e)
+		{
+			if (debug) cout << "Found lapacke error: " << e.what() << endl;
+
+			if (counter >= 1)
+			{
+				// able to do at least 1 EM cycle
+				condition = GAUSSMIX_NONINVERTIBLE_MATRIX_REACHED;
+				break;
+			}
+			else
+			{
+				delete[] X;
+				delete[] kmeans_mu;
+				return GAUSSMIX_GENERAL_ERROR;
+			}
+		}
+		catch (...)
+		{
+			delete[] X;
+			delete[] kmeans_mu;
+			return GAUSSMIX_GENERAL_ERROR;
 		}
 		
 		//run estep again to get a new likelihood
@@ -917,7 +972,14 @@ double gaussmix::gaussmix_train(int n, int m, int k, Matrix & Y, vector<Matrix*>
 	if (debug) cout << "Total number of iterations completed by the EM Algorithm is \n" << counter << endl;
 
 	delete[] X;
-	return new_likelihood;
+	*op_likelihood =  new_likelihood;
+
+	if (condition >= 0)
+	{
+		// no convergence or convergence?
+		condition = (counter == max_iters ? GAUSSMIX_MAX_ITERS_REACHED : GAUSSMIX_SUCCESS);
+	}
+	return condition;
 }
 
 
