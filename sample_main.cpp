@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
 		}
 
 		cout << "The log likelihood (density) of the data is " << log_likelihood << endl;
+		cout << "If all is working right, for multid_data_1.csv that should be around -72" << endl;
+		cout << "If all is working right, for multid_data_2.svm it should be around -138" << endl;
 
 		// now let's restrict to the -1 subpopulation, if we have labels
 		if (labels[0] != 0)  // assume 0 indicates absence of labels
@@ -221,6 +223,9 @@ int main(int argc, char *argv[])
 					cout << "The Covariance matrix " << i << " of adapted -1 subpop is " << endl;
 					adapted_sigma_vector[i]->print();
 				}
+
+				cout << "If all is working right, for multid_data_2.svm the adapted covariance matrices " << \
+						" should have (0,0) entries around 2.5 and 5.9 respectively" << endl;
 
 			}
 			else

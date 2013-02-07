@@ -58,10 +58,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">gaussmix_pdf: compute the log of the probability of the given data point  <a href="#a787b690fc6d7037693ce39d83082b29c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#aa1a9dcf0bda08a38a17b425e42d2749f">gaussmix_pdf_mix</a> (int m, int k, std::vector&lt; double &gt; X, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">gaussmix_pdf_mix: compute the log of the mixture probability of the given data point  <a href="#aa1a9dcf0bda08a38a17b425e42d2749f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a1a476fba903b09ddbe45b07bf51271be">gaussmix_train</a> (int n, int m, int k, <a class="el" href="classMatrix.html">Matrix</a> &amp;X, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">gaussmix_train: train a Gaussian Mixture model on a given data set.  <a href="#a1a476fba903b09ddbe45b07bf51271be"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#aa7a59b9e619f80a363155469caf9de6c">gaussmix_train</a> (int n, int m, int k, int max_iters, <a class="el" href="classMatrix.html">Matrix</a> &amp;X, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks, double *likelihood)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">gaussmix_train: train a Gaussian Mixture model on a given data set.  <a href="#aa7a59b9e619f80a363155469caf9de6c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a78873d0a083ebebe3672a70c60f213ff">kmeans</a> (int dim, double *X, int n, int k)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">kmeans cluster the given data  <a href="#a78873d0a083ebebe3672a70c60f213ff"></a><br/></td></tr>
+<tr><td colspan="2"><h2>Variables</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#aafd1f4d2dd0085b2be689e99b8e6ab1e">GAUSSMIX_FILE_NOT_FOUND</a> = -1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a5c180e8636ac5f822b7f8b4ee1430f07">GAUSSMIX_GENERAL_ERROR</a> = -2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a7aadc5721180311a46383b2c908ce107">GAUSSMIX_INVALID_DATA</a> = -1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a0ea9f2f4afb32ae6990e8a0f035bd377">GAUSSMIX_MAX_ITERS_REACHED</a> = 1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#a3ee71ccb742c9d34e463197591879862">GAUSSMIX_NONINVERTIBLE_MATRIX_REACHED</a> = 2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegaussmix.html#acbfe6f595559242879ac9ee2cc91c086">GAUSSMIX_SUCCESS</a> = 0</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="af592c6765ff28a99d17cacf87a608a21"></a><!-- doxytag: member="gaussmix::adapt" ref="af592c6765ff28a99d17cacf87a608a21" args="(Matrix &amp;X, int n, std::vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks, std::vector&lt; Matrix * &gt; &amp;adapted_sigma_matrix, Matrix &amp;adapted_mu_matrix, std::vector&lt; double &gt; &amp;adapted_Pks)" -->
@@ -220,9 +227,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>1 on success, 0 on error </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>a GAUSSMIX_ condition code (see above) </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00620">620</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00624">624</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +258,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>a ptr to an array A of doubles - first row is A[0] thru A[n-1], second is A[n] thru A[2n -1] etc note: caller is responsible for freeing the memory! </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00629">629</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00633">633</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -309,9 +316,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>1 for success, 0 for an error or failure. </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>a GASSMIX_ condition code (see above). </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00646">646</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00650">650</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -364,7 +371,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>log likelihood </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00725">725</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00728">728</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -431,16 +438,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>log likelihood </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00761">761</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00764">764</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a1a476fba903b09ddbe45b07bf51271be"></a><!-- doxytag: member="gaussmix::gaussmix_train" ref="a1a476fba903b09ddbe45b07bf51271be" args="(int n, int m, int k, Matrix &amp;X, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks)" -->
+<a class="anchor" id="aa7a59b9e619f80a363155469caf9de6c"></a><!-- doxytag: member="gaussmix::gaussmix_train" ref="aa7a59b9e619f80a363155469caf9de6c" args="(int n, int m, int k, int max_iters, Matrix &amp;X, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pks, double *likelihood)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double gaussmix::gaussmix_train </td>
+          <td class="memname">int gaussmix::gaussmix_train </td>
           <td>(</td>
           <td class="paramtype">int&nbsp;</td>
           <td class="paramname"> <em>n</em>, </td>
@@ -456,6 +463,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td></td>
           <td class="paramtype">int&nbsp;</td>
           <td class="paramname"> <em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>max_iters</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -479,7 +492,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>Pks</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>Pks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>likelihood</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -496,16 +515,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>number of data points </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>dimensionality of data </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>number of clusters </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>data points </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>max</em>&nbsp;</td><td>number of EM iterations </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>X</em>&nbsp;</td><td>data points </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix that holds the mu approximations </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>Pks</em>&nbsp;</td><td>local copy of the cluster weights generated by the caller of EM that holds the Pk's calculated </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>likelihood</em>&nbsp;</td><td>the log likelihood (density) of the data (or std::numeric_limits::infinity() on fatal error) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>the log likelihood (density) of the data (or std::numeric_limits::infinity() on error) </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>one of the GAUSSMIX_ condition codes (see above) </dd></dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00779">779</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00782">782</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -559,6 +580,97 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <dl class="return"><dt><b>Returns:</b></dt><dd>heap-allocated k * dim array of cluster centroids (call must free) or 0 on error </dd></dl>
 
 <p>Definition at line <a class="el" href="KMeans_8cpp_source.html#l00358">358</a> of file <a class="el" href="KMeans_8cpp_source.html">KMeans.cpp</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="aafd1f4d2dd0085b2be689e99b8e6ab1e"></a><!-- doxytag: member="gaussmix::GAUSSMIX_FILE_NOT_FOUND" ref="aafd1f4d2dd0085b2be689e99b8e6ab1e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#aafd1f4d2dd0085b2be689e99b8e6ab1e">gaussmix::GAUSSMIX_FILE_NOT_FOUND</a> = -1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00063">63</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5c180e8636ac5f822b7f8b4ee1430f07"></a><!-- doxytag: member="gaussmix::GAUSSMIX_GENERAL_ERROR" ref="a5c180e8636ac5f822b7f8b4ee1430f07" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#a5c180e8636ac5f822b7f8b4ee1430f07">gaussmix::GAUSSMIX_GENERAL_ERROR</a> = -2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00069">69</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7aadc5721180311a46383b2c908ce107"></a><!-- doxytag: member="gaussmix::GAUSSMIX_INVALID_DATA" ref="a7aadc5721180311a46383b2c908ce107" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#a7aadc5721180311a46383b2c908ce107">gaussmix::GAUSSMIX_INVALID_DATA</a> = -1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00066">66</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0ea9f2f4afb32ae6990e8a0f035bd377"></a><!-- doxytag: member="gaussmix::GAUSSMIX_MAX_ITERS_REACHED" ref="a0ea9f2f4afb32ae6990e8a0f035bd377" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#a0ea9f2f4afb32ae6990e8a0f035bd377">gaussmix::GAUSSMIX_MAX_ITERS_REACHED</a> = 1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00057">57</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3ee71ccb742c9d34e463197591879862"></a><!-- doxytag: member="gaussmix::GAUSSMIX_NONINVERTIBLE_MATRIX_REACHED" ref="a3ee71ccb742c9d34e463197591879862" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#a3ee71ccb742c9d34e463197591879862">gaussmix::GAUSSMIX_NONINVERTIBLE_MATRIX_REACHED</a> = 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00060">60</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acbfe6f595559242879ac9ee2cc91c086"></a><!-- doxytag: member="gaussmix::GAUSSMIX_SUCCESS" ref="acbfe6f595559242879ac9ee2cc91c086" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="namespacegaussmix.html#acbfe6f595559242879ac9ee2cc91c086">gaussmix::GAUSSMIX_SUCCESS</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="GaussMix_8h_source.html#l00054">54</a> of file <a class="el" href="GaussMix_8h_source.html">GaussMix.h</a>.</p>
 
 </div>
 </div>

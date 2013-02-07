@@ -30,19 +30,19 @@
 /*! \file GaussMix.cpp
     \version 1.0
     \brief core libGaussMix++ em algorithm method implementations.
-    \author Elizabeth Garbee, James Ulrich, and CyberPoint Labs, CyberPoint International LLC
+    \author Elizabeth Garbee & CyberPoint Labs, CyberPoint International LLC
     \date Summer 2012
 
 */
 
-/*! \mainpage libGaussMix++: An Expectation Maximization Algorithm for Training Gaussian Mixture Models
+/*! \mainpage libGaussMix: An Expectation Maximization Algorithm for Training Gaussian Mixture Models
 *
-*\authors Elizabeth Garbee, James Ulrich, CyberPoint Labs
-*\date October 15, 2012
+*\authors Elizabeth Garbee & CyberPoint Labs
+*\date February 7, 2013
 *
-* Copyright 2012 CyberPoint International LLC.
+* Copyright 2013 CyberPoint International LLC.
 *
-* The contents of libGaussMix++ are offered under the NewBSD license:
+* The contents of libGaussMix are offered under the NewBSD license:
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
@@ -91,39 +91,39 @@
 * - Repeat: an E step to get a new L and new P(n|k)s, followed by an M step to get new mu(k)s, sigma(k)s, and P(k)s,
 * - Stop when the value of L is no longer meaningfully changing.
 *
-* The libGaussMix++ implementation of the EM algorithm uses the "KMeans" clustering algorithm to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
+* The libGaussMix implementation of the EM algorithm uses the "KMeans" clustering algorithm to provide the initial guesses for the means of the K Gaussians, in order to increase the efficiency and efficacy of
 * EM. 
 *
-* The libGaussMix++ code base also includes support for adapation of a GMM to a specific subpopulation of the population on which it was trained. In a sense, this
+* The libGaussMix code base also includes support for adapation of a GMM to a specific subpopulation of the population on which it was trained. In a sense, this
 * "biases" the model towards the subpopulation. If the population splits into distinct subpopulations, one may then classify a sample as belonging to a particular
 * subpopulation, by assiging it to the subpopulation  under whose adapted GMM it has the highest likelihood density. One often normalizes
 * these scores by the unadapted GMM density. See reference 2 for details. This functionality is provided by the adapt() method of the GaussMix API.
 *
 * \section usage_sec Usage
 *
-* libGaussMix++ does not actually build as a library. The API is provided in GaussMix.h; API implementations are contained in GaussMix.cpp. The implementations
+* The libGaussMix library builds into both .a and .so files. The API is provided in GaussMix.h; API implementations are contained in GaussMix.cpp. The implementations
 * use helper routines provided in Matrix.h/ Matrix.cpp, which in turn wrap LAPACK linear algebra functions, and in KMeans.h/ KMeans.cpp, to generate initial model parameter guesses.
-* To build these files into an executable with a sample driver function provided in sample_main.cpp, follow these steps:
+* To build the lib/API into an executable using the sample driver function provided in sample_main.cpp, follow these steps:
 *
 * - 1. Install BLAS, LAPACK, and LAPACKE on your machine if they're not already there (c.f. http://www.netlib.org/lapack/, which bundles a reference vesion of BLAS).
-* - 2. Update the environment variables in the libGaussMix++ makefile to point to your environment's BLAS and LAPACK header and library locations.
-* - 3. run make on the libGaussMix++ makefile.
+* - 2. Update the environment variables in libgaussmix.inc to point to your environment's BLAS and LAPACK header and library locations.
+* - 3. run make on the libGaussMix makefile.
 * - 4. run the resulting executable via: "gaussmix <data_file> <num_dimensions> <num_data_points> <num_clusters>". \n
 *      Try using one of the sample *.csv or *.svm data files as the first argument: e.g. "gaussmix multid_data_1.csv 3 20 2".
 *
-* The libGaussMix++ source code has been built and tested on SL6.2 using gcc 4.4.5.
+* The libGaussMix source code has been built and tested on SL6.2 using gcc 4.4.5.
 * 
 *
 * \section example_sec Caller Example
 *
-* For an example "main" that invokes the libGaussMix++ API routines, see sample_main.cpp.
+* For an example "main" that invokes the libGaussMix API routines, see sample_main.cpp.
 *
 * \section Notes
 *
 * 1. Per the first reference, the values of the Gaussian density functions may be so small as to underflow to zero, and therefore, it is desirable to perform
 * the EM algorithm in the log domain. This implementation takes that approach.
 *
-* 2. libGaussMix++ supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files
+* 2. libGaussMix supports csv and svm-style data formats (c.f. www.csie.ntu.edu.tw/~cjlin/libsvm/). Sample files
 * (multid_data_1.csv and multid_data_2.svm, respectively) are provided for convenience. The former consists of 20
 * three-dimensional data points falling into two clusters centered on (1,1,1) and (100,100,100). The second is similarly
 * distributed, with a "+1" cluster centered on (10,10,10) and "-1" cluster centered on (50,50,50).

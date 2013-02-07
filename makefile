@@ -29,37 +29,33 @@
 
 EM_DIR=.
 
-#
-# you must set the next three variables to the appropriate values for your environment
-# LAPACK_INC_PATH must be the path to lapacke.h
-# LAPACK_PATH must be the path to libpacke.a and liblapack.a
-# BLAS_PATH must be the path to librefblas.a
-#
-LAPACK_INC_PATH=
-LAPACK_PATH=
-BLAS_PATH=
+# specify paths to BLAS and LAPACK includes here
+include gaussmix.inc
 
-
-CXX = g++ -g3 -gdwarf-2 -fopenmp
-CC = gcc -g3 -gdwarf-2 -fopenmp
+CXX = g++ -g3 -gdwarf-2 -fopenmp -fPIC
+CC = gcc -g3 -gdwarf-2 -fopenmp -fPIC
 
 all: gaussmix
 
-debug: CXX = g++ -g3 -gdwarf-2 -fopenmp -DDEBUG -g
-debug: CC = gcc -g3 -gdwarf-2 -fopenmp -DDEBUG -g
+debug: CXX = g++ -g3 -gdwarf-2 -fopenmp -DDEBUG -g -fPIC
+debug: CC = gcc -g3 -gdwarf-2 -fopenmp -DDEBUG -g -fPIC
 debug: gaussmix    
 
 #///// LINK STEPS /////
 
 
-OBJS = Matrix.o Adapt.o KMeans.o GaussMix.o sample_main.o
-
+OBJS = Matrix.o Adapt.o KMeans.o GaussMix.o  
 
 #-- Build-only target --
-gaussmix: $(OBJS)
+gaussmix: $(OBJS) sample_main.o
 	@echo LAPACK_PATH is set to $(LAPACK_PATH)
 	@echo BLAS_PATH is set to $(BLAS_PATH)
-	$(CXX) -o gaussmix $(OBJS) -L$(LAPACK_PATH) -llapacke -llapack -L$(BLAS_PATH) -lrefblas -lgfortran 
+	ar -cvq libgaussmix.a $(OBJS)
+	gcc -shared -Wl,-soname,libgaussmix.so.1 -o libgaussmix.so.1.0 $(OBJS)
+	ln -fs libgaussmix.so.1.0 libgaussmix.so.1
+	ln -fs libgaussmix.so.1.0 libgaussmix.so
+	$(CXX) -o gaussmix sample_main.o -L$(EM_DIR) -lgaussmix -L$(LAPACK_PATH) -llapacke -llapack \
+		-L$(BLAS_PATH) -l$(BLAS_NAME) -lgfortran 
 
 #///// COMPILE STEPS /////
 
