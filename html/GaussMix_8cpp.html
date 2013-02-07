@@ -80,16 +80,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a706068f562dd5c64a8b7bbd4b2298dd1">MAX_LINE_SIZE</a>&nbsp;&nbsp;&nbsp;1000</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#adee8c6d2fc20a1194cf64c481e7b6353">sqr</a>(x)&nbsp;&nbsp;&nbsp;((x)*(x))</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#ac1e416de5659d4e9f41155ce3f949006">estep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;Pk_matrix)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">estep is the function that calculates the L and Pnk for a given data point(n) and gaussian(k).  <a href="#ac1e416de5659d4e9f41155ce3f949006"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a6f9e596ae92e8687d9827de428495044">mstep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;Pk_matrix)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">mstep is the function that approximates the mu, sigma and P(k) paramters for a given Gaussian fit.  <a href="#a6f9e596ae92e8687d9827de428495044"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a22a2fa80ef93382d73c58e4a242c476f">mstep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, <a class="el" href="classMatrix.html">Matrix</a> *sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;Pk_matrix)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a6930db5e25d6b4f9bfdf42be37a032f5">estep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">estep is the function that calculates the L and Pnk for a given data point(n) and gaussian(k).  <a href="#a6930db5e25d6b4f9bfdf42be37a032f5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a0c63542e8d907e1b3600c3fcbcd145a9">matrixToRaw</a> (<a class="el" href="classMatrix.html">Matrix</a> &amp;X)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#a0c39cb88bd208489d7d118de0cb63e7b">mstep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, vector&lt; <a class="el" href="classMatrix.html">Matrix</a> * &gt; &amp;sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">mstep is the function that approximates the mu, sigma and P(k) paramters for a given Gaussian fit.  <a href="#a0c39cb88bd208489d7d118de0cb63e7b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="GaussMix_8cpp.html#ac0ee48ac300342f2b84eabfeed525994">mstep</a> (int n, int m, int k, double *X, <a class="el" href="classMatrix.html">Matrix</a> &amp;p_nk_matrix, <a class="el" href="classMatrix.html">Matrix</a> *sigma_matrix, <a class="el" href="classMatrix.html">Matrix</a> &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>core libGaussMix++ em algorithm method implementations. </p>
 <dl class="version"><dt><b>Version:</b></dt><dd>1.0 </dd></dl>
-<dl class="author"><dt><b>Author:</b></dt><dd>Elizabeth Garbee and CyberPoint Labs, CyberPoint International LLC </dd></dl>
+<dl class="author"><dt><b>Author:</b></dt><dd>Elizabeth Garbee, James Ulrich, and CyberPoint Labs, CyberPoint International LLC </dd></dl>
 <dl class="date"><dt><b>Date:</b></dt><dd>Summer 2012 </dd></dl>
 
 <p>Definition in file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
@@ -105,7 +106,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00168">168</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00194">194</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -120,7 +121,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00175">175</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00201">201</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -135,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00163">163</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00189">189</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -150,7 +151,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00166">166</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00192">192</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -165,7 +166,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00170">170</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00196">196</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
@@ -185,12 +186,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00161">161</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00187">187</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ac1e416de5659d4e9f41155ce3f949006"></a><!-- doxytag: member="GaussMix.cpp::estep" ref="ac1e416de5659d4e9f41155ce3f949006" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, Matrix &amp;Pk_matrix)" -->
+<a class="anchor" id="a6930db5e25d6b4f9bfdf42be37a032f5"></a><!-- doxytag: member="GaussMix.cpp::estep" ref="a6930db5e25d6b4f9bfdf42be37a032f5" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -239,8 +240,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>Pk_matrix</em></td><td>&nbsp;</td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>Pk_vec</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -261,16 +262,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td valign="top"></td><td valign="top"><em>p_nk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the pnk's calculated </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of mean vectors generated by caller </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>Pk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the Pk's calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pk_vec</em>&nbsp;</td><td>vector generated by the caller of EM that holds the Pk's calculated </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00203">203</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00231">231</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a6f9e596ae92e8687d9827de428495044"></a><!-- doxytag: member="GaussMix.cpp::mstep" ref="a6f9e596ae92e8687d9827de428495044" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, Matrix &amp;Pk_matrix)" -->
+<a class="anchor" id="a0c63542e8d907e1b3600c3fcbcd145a9"></a><!-- doxytag: member="GaussMix.cpp::matrixToRaw" ref="a0c63542e8d907e1b3600c3fcbcd145a9" args="(Matrix &amp;X)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double* matrixToRaw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>X</em></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0c39cb88bd208489d7d118de0cb63e7b"></a><!-- doxytag: member="GaussMix.cpp::mstep" ref="a0c39cb88bd208489d7d118de0cb63e7b" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, vector&lt; Matrix * &gt; &amp;sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -319,8 +338,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>Pk_matrix</em></td><td>&nbsp;</td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>Pk_vec</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -341,16 +360,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td valign="top"></td><td valign="top"><em>p_nk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the pnk's calculated </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>sigma_matrix</em>&nbsp;</td><td>vector of matrix pointers generated by the caller of EM that holds the sigmas calculated </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>mu_matrix</em>&nbsp;</td><td>matrix of mean vectors generated by caller </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>Pk_matrix</em>&nbsp;</td><td>matrix generated by the caller of EM that holds the Pk's calculated </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>Pk_vec</em>&nbsp;</td><td>vector generated by the caller of EM that holds the Pk's calculated </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00408">408</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GaussMix_8cpp_source.html#l00450">450</a> of file <a class="el" href="GaussMix_8cpp_source.html">GaussMix.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a22a2fa80ef93382d73c58e4a242c476f"></a><!-- doxytag: member="GaussMix.cpp::mstep" ref="a22a2fa80ef93382d73c58e4a242c476f" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, Matrix *sigma_matrix, Matrix &amp;mu_matrix, Matrix &amp;Pk_matrix)" -->
+<a class="anchor" id="ac0ee48ac300342f2b84eabfeed525994"></a><!-- doxytag: member="GaussMix.cpp::mstep" ref="ac0ee48ac300342f2b84eabfeed525994" args="(int n, int m, int k, double *X, Matrix &amp;p_nk_matrix, Matrix *sigma_matrix, Matrix &amp;mu_matrix, std::vector&lt; double &gt; &amp;Pk_vec)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -399,8 +418,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classMatrix.html">Matrix</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>Pk_matrix</em></td><td>&nbsp;</td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>Pk_vec</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -428,7 +447,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 5 Nov 2012 for EM by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 7 Feb 2013 for EM by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

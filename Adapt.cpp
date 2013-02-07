@@ -2,6 +2,8 @@
 # Copyright (c) 2012, CyberPoint International, LLC
 # All rights reserved.
 #
+# This software is offered under the NewBSD license:
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -61,12 +63,12 @@ int compute_new_means(const Matrix & mu_matrix,const Matrix & weighted_means,con
 						Matrix & adapted_mu_matrix);
 
 int compute_new_weights(const vector<double> & alphas,const vector<double> & norm_constants, int num_points,
-		const Matrix & Pks, Matrix & new_weights);
+		const std::vector<double> & Pks, std::vector<double> & new_weights);
 
 int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_constants);
 
 int compute_posteriors(Matrix & X, int n, int m, const Matrix & mu_matrix,
-		const vector<Matrix *> & sigma_matrix, const Matrix & Pks, Matrix & posteriors);
+		const vector<Matrix *> & sigma_matrix, const std::vector<double> & Pks, Matrix & posteriors);
 
 int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		Matrix &  weighted_means);
@@ -261,12 +263,12 @@ int compute_new_means(const Matrix & mu_matrix,const Matrix & weighted_means,con
  * @param alphas the alpha constants to use in the weight computation
  * @param norm_constants the normalization constants (i-th constant is for i-th cluster)
  * @param num_points number of data points
- * @param Pks cluster weights as a 1 X (num_clusters) Matrix
- * @param[out] new_weights the new cluster weights as a 1 X (num_clusters) Matrix
+ * @param Pks cluster weights
+ * @param[out] new_weights the new cluster weights
  * @return 1 on success, 0 on error
  */
 int compute_new_weights(const vector<double> & alphas,const vector<double> & norm_constants, int num_points,
-		const Matrix & Pks, Matrix & new_weights)
+		const std::vector<double> & Pks, std::vector<double> & new_weights)
 {
 	int retcode = 0;
 
@@ -276,7 +278,7 @@ int compute_new_weights(const vector<double> & alphas,const vector<double> & nor
 		 *  where v_i are the normalization constants, N is the number of data points,
 		 *  w_i is the old weight, and Y is 1/(sum of all new weights)
 		 */
-		int num_clusters = new_weights.colCount();
+		int num_clusters = new_weights.size();
 
 		double sum_weights = 0.0;
 
@@ -286,15 +288,15 @@ int compute_new_weights(const vector<double> & alphas,const vector<double> & nor
 		#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
-			double temp = alphas[k] * norm_constants[k]/num_points + (1 - alphas[k])*Pks.getValue(0,k);
+			double temp = alphas[k] * norm_constants[k]/num_points + (1 - alphas[k])*Pks[k];
 			sum_weights += temp;
-			new_weights.update(temp,0,k);
+			new_weights[k] = temp;
 		}
 
 		// now re-normalize
 		for (int k = 0; k < num_clusters; k++)
 		{
-			new_weights.update(new_weights.getValue(0,k)/sum_weights,0,k);
+			new_weights[k] = new_weights[k]/sum_weights;
 		}
 
 		retcode = 1;
@@ -360,7 +362,7 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
  * @return 1 on success, 0 on error
  */
 int compute_posteriors(Matrix & X, int num_points, Matrix & mu_matrix, vector<Matrix *> & sigma_matrix,
-						Matrix & Pks, Matrix & posteriors)
+						std::vector<double> & Pks, Matrix & posteriors)
 {
 	int retcode = 0;
 	int num_clusters = mu_matrix.rowCount();
@@ -388,7 +390,7 @@ int compute_posteriors(Matrix & X, int num_points, Matrix & mu_matrix, vector<Ma
 										*(sigma_matrix[k]),mean_vec);
 
 				// compute the weighted likelihood density (un-log'd)
-				double post_prob = exp(lld)*Pks.getValue(0,k);
+				double post_prob = exp(lld)*Pks[k];
 				posteriors.update(post_prob,n,k);
 				if (debug)
 				{
@@ -507,8 +509,8 @@ int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<dou
 
 
 int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
-		Matrix &mu_matrix, Matrix &Pks,
-		vector<Matrix*> &adapted_sigma_matrix, Matrix &adapted_mu_matrix, Matrix &adapted_Pks)
+		Matrix &mu_matrix, std::vector<double> &Pks,
+		vector<Matrix*> &adapted_sigma_matrix, Matrix &adapted_mu_matrix, std::vector<double> &adapted_Pks)
 {
 	int num_clusters = mu_matrix.rowCount();		// number of gaussians in mix
 	int num_dimensions = mu_matrix.colCount();		// number of data dimensions
@@ -518,7 +520,7 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 	 * 1. construct an n X k "posterior" matrix of weighted density values p_nk = P(n|k)*P(k)/Q_n
 	 * for each data point, where Q_n is the normalization factor given by the sum of P(n|k)*P(k) over all k.
 	*/
-	Matrix posteriors(n,Pks.colCount());
+	Matrix posteriors(n,Pks.size());
 	retcode = compute_posteriors(X,n,mu_matrix,sigma_matrix,Pks,posteriors);
 
 	if (debug)

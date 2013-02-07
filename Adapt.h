@@ -2,6 +2,8 @@
 # Copyright (c) 2012, CyberPoint International, LLC
 # All rights reserved.
 #
+# This software is offered under the NewBSD license:
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -52,12 +54,12 @@ namespace gaussmix
 @param [in] Pks cluster weights returned by EM call
 @param[out] adapted_sigma_matrix vector of covariance matrices
 @param [out] adapted_mu_matrix cluster means
-@param [out] adapted_Pks cluster weight
+@param [out] adapted_Pks cluster weights
 @return 1 on success, 0 on error
 */
 int adapt(Matrix & X, int n, std::vector<Matrix*> &sigma_matrix,
-		Matrix &mu_matrix, Matrix &Pks, std::vector<Matrix*> &adapted_sigma_matrix,
-		Matrix &adapted_mu_matrix, Matrix &adapted_Pks);
+		Matrix &mu_matrix, std::vector<double> & Pks, std::vector<Matrix*> &adapted_sigma_matrix,
+		Matrix &adapted_mu_matrix, std::vector<double> &adapted_Pks);
 
 
 #endif /* ADAPT_H_ */

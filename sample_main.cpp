@@ -2,6 +2,8 @@
 # Copyright (c) 2012, CyberPoint International, LLC
 # All rights reserved.
 #
+# This software is offered under the NewBSD license:
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -122,7 +124,7 @@ int main(int argc, char *argv[])
 	}
 	//create mean and Pk matrices for EM to fill
 	Matrix mu_local(k,m);
-	Matrix Pk_matrix(1,k);
+	std::vector<double> Pk_matrix(k,0.0);
 
 	// run the EM function
 	double log_likelihood = 0;
@@ -132,7 +134,15 @@ int main(int argc, char *argv[])
 
 		// print results
 		cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
-		Pk_matrix.print();
+
+		std::string s;
+		for (int i = 0; i < k; i++)
+		{
+			s += Pk_matrix[i];
+			s += " ";
+		}
+		cout << s << endl;
+
 
 		cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
 		mu_local.print();
@@ -174,7 +184,7 @@ int main(int argc, char *argv[])
 			}
 			//create mean and Pk matrices for adapt rtn to fill
 			Matrix adapted_mu_local(k,m);
-			Matrix adapted_Pk_matrix(1,k);
+			std::vector<double> adapted_Pk_matrix(k,0.0);
 
 			if ((num_subpop > 2) &&
 				(gaussmix::gaussmix_adapt(S,num_subpop,sigma_vector,mu_local,Pk_matrix,
@@ -182,7 +192,15 @@ int main(int argc, char *argv[])
 			{
 				// print results
 				cout << "The matrix of adapted -1 subpop Pk's is " << endl;
-				adapted_Pk_matrix.print();
+
+				std::string s;
+				for (int i = 0; i < k; i++)
+				{
+					s += adapted_Pk_matrix[i];
+					s += " ";
+				}
+				cout << s << endl;
+
 
 				cout << "The matrix of adapted -1 subpop mu's is " << endl;
 				adapted_mu_local.print();
