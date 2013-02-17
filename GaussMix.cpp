@@ -771,7 +771,7 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Ma
 	{
 		std:vector<double> mean_vec;
 		mu_matrix.getCopyOfRow(i,mean_vec);
-		sum_probs = Pks[i]*
+		sum_probs += Pks[i]*
 				exp(gaussmix::gaussmix_pdf(m,X,*(sigma_matrix[i]),mean_vec));
 	}
 
