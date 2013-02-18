@@ -170,6 +170,7 @@
 #include <stdarg.h>
 #include <set>
 #include <exception>
+#include <syslog.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -764,17 +765,15 @@ double gaussmix::gaussmix_pdf(int m, std::vector<double> X, Matrix &sigma_matrix
 double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Matrix*> &sigma_matrix,
 		Matrix &mu_matrix, std::vector<double> &Pks)
 {
-
 	double sum_probs = 0.0;
 
 	for (int i = 0; i < k; i++)
 	{
 		std:vector<double> mean_vec;
 		mu_matrix.getCopyOfRow(i,mean_vec);
-		sum_probs = Pks[i]*
+		sum_probs += Pks[i]*
 				exp(gaussmix::gaussmix_pdf(m,X,*(sigma_matrix[i]),mean_vec));
 	}
-
 	return log(sum_probs);
 
 }
