@@ -32,6 +32,7 @@
 #ifndef MATRIX_HEADER_H
 #define MATRIX_HEADER_H
 
+#include <vector>
 #include <string>
 #include <exception>
 #include <stdexcept>
