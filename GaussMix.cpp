@@ -852,7 +852,7 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	{
 		//all of the Pks have to sum to one
 		double term1 = 1.0 / k;
-		Pks[gaussian] = term1;
+		Pks.push_back(term1);
 	}
 
 	if (debug)
