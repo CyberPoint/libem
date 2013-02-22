@@ -55,9 +55,8 @@ using namespace std;
 int compute_expected_squares(Matrix & X,const Matrix & posteriors,const vector<double> & norm_constants,
 		std::vector<Matrix *> &  expected_squares);
 
-int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & sigma_matrix,
-						const vector<double> & alphas,vector <Matrix *> & expected_squares,
-						vector <Matrix *> & adapted_sigma_matrix);
+int compute_new_covariances(const Matrix & mu_matrix, const Matrix & nu_matrix, 
+		const vector<Matrix * > & sigma_matrix, const vector<double> & alphas,vector <Matrix *> & expected_squares, vector <Matrix *> & adapted_sigma_matrix);
 
 int compute_new_means(const Matrix & mu_matrix,const Matrix & weighted_means,const vector<double> & alphas,
 						Matrix & adapted_mu_matrix);
@@ -143,15 +142,16 @@ int compute_expected_squares(Matrix & X,const Matrix & posteriors,const vector<d
 /*! \brief compute_new_covariances
  *
  * @param mu_matrix matrix of old cluster means
+ * @param nu_matrix matrix of adapated cluster means
  * @param sigma_matrix vector of (ptrs to) old covariance matrices
  * @param alphas the alpha constants used for weight computations
  * @param expected_squares the expected square means returned from compute_expected_squares
  * @param[out] adapted_sigma_matrix (ptrs to) the new covariance matrices (caller inits to 0)
  * @return 1 on success, 0 on error
  */
-int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & sigma_matrix,
-						const vector<double> & alphas,vector <Matrix *> & expected_squares,
-						vector <Matrix *> & adapted_sigma_matrix)
+int compute_new_covariances(const Matrix & mu_matrix, const Matrix & nu_matrix, 
+	const vector<Matrix * > & sigma_matrix, const vector<double> & alphas,
+	vector <Matrix *> & expected_squares, vector <Matrix *> & adapted_sigma_matrix)
 {
 	int retcode = 0;
 
@@ -187,7 +187,7 @@ int compute_new_covariances(const Matrix & mu_matrix, const vector<Matrix * > & 
 					old_val *= (1 - alphas[k]);
 					if (i == j)
 					{
-						double temp = mu_matrix.getValue(k,j);
+						double temp = nu_matrix.getValue(k,j);
 						old_val -= temp*temp;
 					}
 					adapted_sigma_matrix[k]->update(new_val + old_val,i,j);
@@ -609,7 +609,7 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 	 */
 	if (retcode != 0)
 	{
-		retcode = compute_new_covariances(mu_matrix,sigma_matrix,alphas,expected_squares,adapted_sigma_matrix);
+		retcode = compute_new_covariances(mu_matrix,adapted_mu_matrix, sigma_matrix,alphas,expected_squares,adapted_sigma_matrix);
 	}
 
 	if (expected_squares.size() > 0)
