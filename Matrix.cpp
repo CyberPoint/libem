@@ -217,7 +217,7 @@ void Matrix::assign(double val, int i, int j)
 @param i 0-rel row number
 @param j 0-rel column number
 */
-void Matrix::update(double val, int i, int j)
+void Matrix::update(double val, int i, int j) 
 {
 	if (j>=numCols || j<0) 
 		{
