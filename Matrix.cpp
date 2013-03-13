@@ -226,7 +226,7 @@ void Matrix::update(double val, int i, int j)
 		}
 	if (i>=numRows || i<0) throw SizeError((char *)"Error: attempt to write value to a non-existent row");
 	columns[j][i] = val;
-	changed = true;
+	changed = true; 
 }
 
 
