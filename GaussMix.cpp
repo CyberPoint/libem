@@ -181,7 +181,7 @@
 
 // for kmeans utils
 #include "KMeans.h"
-
+ 
 // for adaptation utils
 #include "Adapt.h"
 
@@ -203,7 +203,7 @@
 /*
  * SET THIS TO 1 FOR DEBUGGING STATEMENT SUPPORT (via std out)
  */
-#define debug 0
+#define debug 1
 
 using namespace std;
 
@@ -752,6 +752,7 @@ double gaussmix::gaussmix_pdf(int m, std::vector<double> X, Matrix &sigma_matrix
 	Matrix & inv = sigma_matrix.inv();
 
 	// get exp of inner product
+	// inv is mxm, rowvec is 1xm, colvec is mx1
 	Matrix & innerAsMatrix = meanDiffRowVec.dot(inv.dot(meanDiffColVec));
 	double exp_inner = -0.5 * innerAsMatrix.getValue(0,0);
 
