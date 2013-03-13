@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <vector>
 #include <omp.h>
-
+#include<syslog.h>
 #include <iostream>
 
 #include <lapacke.h>
@@ -219,7 +219,11 @@ void Matrix::assign(double val, int i, int j)
 */
 void Matrix::update(double val, int i, int j)
 {
-	if (j>=numCols || j<0) throw SizeError((char *)"Error: attempt to write value to a non-existent column");
+	if (j>=numCols || j<0) 
+		{
+		syslog(LOG_WARNING, "attempting to update value (%d, %d) in matrix of size %dx%d", i, j, numRows, numCols);
+		throw SizeError((char *)"Error: attempt to write value to a non-existent column");
+		}
 	if (i>=numRows || i<0) throw SizeError((char *)"Error: attempt to write value to a non-existent row");
 	columns[j][i] = val;
 	changed = true;
