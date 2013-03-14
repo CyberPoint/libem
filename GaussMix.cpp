@@ -203,7 +203,7 @@
 /*
  * SET THIS TO 1 FOR DEBUGGING STATEMENT SUPPORT (via std out)
  */
-#define debug 1
+#define debug 0
 
 using namespace std;
 
@@ -356,13 +356,13 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug)
 			{
 				cout << "Pk_vec is: " << endl;
-				std::string s;
+				std::string s="";
 				for (int i = 0; i < k; i++)
 				{
 					s += Pk_vec[i];
 					s += " ";
 				}
-				cout << s << endl;
+				cout << s.c_str() << endl;
 
 			}
 
@@ -853,7 +853,7 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	{
 		//all of the Pks have to sum to one
 		double term1 = 1.0 / k;
-		Pks.push_back(term1);
+		Pks[gaussian]=term1;
 	}
 
 	if (debug)
@@ -865,7 +865,9 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	//get a new likelihood from estep to have something to start with
 	try
 	{
+		if (debug) printf("about to call e-step, Pks has size %d", Pks.size());
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
+
 	}
 	catch (std::exception e)
 	{
@@ -972,6 +974,7 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	if (debug) cout << "Total number of iterations completed by the EM Algorithm is \n" << counter << endl;
 
 	delete[] X;
+	
 	*op_likelihood =  new_likelihood;
 
 	if (condition >= 0)

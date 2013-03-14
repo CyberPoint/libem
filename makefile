@@ -79,4 +79,4 @@ sample_main.o: $(EM_DIR)/sample_main.cpp $(EM_DIR)/GaussMix.h $(EM_DIR)/Matrix.h
 
 #///// clean-up /////
 clean:
-	rm -f *.o gaussmix
+	rm -f *.o gaussmix libgaussmix.*
