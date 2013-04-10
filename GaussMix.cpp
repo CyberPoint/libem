@@ -188,6 +188,9 @@
 //API header file
 #include "GaussMix.h"
 
+// for error handling in C libraries
+#include <errno.h>
+
 //#define statements - change #debug to 1 if you want to see EM's calculations as it goes
 #define sqr(x) ((x)*(x))
 
@@ -203,7 +206,7 @@
 /*
  * SET THIS TO 1 FOR DEBUGGING STATEMENT SUPPORT (via std out)
  */
-#define debug 0
+#define debug 1
 
 using namespace std;
 
@@ -661,8 +664,11 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 	memset(buffer, 0, MAX_LINE_SIZE);
 	int row = 0;
 	int cols = 0;
+	// Reset error flag so it will reflect local status
+	errno = 0;
 	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
 	{
+	  cout << "Parsing line: " << buffer << endl;
 		cols = 0;
 
 		if (buffer[MAX_LINE_SIZE - 1] != 0)
@@ -670,8 +676,6 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 			if (debug) cout << "Max line size exceeded at zero relative line " << row << endl;
 			return GAUSSMIX_FILE_NOT_FOUND;
 		}
-
-		int errno = 0;
 		if (strstr(buffer,":"))
 		{
 			// we have svm format (labelled data)
@@ -679,7 +683,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 			sscanf(plabel,"%d",&(labels[row]));
 			if (errno != 0)
 			{
-				if (debug) cout << "Could not convert label at row " << row << endl;
+				if (debug) cout << "Could not convert label at row " << row << ": " << strerror(errno) << endl;
 				return GAUSSMIX_FILE_NOT_FOUND;
 			}
 			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
@@ -689,7 +693,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 				sscanf(strtok(NULL, " "), "%lf", &temp);
 				if (errno != 0)
 				{
-					if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+					if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
 					return GAUSSMIX_FILE_NOT_FOUND;
 				}
 				X.update(temp,row,cols);
@@ -698,11 +702,12 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 		else
 		{
 			// csv-style input (data_point_1,data_point_2, etc.)
-			char *ptok = strtok(buffer, ",");
+		        char *ptok = strtok(buffer, ",");
 			if (ptok) sscanf(ptok, "%lf", &temp);
 			if (errno != 0)
 			{
-				if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+			  if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
+				
 				return GAUSSMIX_FILE_NOT_FOUND;
 			}
 			X.update(temp,row,cols);
@@ -713,7 +718,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 
 				if (errno != 0)
 				{
-					if (debug) cout << "Could not convert data at index " << row << " and " << cols << endl;
+					if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
 					return GAUSSMIX_FILE_NOT_FOUND;
 				}
 				X.update(temp,row,cols);
