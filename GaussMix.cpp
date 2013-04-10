@@ -176,6 +176,9 @@
 #include <omp.h>
 #endif
 
+#ifdef UseMPI
+#include <mpi.h>
+#endif
 
 #include <lapacke.h>
 
@@ -245,10 +248,8 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	//initialize variables
 	const int pi = 3.141592653;
 
-	std::vector<Matrix *> workingCovars;
-
 	//for each data point in n
-	for (int data_point = 0, count = 0; data_point < n; data_point++, count++)
+	for (int data_point = 0; data_point < n; data_point++)
 	{
 		if (debug)
 		{
@@ -277,9 +278,6 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 		//log_densities is the k dimensional array that stores the density in log space
 		double log_densities[k];
-
-		//for each cluster
-		workingCovars.clear();
 
 		int gaussian = 0;
 		#ifdef _OPENMP
@@ -400,19 +398,12 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			#ifdef _OPENMP
 			# pragma omp critical(sigma_inv_tracking)
 			#endif
-			workingCovars.push_back(sigma_inv);
 
 			delete &difference_row;
 			delete &term1;
 			delete &term2;
 
 		} // end gaussian 
-
-		// free up covars created during above loop
-		for (std::vector<Matrix *>::iterator iter = workingCovars.begin(); iter != workingCovars.end();iter++)
-		{
-			delete *iter;
-		}
 
 		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
