@@ -34,6 +34,9 @@
 #include <string>
 #include <cmath>
 #include <set>
+#ifdef UseMPI
+#include <mpi.h>
+#endif
 
 #include <stdio.h>
 
@@ -120,7 +123,13 @@ int assignment_change_count (int n, int a[], int b[])
 	for (int ii = 0; ii < n; ii++)
 		if (a[ii] != b[ii])
 			change_count++;
+#ifdef UseMPI
+	int global_count;
+	MPI_Allreduce(&change_count, &global_count, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	return global_count;
+#else
 	return change_count;
+#endif
 }
 
 
@@ -166,6 +175,13 @@ void calc_cluster_centroids(int m, int n, int k, double *X, int *cluster_assignm
 		for (int jj = 0; jj < m; jj++)
 			new_cluster_centroid[active_cluster*m + jj] += X[ii*m + jj];
 	}
+#ifdef UseMPI
+	{
+	  double global_cluster_centroid[k*m];
+	  MPI_Allreduce(new_cluster_centroid, global_cluster_centroid, k*m, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	  memcpy(new_cluster_centroid,global_cluster_centroid,k*m*sizeof(double));
+	}
+#endif
 	// divide each coordinate sum by number of members to find mean(centroid) for each cluster
 	for (int ii = 0; ii < k; ii++)
 	{
@@ -207,7 +223,15 @@ double calc_total_distance(int m, int n, int k, double *X, double *centroids, in
 		if (active_cluster != -1)
 			tot_D += euclid_distance(m, &X[ii*m], &centroids[active_cluster*m]);
 	}
+#ifdef UseMPI
+	// Sum this over all nodes
+	double global_D;
+	MPI_Allreduce(&tot_D, &global_D, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	if (debug) printf("local distance: %lf, global distance: %lf\n", tot_D, global_D);
+	return global_D;
+#else
 	return tot_D;
+#endif
 }
 
 
@@ -258,6 +282,11 @@ void choose_all_clusters_from_distances(int m, int n, int k, double *X, double *
 
 void cluster_diag(int m, int n, int k, double *X, int *cluster_assignment_index, double *cluster_centroid)
 {
+  // MPI TODO: Make this work in parallel environment
+  // May not be critical - primarily used for debugging.  Maybe that makes it critical!
+#ifdef UseMPI
+  return;
+#endif
 	int cluster_member_count[MAX_CLUSTERS];
 	//get the current cluster member count
 	get_cluster_member_count(n, k, cluster_assignment_index, cluster_member_count);
@@ -347,6 +376,12 @@ void get_cluster_member_count(int n, int k, int *cluster_assignment_index, int *
 	// count members of each cluster
 	for (int ii = 0; ii < n; ii++)
 		cluster_member_count[cluster_assignment_index[ii]]++;
+#ifdef UseMPI
+	// share across nodes
+	int global_member_count[k];
+	MPI_Allreduce(cluster_member_count, global_member_count, k, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	memcpy(cluster_member_count,global_member_count,k*sizeof(int));
+#endif
 
 }
 
@@ -380,8 +415,25 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 		return NULL;
 	}
 
+  // MPI parallel stuff
+  int nodes=1, myNode=0;
+  // Total data points across all nodes
+  int totalDataPoints = n;
+  // Data points on and before this node
+  int scanDataPoints = n;
+
+#ifdef UseMPI
+  MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
+  MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
+
+  MPI_Allreduce(&n, &totalDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Scan(&n, &scanDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#endif
+
 	// give the initial cluster centroids some values randomly drawn from your data set
-    srand( time(NULL) );
+	// Make it fixed for debugging
+	//srand( time(NULL) );
+	srand(5);
     std::set<int> choices;
     for (int i = 0; i < k; i++)
 	{
@@ -390,19 +442,38 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
     	int row = 0;
     	do
     	{
-    		row = rand() % n;
+    		row = rand() % totalDataPoints;
 
     	} while (choices.find(row) != choices.end());
 
     	choices.insert(row);
 
     	if (debug) cout << "picked row: " << row << endl;
+#ifdef UseMPI
+      // Who's got that row?
+      int nodeWithRow = -1;
+      if ((row < scanDataPoints) && (row >= scanDataPoints - n))
+	{
+	  // I have it!
+	  nodeWithRow = myNode;
+	}
+      // Let eveyone know
+      int globalNodeWithRow;
+      MPI_Allreduce(&nodeWithRow, &globalNodeWithRow, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+      if (debug) printf("On node %d, globalNodeWithRow is %d, local is %d,scan is %d\n",myNode,globalNodeWithRow,nodeWithRow,scanDataPoints);
+      if (globalNodeWithRow == myNode)
+	{
+	  row = row - scanDataPoints + n;
+#endif
+	  // Copy that row into the centroid
+	  memcpy(&(cluster_centroid[i*m]),&(X[row*m]),m*sizeof(double));
+#ifdef UseMPI
+	}
+      //Share this centroid across the nodes
+      MPI_Bcast(&(cluster_centroid[i*m]), m, MPI_DOUBLE, globalNodeWithRow, MPI_COMM_WORLD);
+      MPI_Barrier(MPI_COMM_WORLD);
+#endif
 
-		for (int j = 0; j < m; j++)
-		{
-        		cluster_centroid[i*m + j] = X[row*m + j];
-
-		}
 	}
 
 	//calculate distances

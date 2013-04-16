@@ -36,6 +36,10 @@
 #include <iostream>
 #include "GaussMix.h"
 
+#ifdef UseMPI
+#include <mpi.h>
+#endif
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -76,6 +80,7 @@ int main(int argc, char *argv[])
 	gaussmix::gaussmix_pdf(4, d, sigma_matrix,mu_vector);
 	**********************************************************/
 
+  gaussmix::init(&argc,&argv);
 	// initialize variables
 	int i, k, m, n;
 	// throw an error if the command line arguments don't match ParseCSV's inputs
@@ -251,5 +256,8 @@ int main(int argc, char *argv[])
 	{
 		delete sigma_vector[i];
 	}
+#ifdef UseMPI
+	MPI_Finalize();
+#endif
     return 0;
 }

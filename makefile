@@ -32,8 +32,10 @@ EM_DIR=.
 # specify paths to BLAS and LAPACK includes here
 include gaussmix.inc
 
-CXX = g++ -g3 -gdwarf-2 -fopenmp -fPIC
-CC = gcc -g3 -gdwarf-2 -fopenmp -fPIC
+OPENMP =
+#OPENMP = -fopenmp
+CXX = mpicxx -DUseMPI -g3 -gdwarf-2 $(OPENMP) -fPIC 
+CC = mpicc -DUseMPI -g3 -gdwarf-2 $(OPENMP) -fPIC
 
 all: gaussmix
 

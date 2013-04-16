@@ -176,6 +176,8 @@
 #include <omp.h>
 #endif
 
+static int myNode=0, totalNodes=1;
+
 #ifdef UseMPI
 #include <mpi.h>
 #endif
@@ -278,7 +280,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 		//log_densities is the k dimensional array that stores the density in log space
 		double log_densities[k];
-
+		
 		int gaussian = 0;
 		#ifdef _OPENMP
 		# pragma omp parallel for
@@ -429,6 +431,17 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		if (debug) cout << "The likelihood for this iteration is " << likelihood << endl;
 		
 	} // end data_point
+
+#ifdef UseMPI
+	// Now reduce the likelihood over all data points:
+	// TODO - do we need to scale this for the number of points?
+	double totalLikelihood;
+	if (debug) cout << "Reducing likelihood: " << likelihood << " on node "<< myNode << endl;
+	MPI_Allreduce(&likelihood, &totalLikelihood, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	likelihood = totalLikelihood;
+	MPI_Barrier(MPI_COMM_WORLD);
+	if (debug) cout << "Global likelihood: " << likelihood << endl;
+#endif
 
 	//return the likelihood of this model
 	return likelihood;
@@ -592,7 +605,14 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			Pk_vec[gaussian] = Pk_hat.getValue(0,gaussian);
 
 		} // end if successflag == true
+#ifdef UseMPI
+		int global_successflag;
+		MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+		successflag = global_successflag;
+#endif
+
 	} //end gaussian
+	// TODO MPI reduction
 
 	//the Pk calculation is a sum - treat it as such
 	double sum = 0;
@@ -981,5 +1001,23 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	return condition;
 }
 
+void gaussmix::init(int *argc, char ***argv)
+{
+#ifdef UseMPI
+  //MPI_Status status; 
+  MPI_Init(argc, argv);
 
+  MPI_Comm_size(MPI_COMM_WORLD, &totalNodes); 
+  MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
+
+  if (myNode == 0) printf("Using MPI with size %d\n",totalNodes);
+#endif
+}
+
+void gaussmix::fini()
+{
+#ifdef UseMPI
+  MPI_Finalize();
+#endif
+}
 
