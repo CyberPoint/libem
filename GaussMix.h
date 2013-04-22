@@ -102,11 +102,12 @@ double * gaussmix_matrixToRaw(Matrix & X);
 @param[in] file_name ptr to full file path
 @param[in] n the number of data points
 @param[in] m dimensionality of the data
-@param[out] ref to pre-allocated m X n Matrix (all 0s). data returned here.
-@param[out] labels pointer to pre-allocated array of size n, for svm format, or null, for csv format. labels returned here.
+@param[out] ref to Matrix (all 0s). We allocate and return data here.
+@param[out] ref to int.  Return number of elements in local MPI job.
+@param[out] labels pointer to array, for svm format, or null, for csv format. we allocate and return labels here.
 @returns  a GASSMIX_ condition code (see above).
 */
-int gaussmix_parse(char *file_name,  int n, int m, Matrix & data, int * labels = NULL);
+ int gaussmix_parse(char *file_name,  int n, int m, Matrix & data, int & localSamples, std::vector<int> & labels);
 
 
 /*! \brief gaussmix_pdf: compute the log of the  probability of the given data point
@@ -160,6 +161,8 @@ int gaussmix_train(int n, int m, int k, int max_iters, Matrix & X, vector<Matrix
  void fini();
 
 
+ int parse_line(char * buffer, Matrix & X, std::vector<int> & labels, int row, int m);
+
 #endif //EM_ALGORITHM_HEADER
 
-}
+};

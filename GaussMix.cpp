@@ -211,7 +211,7 @@ static int myNode=0, totalNodes=1;
 /*
  * SET THIS TO 1 FOR DEBUGGING STATEMENT SUPPORT (via std out)
  */
-#define debug 1
+#define debug 0
 
 using namespace std;
 
@@ -268,7 +268,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		//for each dimension
 		for (int dim = 0; dim < m; dim++)
 		{	
-			if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << endl;
+		  if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << " on node "<< myNode << endl;
 
 			//put the data stored in the double* in the x matrix you just created
 			x.update(X[m*data_point + dim],0,dim);
@@ -311,7 +311,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			Matrix& difference_row = x.subtract(mu_matrix_row);
 			if (debug) difference_row.print();
 
-			//sigma^-
+			//sigma^ inverse
 			Matrix * sigma_inv;
 			sigma_inv = &(sigma_matrix[gaussian]->inv());
 			if (debug) cout << "sigma_inv" << endl << flush;
@@ -380,6 +380,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			//current z is the log of the density function times the cluster weight
 			double current_z = temp2 + log_density;
 
+			if (debug) cout << "current_z: "<<current_z<<", Node: "<<myNode<<", Dp: "<<data_point<<", Gaussian: "<<gaussian<<endl;
 			//assign current_z
 			#ifdef _OPENMP
 			# pragma omp critical(z_max)
@@ -434,14 +435,33 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 
 #ifdef UseMPI
 	// Now reduce the likelihood over all data points:
-	// TODO - do we need to scale this for the number of points?
 	double totalLikelihood;
+	MPI_Barrier(MPI_COMM_WORLD);
 	if (debug) cout << "Reducing likelihood: " << likelihood << " on node "<< myNode << endl;
 	MPI_Allreduce(&likelihood, &totalLikelihood, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	likelihood = totalLikelihood;
 	MPI_Barrier(MPI_COMM_WORLD);
-	if (debug) cout << "Global likelihood: " << likelihood << endl;
 #endif
+	if (debug) 
+	  {
+	    cout << "Likelihood after E-Step: " << likelihood << endl;
+	    cout << "myNode: " << myNode << ", totalNodes: " << totalNodes << endl;
+	    for (int i=0; i<totalNodes; i++)
+	      for (int j=0; j<n; j++)
+		for (int l=0; l<k ; l++)
+		  {
+		    double tmp=p_nk_matrix.getValue(j,l);
+		    if (myNode == i) cout << "P_NK:  Node: "<<i<<", Sample: "<<j<<", gaussian: "<<l<<", Value: "<<tmp<<endl;
+#ifdef UseMPI
+		    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+		  }
+	    cout<<"node "<<myNode<<" at barrier"<<endl;
+	    sleep(2);
+#ifdef UseMPI
+	    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+	  }
 
 	//return the likelihood of this model
 	return likelihood;
@@ -465,7 +485,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	//initialize the Pk_hat matrix
 	//note: "hat" denotes an approximation in the literature
 	Matrix Pk_hat(1,k);
-	bool successflag = true;
+	int successflag = 0;
 
 	int gaussian = 0;
 	#ifdef _OPENMP
@@ -491,32 +511,50 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		//initialize the array of doubles of length m that represents the data
 		double x[m];
 		
-		if (successflag == true)
+		if (successflag == 0)
 		{
 			//do the mu calculation point by point
 			for (int data_point = 0; data_point < n; data_point++)
 			{
+			  // No need to calculate this multiple times
+			  double exp_p_nk = exp(p_nk_matrix.getValue(data_point,gaussian));
+			  double t = p_nk_matrix.getValue(data_point,gaussian);
+			  if (debug) cout << "exp_p_nk: "<< exp_p_nk<<", from "<<t<<endl;
 				for (int dim = 0; dim < m; dim++)
 				{
-					x[dim] = X[m*data_point + dim]*exp(p_nk_matrix.getValue(data_point,gaussian));
+					x[dim] = X[m*data_point + dim]* exp_p_nk;
 				}
 
 				//sum up all the individual mu calculations
+				if (debug) 
+				  {
+				    cout << "summing into mu_hat: "<<endl;
+				    for (int i=0; i<m; i++)
+				      cout << x[i] << ", ";
+				    cout << endl;
+				  }
 				mu_hat.add(x, m, 0);
 
 				//calculate the normalization factor
-				if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << endl;
-				norm_factor += exp(p_nk_matrix.getValue(data_point,gaussian));
+				if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << ", node: "<<myNode<<", point: "<<data_point<<endl;
+				norm_factor += exp_p_nk;
 				if (debug) cout << "norm factor is " << norm_factor << endl;
 			}
+#ifdef UseMPI
+		MPI_Barrier(MPI_COMM_WORLD);
+#endif
 
 			//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
 			for (int dim = 0; dim < m; dim++)
 			{
-				mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
+			  if (debug) cout << "norm_factor is "<<norm_factor<<", myNode: "<<myNode<<endl;
+			  if (norm_factor == 0)
+			    mu_hat.update(0,0,dim);
+			  else
+			    mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 			}
 	
-			//calculate the new covariances
+			//calculate the new covariances, sigma_hat
 			for (int data_point = 0; data_point < n; data_point++)
 			{
 				//fill in x vector for this data_point
@@ -534,22 +572,12 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				//row representation of x - mu for matrix multiplication
 				Matrix & difference_row = x_m.subtract(mu_hat);
 
-				//column representation of x - mu for matrix multiplication
-				Matrix difference_column(m,1);
-				if (debug) cout << "difference column:" << endl;
-				if (debug) difference_column.print();
-				for (int i = 0; i < m; i++)
-				{
-					//fill it in
-					difference_column.update(difference_row.getValue(0,i),i,0);
-				}
-
 				//magical kronecker tensor product calculation
 				for (int i = 0; i < m; i++)
 				{
 					for (int j = 0; j < m; j++)
 					{
-						double temp1 = difference_row.getValue(0,i) * difference_column.getValue(j,0)*exp(p_nk_matrix.getValue(data_point,gaussian));
+						double temp1 = difference_row.getValue(0,i) * difference_row.getValue(0,j)*exp(p_nk_matrix.getValue(data_point,gaussian));
 						sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
 					}
 				}
@@ -563,7 +591,10 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-					sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
+				  if (norm_factor == 0)
+				    sigma_hat.update(0,i,j);
+				  else
+				    sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
 				}
 			}
 			
@@ -577,12 +608,12 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				#ifdef __OPENMP
 				#pragma omp critical(success_flag)
 				#endif
-				successflag = false;
+				successflag = 1;
 
 			}
 			//adjust the Pk_hat calculations by the normalization factor (this particular func is threadsafe)
 			Pk_hat.update(norm_factor/n,0,gaussian);
-			if (debug) cout << "pk hat matrix" << endl;
+			if (debug) cout << "pk hat matrix after updating for gaussian "<<gaussian<<" on node " << myNode << endl;
 			if (debug) Pk_hat.print();
 
 			//assign sigma_hat to sigma_matrix[gaussian]
@@ -606,15 +637,139 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 		} // end if successflag == true
 #ifdef UseMPI
+		// Yes, this is inside a parallel loop, so it's behavior is not completely
+		// determinate.  However, the point is to stop if *any* of the loops has
+		// successflag set to false.  This will do that.
 		int global_successflag;
-		MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-		successflag = global_successflag;
+#ifdef __OPENMP
+#pragma omp critical(global_success_flag)
+#endif
+		{
+		  MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_LOR, MPI_COMM_WORLD);
+		  if (debug) cout << "global_successflag: "<<global_successflag<<endl;
+		  successflag = global_successflag;
+		}
 #endif
 
 	} //end gaussian
-	// TODO MPI reduction
+#ifdef UseMPI
+	if (debug)
+	  {
+	    MPI_Barrier(MPI_COMM_WORLD);
+	    cout << "About to reduce at end of M-Step"<<endl;
+	    MPI_Barrier(MPI_COMM_WORLD);
+	  }
+#endif
 
-	//the Pk calculation is a sum - treat it as such
+#ifdef UseMPI
+	// TODO MPI reduction
+	{
+	  // Space for temporary reduced Pk_vec
+	  double global_Pk_vec[k];
+	  MPI_Allreduce(&(Pk_vec[0]),global_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+	  double local_scale=0.0, global_scale=0.0;
+	  for (int i=0; i<k; i++)
+	    {
+	      local_scale += Pk_vec[i];
+	      global_scale += global_Pk_vec[i];
+	    }
+	  // Since it's replicated, not distributed across the nodes, scale to number of nodes
+	  global_scale /= totalNodes;
+	  if (debug)
+	    {
+	      cout << "local_scale("<<myNode<<"): "<<local_scale<<", global_scale: "<<global_scale<<endl;
+	      cout << "global_pk_vec("<<myNode<<"):" << endl;
+	      for (int i=0; i<k; i++)
+		{
+		  cout << global_Pk_vec[i] << ", ";
+		}
+	      cout << endl;
+	      cout << "local_pk_vec("<<myNode<<"):" << endl;
+	      for (int i=0; i<k; i++)
+		{
+		  cout << Pk_vec[i] << ", ";
+		}
+	      cout << endl;
+	    }
+	  // MPI workspace
+	  double global_work[k*m*m];
+	  double local_work[k*m*m];
+	if (debug)
+	  {
+	    MPI_Barrier(MPI_COMM_WORLD);
+	    for (int node=0; node<totalNodes; node++)
+	      for (int gaussian=0; gaussian<k; gaussian++)
+		for (int dim=0; dim<m ; dim++)
+		  {
+		    double tmp=mu_matrix.getValue(gaussian,dim);
+		    if (myNode == node) cout << "mu_matrix before reduce:  Node: "<<node<<", Gaussian: "<<gaussian<<", dim: "<<dim<<", Value: "<<tmp<<endl;
+#ifdef UseMPI
+		    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+		  }
+	  }
+
+	  // Mu
+	  for (int gaussian=0; gaussian<k; gaussian++)
+	    {
+	      // extract and denormalize
+	      for (int dim = 0; dim < m; dim++)
+		{
+		  local_work[gaussian*m+dim] = mu_matrix.getValue(gaussian,dim) * local_scale;
+		}
+	    }
+	  // Reduce
+	  MPI_Allreduce(local_work,global_work,k*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+	  // Restore reduced Mu
+	  for (int gaussian=0; gaussian<k; gaussian++)
+	    {
+	      // extract and denormalize
+	      for (int dim = 0; dim < m; dim++)
+		{
+		  mu_matrix.update(global_work[gaussian*m+dim] / global_scale,gaussian,dim);
+		}
+	    }
+	  // Sigma
+	  for (int gaussian=0; gaussian<k; gaussian++)
+	    {
+	      for (int i = 0; i < m; i++)
+		{
+		  for (int j = 0; j < m; j++)
+		    {
+		      local_work[gaussian*m*m+i*m+j] = local_scale * sigma_matrix[gaussian]->getValue(i,j);
+		      if (debug) cout << "Node: "<< myNode<< "Gaussian (m,i,j): "<<local_work[gaussian*m*m+i*m+j]<<" ("<<m<<", "<<i<<", "<<j<<")"<<endl;
+		    }
+		}
+
+	    }
+	  // Reduce
+	  MPI_Allreduce(local_work,global_work,k*m*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+	  // Restore reduced sigma
+	  for (int gaussian=0; gaussian<k; gaussian++)
+	    {
+	      for (int i = 0; i < m; i++)
+		{
+		  for (int j = 0; j < m; j++)
+		    {
+		      sigma_matrix[gaussian]->update(global_work[gaussian*m*m+i*m+j] / global_scale, i, j);
+		    }
+		}
+
+	    }
+	  // Normalize global Pk
+	  double sum = 0;
+	  for (int i=0; i<k; i++)
+	    {
+	      sum += global_Pk_vec[i];
+	    }
+	  for (int i=0; i<k; i++)
+	    {
+	      Pk_vec[i] /= sum;
+	    }
+
+	}
+#else
+	// Normalize Pk
 	double sum = 0;
 	for (int i = 0; i < k; i++)
 	{	
@@ -625,8 +780,51 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	{	
 		Pk_vec[i] = Pk_vec[i]/sum;
 	}
+#endif
+#ifdef UseMPI
+	if (debug)
+	  {
+	    MPI_Barrier(MPI_COMM_WORLD);
+	    cout << "Finished M-Step - printing"<<endl;
+	    MPI_Barrier(MPI_COMM_WORLD);
+	  }
+#endif
+	if (debug)
+	  {
+	    // Print all the return values: mu, sigma,
+	    //for (node=0; node < totalNodes; node++)
+	    for (int node=0; node<totalNodes; node++)
+	      for (int gaussian=0; gaussian<k; gaussian++)
+		for (int dim=0; dim<m ; dim++)
+		  {
+		    double tmp=mu_matrix.getValue(gaussian,dim);
+		    if (myNode == node) cout << "mu_matrix:  Node: "<<node<<", Gaussian: "<<gaussian<<", dim: "<<dim<<", Value: "<<tmp<<endl;
+#ifdef UseMPI
+		    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+		  }
+	    for (int node=0; node<totalNodes; node++)
+	      for (int gaussian=0; gaussian<k; gaussian++)
+		{
+		  for (int i = 0; i < m; i++)
+		    for (int j = 0; j < m; j++)
+		      if (myNode == node)
+			cout << "sigma: Node: "<<node<<",Gaussian: "<<gaussian<<", i,j: ("<<i<<", "<<j<<") :"<< sigma_matrix[gaussian]->getValue(i,j)<<endl;
+		}
 
-	return successflag;
+
+	  }
+#ifdef UseMPI
+	if (debug)
+	  {
+	    MPI_Barrier(MPI_COMM_WORLD);
+	    cout << "Finished Printing M-Step"<<endl;
+	    sleep(1);
+	    MPI_Barrier(MPI_COMM_WORLD);
+	  }
+#endif
+
+	return !successflag;
 }
 
 
@@ -662,8 +860,104 @@ double * gaussmix::gaussmix_matrixToRaw(Matrix & X)
 	return ptr;
 }
 
-int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * labels )
+int * serializeIntVector(std::vector<int> vec)
 {
+  int *array = new int[1+vec.size()];
+  
+  array[0] = vec.size();
+  for (int i=1; i<= vec.size(); i++)
+    array[i] = vec[i-1];
+  return array;
+}
+
+std::vector<int> deserializeIntVector(int *array)
+{
+  std::vector<int> vec (array[0]);
+  for (int i=0; i< array[0]; i++)
+    vec[i] = array[i+1];
+  return vec;
+}
+
+int gaussmix::parse_line(char * buffer, Matrix & X, std::vector<int> & labels, int row, int m) {
+	
+  if (debug) cout << "Parsing line: " << buffer << endl;
+  int cols = 0;
+  double temp;
+
+  // Reset errno from possible previous issues
+  errno = 0;
+  if (buffer[MAX_LINE_SIZE - 1] != 0)
+    {
+      if (debug) cout << "Max line size exceeded at zero relative line " << row << endl;
+      return GAUSSMIX_FILE_NOT_FOUND;
+    }
+  if (strstr(buffer,":"))
+    {
+      // we have svm format (labelled data)
+      char * plabel = strtok(buffer," ");
+      sscanf(plabel,"%d",&(labels[row]));
+      if (errno != 0)
+	{
+	  if (debug) cout << "Could not convert label at row " << row << ": " << strerror(errno) << endl;
+	  return GAUSSMIX_FILE_NOT_FOUND;
+	}
+      // libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
+      for (cols = 0; cols < m; cols++)
+	{
+	  strtok(NULL, ":");	// bump past position label
+	  sscanf(strtok(NULL, " "), "%lf", &temp);
+	  if (errno != 0)
+	    {
+	      if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
+	      return GAUSSMIX_FILE_NOT_FOUND;
+	    }
+	  X.update(temp,row,cols);
+	}
+    }
+  else
+    {
+      // csv-style input (data_point_1,data_point_2, etc.)
+      char *ptok = strtok(buffer, ",");
+      if (ptok) sscanf(ptok, "%lf", &temp);
+      if (errno != 0)
+	{
+	  if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
+				
+	  return GAUSSMIX_FILE_NOT_FOUND;
+	}
+      X.update(temp,row,cols);
+
+      for (cols = 1; cols < m; cols++)
+	{
+	  sscanf(strtok(NULL, ","), "%lf", &temp);
+
+	  if (errno != 0)
+	    {
+	      if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
+	      return GAUSSMIX_FILE_NOT_FOUND;
+	    }
+	  X.update(temp,row,cols);
+	}
+    }
+}
+
+int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & localSamples, std::vector<int> & labels )
+{
+  int mpiError = 0;
+
+  // How many samples are local in an MPI run?
+  if (totalNodes == 1) localSamples = n;
+  else if (myNode == 0) 
+    {
+      int perNode = (n + totalNodes-1)/totalNodes;
+      localSamples = n - (totalNodes-1)*perNode;
+    }
+  else localSamples = (n + totalNodes-1)/totalNodes;
+
+  if (myNode == 0)
+    {
+      // Read in data on node 0
+
 	char buffer[MAX_LINE_SIZE];
 	double temp;
 
@@ -672,72 +966,133 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int * la
 	{
 		return GAUSSMIX_FILE_NOT_FOUND;
 	}
-	memset(buffer, 0, MAX_LINE_SIZE);
-	int row = 0;
-	int cols = 0;
-	// Reset error flag so it will reflect local status
-	errno = 0;
-	while (fgets(buffer,MAX_LINE_SIZE,f) != NULL)
-	{
-	  cout << "Parsing line: " << buffer << endl;
-		cols = 0;
+	for (int currentNode=totalNodes-1; currentNode >=0; currentNode--) 
+	  {
+	    int rowsToRead, row;
 
-		if (buffer[MAX_LINE_SIZE - 1] != 0)
-		{
-			if (debug) cout << "Max line size exceeded at zero relative line " << row << endl;
-			return GAUSSMIX_FILE_NOT_FOUND;
-		}
-		if (strstr(buffer,":"))
-		{
-			// we have svm format (labelled data)
-			char * plabel = strtok(buffer," ");
-			sscanf(plabel,"%d",&(labels[row]));
-			if (errno != 0)
-			{
-				if (debug) cout << "Could not convert label at row " << row << ": " << strerror(errno) << endl;
-				return GAUSSMIX_FILE_NOT_FOUND;
-			}
-			// libsvm-style input (label 1:data_point_1 2:data_point_2 etc.)
-			for (cols = 0; cols < m; cols++)
-			{
-				strtok(NULL, ":");	// bump past position label
-				sscanf(strtok(NULL, " "), "%lf", &temp);
-				if (errno != 0)
-				{
-					if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
-					return GAUSSMIX_FILE_NOT_FOUND;
-				}
-				X.update(temp,row,cols);
-			}
-		}
-		else
-		{
-			// csv-style input (data_point_1,data_point_2, etc.)
-		        char *ptok = strtok(buffer, ",");
-			if (ptok) sscanf(ptok, "%lf", &temp);
-			if (errno != 0)
-			{
-			  if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
-				
-				return GAUSSMIX_FILE_NOT_FOUND;
-			}
-			X.update(temp,row,cols);
-
-			for (cols = 1; cols < m; cols++)
-			{
-				sscanf(strtok(NULL, ","), "%lf", &temp);
-
-				if (errno != 0)
-				{
-					if (debug) cout << "Could not convert data at index " << row << " and " << cols << ": " << strerror(errno) << "temp is " << temp << endl;
-					return GAUSSMIX_FILE_NOT_FOUND;
-				}
-				X.update(temp,row,cols);
-			}
-		}
-		row++;
+	    if (totalNodes == 1) rowsToRead = n;
+	    else if (currentNode == 0) 
+	      {
+		int perNode = (n + totalNodes-1)/totalNodes;
+		rowsToRead = n - (totalNodes-1)*perNode;
+	      }
+	    else rowsToRead = (n + totalNodes-1)/totalNodes;
+	    if (debug) cout << "Reading "<<rowsToRead<<" lines for node "<<currentNode<<endl;
+	    X = Matrix(rowsToRead,m);
+	    labels = std::vector<int> (rowsToRead);
+	    for (row = 0; row < rowsToRead; row++) 
+	      {
+		char buffer[MAX_LINE_SIZE];
 		memset(buffer, 0, MAX_LINE_SIZE);
+		if (fgets(buffer,MAX_LINE_SIZE,f) == NULL)
+		  {
+		    cout << "ERROR: Ran out of data on row " << row << endl;
+		    return GAUSSMIX_FILE_NOT_FOUND;
+		  }
+		if (buffer[MAX_LINE_SIZE - 1] != 0)
+		  {
+		    cout << "ERROR: Max line size exceeded at zero relative line " << row << endl;
+		    return GAUSSMIX_FILE_NOT_FOUND;
+		  }
+	      if (parse_line(buffer, X, labels, row, m) != 0)
+		{
+		  cout << "ERROR: Could not parse line " << row << endl;
+		  return GAUSSMIX_FILE_NOT_FOUND;
+		}
+	      if (debug)
+		{
+		  int parsedRows = X.rowCount();
+		  cout << "row is "<<row<<", and X.rowCount is "<<parsedRows<<endl;
+		}
+	    } // end for loop to read individual lines
+#ifdef UseMPI
+	  // Send parsed data and labels to node currentNode
+	  if (debug) 
+	    cout << "Read " << row << " rows : " << " of " << rowsToRead << " for node " << currentNode << endl;
+	  if (currentNode != 0)
+	    {
+	      int matrixSize = rowsToRead*m+2;
+	      int vectorSize = rowsToRead+1;
+
+	      double *tmp;
+	      int *itmp;
+	      if (debug) cout << "Sending " << row*m << " doubles from node " << myNode << " to " << currentNode << endl;
+	      tmp = X.Serialize();
+	      if (MPI_SUCCESS !=  MPI_Send(tmp, row*m+2, MPI_DOUBLE, currentNode, 99,
+	       				   MPI_COMM_WORLD))
+	       	{
+	       	  cout << "Error sending data in MPI"<<endl;
+	       	  mpiError = 1;
+	       	}
+	      itmp = serializeIntVector(labels);
+	      if (MPI_SUCCESS !=  MPI_Send(itmp, row+1, MPI_DOUBLE, currentNode, 100,
+	       				   MPI_COMM_WORLD))
+	       	{
+	       	  cout << "Error sending labels in MPI"<<endl;
+	       	  mpiError = 1;
+	       	}
+	    }
+#endif
+	}  // end of for loop over nodes
+    } // if myNode == 0
+#ifdef UseMPI
+  // Other nodes exist
+  else  // not node 0
+    {
+      // Receive data sent by node 0
+      MPI_Status status;
+      int matrixSize = localSamples*m+2;
+      double tmp[matrixSize];
+      int vectorSize = localSamples+1;
+      int itmp[vectorSize];
+
+      if (debug) cout << "Reserved tmp space for comms: "<<matrixSize<<" doubles"<<endl;
+      if (debug) cout << "Reserved more tmp space for comms: "<<vectorSize<<" ints"<<endl;
+
+      if (debug) cout << "Receiving up to "<<matrixSize<<" doubles on node "<<myNode<<endl;
+      if (MPI_SUCCESS != MPI_Recv(tmp, matrixSize, MPI_DOUBLE, 0, 99,
+      				  MPI_COMM_WORLD, &status))
+      	{
+      	  cout << "Error receiving data in MPI"<<endl;
+      	  mpiError = 1;
+      	}
+      if (debug) cout << "About to deserialize matrix" << endl;
+      X = Matrix(tmp);
+      if (MPI_SUCCESS != MPI_Recv(itmp, vectorSize, MPI_DOUBLE, 0, 100,
+      				  MPI_COMM_WORLD, &status))
+      	{
+      	  cout << "Error receiving labels in MPI"<<endl;
+      	  mpiError = 1;
+      	}
+      labels = deserializeIntVector(itmp);
+      if (debug) cout << "Received" << endl;
+    }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  if (debug)
+    {MPI_Barrier(MPI_COMM_WORLD);sleep(2);
+      for (int node=0; node<totalNodes; node++)
+	{
+	  MPI_Barrier(MPI_COMM_WORLD);
+	  if (myNode == node)
+	    {
+	      int rows = X.rowCount();
+	      int cols = X.colCount();
+	      cout << "Read X on node "<<myNode<<": "<<rows<<" x " << cols<<endl;
+	      for (int i=0; i<rows; i++)
+		{
+		  for (int j=0; j<cols; j++)
+		    {
+		      cout << X.getValue(i,j) << " ";
+		    }
+		  cout << endl;
+		}
+	    }
+	  MPI_Barrier(MPI_COMM_WORLD);
 	}
+    }
+#endif
 	return GAUSSMIX_SUCCESS;
 }
 
@@ -843,6 +1198,7 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	{
 		delete[] X;
 		return std::numeric_limits<double>::infinity();
+		if (debug) cout << "Error: kmeans_mu is empty"<<endl;
 	}
 	//initialize array of identity covariance matrices, 1 per k
 	for(int gaussian = 0; gaussian < k; gaussian++)

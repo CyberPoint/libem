@@ -80,7 +80,19 @@ int main(int argc, char *argv[])
 	gaussmix::gaussmix_pdf(4, d, sigma_matrix,mu_vector);
 	**********************************************************/
 
+  // For MPI - default to one process
+  int myNode = 0;
+  int totalNodes = 1;
+
+  // Initialize gaussmix and MPI
   gaussmix::init(&argc,&argv);
+
+#ifdef UseMPI
+  // Check to see how many processes we actually have
+  MPI_Comm_size(MPI_COMM_WORLD, &totalNodes); 
+  MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
+#endif
+
 	// initialize variables
 	int i, k, m, n;
 	// throw an error if the command line arguments don't match ParseCSV's inputs
@@ -105,20 +117,16 @@ int main(int argc, char *argv[])
 	}
 	// reading in and parsing the data
 	// create an array of doubles that is n by m dimensional
-	Matrix data(n,m);
-	int labels[n];
+	Matrix data;
+	std::vector<int>  labels;
+	int localSamples;
 
-	// initialize labels
-	for (int i = 0; i < n; i++)
-	{
-		labels[i] = 0;
-	}
-
-	if (gaussmix::gaussmix_parse(argv[1], n, m, data, labels) != gaussmix::GAUSSMIX_SUCCESS)
+	if (gaussmix::gaussmix_parse(argv[1], n, m, data, localSamples, labels) != gaussmix::GAUSSMIX_SUCCESS)
 	{
 			cout << "Invalid input file; must be csv, one sample per row, data points as floats" << endl;
 			return 1;
 	}
+	n = localSamples;
 
 	// create vectors that hold pointers to the EM result covariance matrices
 	vector<Matrix *> sigma_vector;
@@ -149,29 +157,30 @@ int main(int argc, char *argv[])
 		}
 
 		// print results
-		cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
+		if (myNode == 0)
+		  {
+		    cout << "The matrix of Pk's approximated by the EM algorithm is " << endl;
+		    for (int i = 0; i < k; i++)
+		      {
+			cout << Pk_matrix[i]<<" ";
+		      }
+		    cout << endl;
 
-		std::string s;
-		for (int i = 0; i < k; i++)
-		{
-			s += Pk_matrix[i];
-			s += " ";
-		}
-		cout << s << endl;
 
+		    cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
+		    mu_local.print();
 
-		cout << "The matrix of mu's approximated by the EM algorithm is " << endl;
-		mu_local.print();
-
-		for (int i = 0; i < k; i++)
-		{
+		    for (int i = 0; i < k; i++)
+		      {
 			cout << "Covariance matrix " << i << " approximated by the EM algorithm is " << endl;
 			sigma_vector[i]->print();
-		}
+		      }
 
-		cout << "The log likelihood (density) of the data is " << log_likelihood << endl;
-		cout << "If all is working right, for multid_data_1.csv that should be around -72" << endl;
-		cout << "If all is working right, for multid_data_2.svm it should be around -138" << endl;
+		    cout << "The log likelihood (density) of the data is " << log_likelihood << endl;
+		    cout << "If all is working right, for multid_data_1.csv that should be around -72" << endl;
+		    cout << "If all is working right, for multid_data_2.svm it should be around -138" << endl;
+		  }
+		goto fini;
 
 		// now let's restrict to the -1 subpopulation, if we have labels
 		if (labels[0] != 0)  // assume 0 indicates absence of labels
@@ -252,10 +261,11 @@ int main(int argc, char *argv[])
 	}
 
 
-	for (int i = 0; i < k; i++)
-	{
-		delete sigma_vector[i];
-	}
+	// for (int i = 0; i < k; i++)
+	// {
+	// 	delete sigma_vector[i];
+	// }
+ fini:
 #ifdef UseMPI
 	MPI_Finalize();
 #endif

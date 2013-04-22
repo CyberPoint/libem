@@ -83,6 +83,17 @@ class Matrix
 	@param major Orientation.ROW_MAJOR or Orientation.COLUMN_MAJOR*/
 	Matrix(double a[], int numRows, int numCols, Orientation major);
 
+	/** Create a matrix from its serialization
+	    @param array A serialization created by Matrix::serialize()
+	*/
+	Matrix(double *array);
+
+	/** Create a serialization of the matrix
+	    @param a array of row-major or column-major representation of matrix
+	    @return a serialization of the array
+	*/
+	double * Serialize();
+
 	/**Assign val to the ith row, jth column of the matrix
 	@param val double value to insert
 	@param i row number

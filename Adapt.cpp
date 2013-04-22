@@ -42,12 +42,16 @@
 #include <omp.h>
 #endif
 
+#ifdef UseMPI
+#include "mpi.h"
+#endif
+
 #include "Adapt.h"
 #include "GaussMix.h"  // for gaussmix_pdf()
 
 using namespace std;
 
-#define debug 0
+#define debug 1
 
 /********************************************************************************************************
  * 						PRIVATE FUNCTION PROTOTYPES
@@ -327,6 +331,18 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
 	try
 	{
 		// sum the posteriors for each cluster to obtain the constant for the cluster
+#ifdef UseMPI
+	  double temp_sum[cols];
+	  double global_sum[cols];
+	  
+	  for (int k = 0; k < cols; k++)
+	    for (int n=0; n < rows; n++)
+	      temp_sum[k] += posteriors.getValue(n,k);
+	  MPI_Allreduce(temp_sum, global_sum, cols, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	  for (int k=0; k < cols; k++)
+	    norm_constants.push_back(global_sum[k]);
+	  if (debug) cout << "Reduced norm constants"<<endl;
+#else
 		for (int k = 0; k < cols; k++)
 		{
 			double temp_sum = 0.0;
@@ -337,6 +353,7 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
 			}
 			norm_constants.push_back(temp_sum);
 		}
+#endif
 		retcode = 1;
 	}
 	catch (exception e)
@@ -487,6 +504,15 @@ int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<dou
 				weighted_means.update(temp_vec[m],k,m);
 			}
 		}
+#ifdef UseMPI
+		// Reduction and update moved out of OpenMP loop
+		  {
+		    double global_temp_vec[num_dimensions*num_clusters+2];
+		    double *temp_vec = weighted_means.Serialize();
+		    MPI_Allreduce(temp_vec, global_temp_vec, num_dimensions*num_clusters, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+		    weighted_means = Matrix(temp_vec);
+		  }
+#endif
 		retcode = 1;
 	}
 	catch (exception e)

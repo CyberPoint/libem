@@ -169,6 +169,42 @@ Matrix::Matrix(double a[], int nRows, int nCols, Orientation major=COLUMN_MAJOR)
 
 }
 
+/** \brief Matrix(double array)
+Create a matrix from its serialization
+@param array A serialization created by Matrix::serialize()
+*/
+Matrix::Matrix(double *array)
+{
+  numRows = int(array[0]);
+  numCols = int(array[1]);
+  if (matrix_debug) cout << "Deserializing an array:" << numRows <<" by "<<numCols<<endl;
+	entries = new double[0];
+	changed = true;
+	for (int i=0; i<numCols; i++)
+	{
+		columns.push_back(std::vector<double>(numRows));
+	}
+	for (int i=0; i<numCols; i++)
+	  for (int j=0; j<numRows; j++)
+	    columns[i][j] = array[2+i*numRows+j];
+}
+
+/** \brief create a serialization of the matrix
+@param a array of row-major or column-major representation of matrix
+@return a serialization of the array
+*/
+double * Matrix::Serialize()
+{
+  if (matrix_debug) cout << "Serializing an array:" << numRows <<" by "<<numCols<<endl;
+	double *out = new double[2+numRows*numCols];
+	out[0] = float(numRows);
+	out[1] = float(numCols);
+	for (int i=0; i<numCols; i++)
+	  for (int j=0; j<numRows; j++)
+	    out[2+i*numRows+j] = columns[i][j];
+	return out;
+}
+
 /** \brief get value of matrix element
 @param i the 0-rel row number
 @param j the 0-rel column number

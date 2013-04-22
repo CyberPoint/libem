@@ -32,6 +32,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <string.h>
 #include <cmath>
 #include <set>
 #ifdef UseMPI
@@ -443,12 +444,13 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
     	do
     	{
     		row = rand() % totalDataPoints;
+		if (debug) cout << "Trying random row "<<row<<" on node "<<myNode<<endl;
 
     	} while (choices.find(row) != choices.end());
 
     	choices.insert(row);
 
-    	if (debug) cout << "picked row: " << row << endl;
+    	if (debug) cout << "picked row: " << row <<" from "<<totalDataPoints<<" total"<< endl;
 #ifdef UseMPI
       // Who's got that row?
       int nodeWithRow = -1;
@@ -472,9 +474,23 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
       //Share this centroid across the nodes
       MPI_Bcast(&(cluster_centroid[i*m]), m, MPI_DOUBLE, globalNodeWithRow, MPI_COMM_WORLD);
       MPI_Barrier(MPI_COMM_WORLD);
+      sleep(2);
 #endif
 
 	}
+
+    if (debug)
+      {
+	if (myNode == 0)
+	  {
+	    cout<<"Centroids in k means:"<<endl;
+	    for (int i=0; i<k*m; i++)
+	      cout << cluster_centroid[i]<<", ";
+	    cout << endl;
+	  }
+	sleep(1);
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
 
 	//calculate distances
 	all_distances(m, n, k, X, cluster_centroid, dist);
