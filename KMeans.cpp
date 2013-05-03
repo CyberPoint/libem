@@ -489,7 +489,9 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 	    cout << endl;
 	  }
 	sleep(1);
+#ifdef UseMPI
 	MPI_Barrier(MPI_COMM_WORLD);
+#endif
       }
 
 	//calculate distances

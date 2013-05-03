@@ -40,7 +40,7 @@
 
 #include "Matrix.h"
 
-#define matrix_debug 0
+#define matrix_debug 1
 
 
 using namespace std;
@@ -175,27 +175,32 @@ Create a matrix from its serialization
 */
 Matrix::Matrix(double *array)
 {
-  numRows = int(array[0]);
-  numCols = int(array[1]);
-  if (matrix_debug) cout << "Deserializing an array:" << numRows <<" by "<<numCols<<endl;
+	numRows = int(array[0]);
+	numCols = int(array[1]);
+	if (matrix_debug) cout << "Creating array:from serialization: " << numRows <<" by "<<numCols<<endl;
+	if (matrix_debug) cout << "Old columns size: "<<columns.size()<<endl;
 	entries = new double[0];
 	changed = true;
 	for (int i=0; i<numCols; i++)
 	{
-		columns.push_back(std::vector<double>(numRows));
+		//columns.push_back(std::vector<double>(numRows));
+		columns.push_back(std::vector<double>());
+		for (int j=0; j<numRows; j++)
+		{
+			//columns[i][j] = array[2+i*numRows+j];
+			columns[i].push_back(array[2+i*numRows+j]);
+		}
 	}
-	for (int i=0; i<numCols; i++)
-	  for (int j=0; j<numRows; j++)
-	    columns[i][j] = array[2+i*numRows+j];
+	if (matrix_debug) cout << "columns.size(): "<<columns.size()<<endl;
 }
 
-/** \brief create a serialization of the matrix
+/** \Brief create a serialization of the matrix
 @param a array of row-major or column-major representation of matrix
 @return a serialization of the array
 */
 double * Matrix::Serialize()
 {
-  if (matrix_debug) cout << "Serializing an array:" << numRows <<" by "<<numCols<<endl;
+	if (matrix_debug) cout << "Serializing an array:" << numRows <<" by "<<numCols<<endl;
 	double *out = new double[2+numRows*numCols];
 	out[0] = float(numRows);
 	out[1] = float(numCols);
@@ -203,6 +208,32 @@ double * Matrix::Serialize()
 	  for (int j=0; j<numRows; j++)
 	    out[2+i*numRows+j] = columns[i][j];
 	return out;
+}
+/** \brief Matrix(double array)
+Fill a matrix from a Matrix serialization
+@param array A serialization created by Matrix::serialize()
+*/
+void Matrix::deSerialize(double *array)
+{
+	numRows = int(array[0]);
+	numCols = int(array[1]);
+	if (matrix_debug) cout << "Deserializing an array:" << numRows <<" by "<<numCols<<endl;
+	if (matrix_debug) cout << "Old columns size: "<<columns.size()<<endl;
+	//entries = new double[0];
+	changed = true;
+	// Fresh start
+	columns.resize(0);
+	for (int i=0; i<numCols; i++)
+	{
+		columns.push_back(std::vector<double>(numRows));
+		//columns.push_back(std::vector<double>());
+		for (int j=0; j<numRows; j++)
+		{
+			columns[i][j] = array[2+i*numRows+j];
+			//columns[i].push_back(array[2+i*numRows+j]);
+		}
+	}
+	if (matrix_debug) cout << "columns.size(): "<<columns.size()<<endl;
 }
 
 /** \brief get value of matrix element

@@ -155,6 +155,8 @@ int main(int argc, char *argv[])
 			}
 			return -1;
 		}
+		else
+		  cout << "Training succeeded on node "<<myNode<<" of "<<totalNodes<<" MPI nodes"<<endl;
 
 		// print results
 		if (myNode == 0)
@@ -180,9 +182,15 @@ int main(int argc, char *argv[])
 		    cout << "If all is working right, for multid_data_1.csv that should be around -72" << endl;
 		    cout << "If all is working right, for multid_data_2.svm it should be around -138" << endl;
 		  }
-		goto fini;
+
+#ifdef UseMPI
+		// For Debugging
+		MPI_Barrier(MPI_COMM_WORLD);
+		sleep(1);
+#endif
 
 		// now let's restrict to the -1 subpopulation, if we have labels
+		cout << "labels[0] = "<<labels[0]<<" on node "<<myNode<<endl;
 		if (labels[0] != 0)  // assume 0 indicates absence of labels
 		{
 			int num_subpop = 0;
@@ -198,7 +206,8 @@ int main(int argc, char *argv[])
 					{
 						temp[j] = data.getValue(i,j);
 					}
-					S.insertRow(&temp[0],n,i);
+					//******************* should the n be m?
+					S.insertRow(&temp[0],m,i);
 					num_subpop++;
 				}
 			}
@@ -212,21 +221,25 @@ int main(int argc, char *argv[])
 			//create mean and Pk matrices for adapt rtn to fill
 			Matrix adapted_mu_local(k,m);
 			std::vector<double> adapted_Pk_matrix(k,0.0);
-
-			if ((num_subpop > 2) &&
+			int global_subpop=num_subpop;
+#ifdef UseMPI
+			MPI_Allreduce(&num_subpop,&global_subpop,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+#endif
+			cout << "Number of subpopulations: "<<num_subpop<<endl;
+			if ((global_subpop > 2) &&
 				(gaussmix::gaussmix_adapt(S,num_subpop,sigma_vector,mu_local,Pk_matrix,
 					adapted_sigma_vector,adapted_mu_local,adapted_Pk_matrix)) != 0)
 			{
+				if (num_subpop >0)
+				{
 				// print results
 				cout << "The matrix of adapted -1 subpop Pk's is " << endl;
 
-				std::string s;
 				for (int i = 0; i < k; i++)
 				{
-					s += adapted_Pk_matrix[i];
-					s += " ";
+				  cout << adapted_Pk_matrix[i] << " ";
 				}
-				cout << s << endl;
+				cout << endl;
 
 
 				cout << "The matrix of adapted -1 subpop mu's is " << endl;
@@ -240,6 +253,7 @@ int main(int argc, char *argv[])
 
 				cout << "If all is working right, for multid_data_2.svm the adapted covariance matrices " << \
 						" should have (0,0) entries around 2.5 and 5.9 respectively" << endl;
+				}
 
 			}
 			else
@@ -247,12 +261,12 @@ int main(int argc, char *argv[])
 				cout << "Error adapting to subpop -1" << endl;
 			}
 
-		    adapted_mu_local.clear();
-		    adapted_Pk_matrix.clear();
-			for (int i = 0; i < k; i++)
-			{
-				delete adapted_sigma_vector[i];
-			}
+			//adapted_mu_local.clear();
+			//adapted_Pk_matrix.clear();
+			// for (int i = 0; i < k; i++)
+			// {
+			// 	delete adapted_sigma_vector[i];
+			// }
 		}
 	}
 	catch (...)
@@ -266,8 +280,7 @@ int main(int argc, char *argv[])
 	// 	delete sigma_vector[i];
 	// }
  fini:
-#ifdef UseMPI
-	MPI_Finalize();
-#endif
+	gaussmix::fini();
+
     return 0;
 }

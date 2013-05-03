@@ -44,6 +44,8 @@
 
 #ifdef UseMPI
 #include "mpi.h"
+// Comm handle for nodes with data
+static 	MPI_Comm AdaptNodes;
 #endif
 
 #include "Adapt.h"
@@ -336,9 +338,12 @@ int compute_norm_constants(const Matrix & posteriors,vector<double> & norm_const
 	  double global_sum[cols];
 	  
 	  for (int k = 0; k < cols; k++)
-	    for (int n=0; n < rows; n++)
-	      temp_sum[k] += posteriors.getValue(n,k);
-	  MPI_Allreduce(temp_sum, global_sum, cols, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	    {
+	      temp_sum[k] = 0.0;
+	      for (int n=0; n < rows; n++)
+		temp_sum[k] += posteriors.getValue(n,k);
+	    }
+	  MPI_Allreduce(temp_sum, global_sum, cols, MPI_DOUBLE, MPI_SUM, AdaptNodes);
 	  for (int k=0; k < cols; k++)
 	    norm_constants.push_back(global_sum[k]);
 	  if (debug) cout << "Reduced norm constants"<<endl;
@@ -385,12 +390,13 @@ int compute_posteriors(Matrix & X, int num_points, Matrix & mu_matrix, vector<Ma
 	int num_clusters = mu_matrix.rowCount();
 	int num_dimensions = mu_matrix.colCount();
 
+	if (debug) cout << "num_clusters: "<<num_clusters<<", num_dimensions: "<<num_dimensions<<", num_points: "<<num_points<<endl;
 	try
 	{
 		// for each cluster
 		#ifdef _OPENMP
 		# pragma omp parallel for
-		#endif
+#endif
 		for (int k = 0; k < num_clusters; k++)
 		{
 
@@ -404,13 +410,14 @@ int compute_posteriors(Matrix & X, int num_points, Matrix & mu_matrix, vector<Ma
 
 				std::vector<double> temp;
 				double lld = gaussmix::gaussmix_pdf(num_dimensions,X.getCopyOfRow(n,temp),
-										*(sigma_matrix[k]),mean_vec);
+								    *(sigma_matrix[k]),mean_vec);
 
 				// compute the weighted likelihood density (un-log'd)
 				double post_prob = exp(lld)*Pks[k];
 				posteriors.update(post_prob,n,k);
 				if (debug)
 				{
+					cout << "Printing posteriors in compute_posteriors"<<endl;
 					posteriors.print();
 				}
 
@@ -504,14 +511,23 @@ int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<dou
 				weighted_means.update(temp_vec[m],k,m);
 			}
 		}
+#if 1
 #ifdef UseMPI
 		// Reduction and update moved out of OpenMP loop
 		  {
 		    double global_temp_vec[num_dimensions*num_clusters+2];
 		    double *temp_vec = weighted_means.Serialize();
-		    MPI_Allreduce(temp_vec, global_temp_vec, num_dimensions*num_clusters, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		    weighted_means = Matrix(temp_vec);
+		    if (debug) 
+		    {
+			    cout<<"Matrix Size from dims*clusters: "<<num_dimensions*num_clusters<<", from tem_vec: "<<temp_vec[0]*temp_vec[1]<<endl;
+		    }
+		    MPI_Allreduce(temp_vec, global_temp_vec, num_dimensions*num_clusters+2, MPI_DOUBLE, MPI_SUM, AdaptNodes);
+		    if (debug) cout<<"Constructing matrix of size "<<num_dimensions<<" by "<<num_clusters<<endl;
+		    //weighted_means = Matrix(temp_vec);
+		    weighted_means.deSerialize(temp_vec);
+		    if (debug) cout<<"Matrix Constructed"<<endl;
 		  }
+#endif
 #endif
 		retcode = 1;
 	}
@@ -542,110 +558,158 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 	int num_dimensions = mu_matrix.colCount();		// number of data dimensions
 
 	int retcode = 1;
-	/*
-	 * 1. construct an n X k "posterior" matrix of weighted density values p_nk = P(n|k)*P(k)/Q_n
-	 * for each data point, where Q_n is the normalization factor given by the sum of P(n|k)*P(k) over all k.
-	*/
-	Matrix posteriors(n,Pks.size());
-	retcode = compute_posteriors(X,n,mu_matrix,sigma_matrix,Pks,posteriors);
+	int myNode = 0;
+	int nodes = 1;
 
-	if (debug)
+#ifdef UseMPI
+	MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
+	MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
+
+	int haveData = (n>0);
+
+	MPI_Comm_split(MPI_COMM_WORLD, haveData, myNode, &AdaptNodes);
+#endif
+	if (debug) cout << "Adapted data - n is "<<n<<" on node "<<myNode<<endl;
+
+	if (n>0)
 	{
-		cout << "the posterior matrix is: " << endl;
-		posteriors.print();
-	}
+		/*
+		 * 1. construct an n X k "posterior" matrix of weighted density values p_nk = P(n|k)*P(k)/Q_n
+		 * for each data point, where Q_n is the normalization factor given by the sum of P(n|k)*P(k) over all k.
+		 */
+		Matrix posteriors(n,Pks.size());
+		if (debug) cout << "Calculating posteriors on node "<<myNode<<endl;
+		retcode = compute_posteriors(X,n,mu_matrix,sigma_matrix,Pks,posteriors);
 
-	/*
-	 *  2. now get a normalization constants v_i for each cluster by summing the normalized densities for each
-	 *  data point, under the cluster.
-	 */
-	vector<double> norm_constants;
-	if (retcode != 0)
-	{
-		retcode = compute_norm_constants(posteriors,norm_constants);
-	}
-
-
-	/*
-	 *  3. now compute the "alpha" constants a_i as v_i/ (v_i + relevance_factor).
-	 */
-	const int relevance_factor = 16;	// see ref 2 in doxygen main index page
-	std::vector<double> alphas;
-	if (retcode != 0)
-	{
-		for (int i = 0; i < num_clusters; i++)
+		if (debug)
 		{
-			alphas.push_back(norm_constants[i] / ( norm_constants[i] + relevance_factor));
-
-		}
-	}
-
-	/*
-	 *  4. now for each cluster, compute the cluster mean e_i as the weighted sum of the data point vectors,
-	 *  where the (n,k) posterior matrix entry is the weight for data point n and cluster k, and the expectation
-	 *  has normalizing constant v_i.
-	 */
-	Matrix weighted_means(num_clusters,num_dimensions);
-	if (retcode != 0)
-	{
-		retcode = compute_weighted_means(X,posteriors,norm_constants,weighted_means);
-
-	}
-
-	/*
-	 *  5. now compute the "expected squares" matrix E_i for each cluster k, where by "expected square"
-	 *  we mean the expected value of the diagonal matrix whose (i,i)-th entry is given by the square of
-	 *  the i-th component of a randomly chosen data point n with itself, weighted by the (n,k) entry of the posterior
-	 *  matrix, and the expectation has normalizing constant v_i.
-	 *
-	 */
-	vector<Matrix * > expected_squares;
-	if (retcode != 0)
-	{
-		for (int i = 0; i < num_clusters; i++)
-		{
-			expected_squares.push_back(new Matrix(num_dimensions,num_dimensions));
+			cout << "the posterior on node "<<myNode<<" matrix is: " << endl;
+			posteriors.print();
 		}
 
-		retcode = compute_expected_squares(X,posteriors,norm_constants,expected_squares);
-
-	}
-
-	/*
-	 *  6. now compute the new cluster weights W_i = Y [(a_i * v_i/N) + (1-a_i)*w_i
-	 *  where N is the number of data points, w_i is the old weight, and Y is 1/(sum of all new weights)
-	 */
-	if (retcode != 0)
-	{
-		retcode = compute_new_weights(alphas,norm_constants,n,Pks,adapted_Pks);
-	}
-
-	/*
-	 *  7. now compute the new cluster means M_i as a_i * e_i + (1-a_i)*m_i where m_i is the old cluster mean
-	 */
-	if (retcode != 0)
-	{
-		retcode = compute_new_means(mu_matrix,weighted_means,alphas,adapted_mu_matrix);
-	}
-
-	/*
-	 *  8. now compute the new covariances C_i as a_i * E_i + (1 - a_i) * ( c_i + diag(m_i) ) - c_i
-	 *  where c_i s the old covariance and diag(m_i) is the diagonal matrix w/entry (j,j) given by the
-	 *  square of the j-th component of m_i and E_i is the "expected squares" matrix
-	 */
-	if (retcode != 0)
-	{
-		retcode = compute_new_covariances(mu_matrix,adapted_mu_matrix, sigma_matrix,alphas,expected_squares,adapted_sigma_matrix);
-	}
-
-	if (expected_squares.size() > 0)
-	{
-		for (int i = 0; i < num_clusters; i++)
+		/*
+		 *  2. now get a normalization constants v_i for each cluster by summing the normalized densities for each
+		 *  data point, under the cluster.
+		 */
+		vector<double> norm_constants;
+		if (retcode != 0)
 		{
-			delete expected_squares[i];
+			retcode = compute_norm_constants(posteriors,norm_constants);
 		}
-	}
+		if (debug)
+		{
+			cout << "Computed normalization constants" << endl;
+		}
 
+		/*
+		 *  3. now compute the "alpha" constants a_i as v_i/ (v_i + relevance_factor).
+		 */
+		const int relevance_factor = 16;	// see ref 2 in doxygen main index page
+		std::vector<double> alphas;
+		if (retcode != 0)
+		{
+			for (int i = 0; i < num_clusters; i++)
+			{
+				alphas.push_back(norm_constants[i] / ( norm_constants[i] + relevance_factor));
+
+			}
+		}
+		if (debug)
+		{
+			cout << "Computed alpha constants" << endl;
+		}
+
+		/*
+		 *  4. now for each cluster, compute the cluster mean e_i as the weighted sum of the data point vectors,
+		 *  where the (n,k) posterior matrix entry is the weight for data point n and cluster k, and the expectation
+		 *  has normalizing constant v_i.
+		 */
+		Matrix weighted_means(num_clusters,num_dimensions);
+		if (retcode != 0)
+		{
+			retcode = compute_weighted_means(X,posteriors,norm_constants,weighted_means);
+
+		}
+		if (debug)
+		{
+			cout << "Computed cluster mean" << endl;
+		}
+
+		/*
+		 *  5. now compute the "expected squares" matrix E_i for each cluster k, where by "expected square"
+		 *  we mean the expected value of the diagonal matrix whose (i,i)-th entry is given by the square of
+		 *  the i-th component of a randomly chosen data point n with itself, weighted by the (n,k) entry of the posterior
+		 *  matrix, and the expectation has normalizing constant v_i.
+		 *
+		 */
+		vector<Matrix * > expected_squares;
+		if (retcode != 0)
+		{
+			for (int i = 0; i < num_clusters; i++)
+			{
+				expected_squares.push_back(new Matrix(num_dimensions,num_dimensions));
+			}
+
+			retcode = compute_expected_squares(X,posteriors,norm_constants,expected_squares);
+
+		}
+		if (debug)
+		{
+			cout << "Computed expected squares" << endl;
+		}
+
+		/*
+		 *  6. now compute the new cluster weights W_i = Y [(a_i * v_i/N) + (1-a_i)*w_i
+		 *  where N is the number of data points, w_i is the old weight, and Y is 1/(sum of all new weights)
+		 */
+		if (retcode != 0)
+		{
+			retcode = compute_new_weights(alphas,norm_constants,n,Pks,adapted_Pks);
+		}
+		if (debug)
+		{
+			cout << "Computed cluster weights" << endl;
+		}
+
+		/*
+		 *  7. now compute the new cluster means M_i as a_i * e_i + (1-a_i)*m_i where m_i is the old cluster mean
+		 */
+		if (retcode != 0)
+		{
+			retcode = compute_new_means(mu_matrix,weighted_means,alphas,adapted_mu_matrix);
+		}
+
+		if (debug)
+		{
+			cout << "Computed new cluster means" << endl;
+		}
+		/*
+		 *  8. now compute the new covariances C_i as a_i * E_i + (1 - a_i) * ( c_i + diag(m_i) ) - c_i
+		 *  where c_i s the old covariance and diag(m_i) is the diagonal matrix w/entry (j,j) given by the
+		 *  square of the j-th component of m_i and E_i is the "expected squares" matrix
+		 */
+		if (retcode != 0)
+		{
+			retcode = compute_new_covariances(mu_matrix,adapted_mu_matrix, sigma_matrix,alphas,expected_squares,adapted_sigma_matrix);
+		}
+
+		if (expected_squares.size() > 0)
+		{
+			for (int i = 0; i < num_clusters; i++)
+			{
+				delete expected_squares[i];
+			}
+		}
+		if (debug)
+		{
+			cout << "Computed new covariances" << endl;
+		}
+
+	}
+#ifdef UseMPI
+	if (debug) cout << "Node "<<myNode<<" finished adapt."<<endl;
+	//MPI_Barrier(MPI_COMM_WORLD);
+#endif
     return retcode;
 }
 

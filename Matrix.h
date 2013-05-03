@@ -94,6 +94,12 @@ class Matrix
 	*/
 	double * Serialize();
 
+        /** \brief Matrix(double array)
+	    Fill a matrix from a Matrix serialization
+	    @param array A serialization created by Matrix::serialize()
+	*/
+	void deSerialize(double *array);
+
 	/**Assign val to the ith row, jth column of the matrix
 	@param val double value to insert
 	@param i row number
