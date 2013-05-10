@@ -360,19 +360,17 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug)
 			{
 				cout << "Pk_vec is: " << endl;
-				std::string s="";
 				for (int i = 0; i < k; i++)
 				{
-					s += Pk_vec[i];
-					s += " ";
+					cout << Pk_vec[i]<<" ";
 				}
-				cout << s.c_str() << endl;
+				cout << endl;
 
 			}
 
 			//temp1 is the cluster weight for the current gaussian
 			double temp1 = Pk_vec[gaussian];
-			if (debug) printf("temp 1 is %lf \n"), Pk_vec[gaussian];
+			if (debug) printf("temp 1 is %lf. gaussian is %d \n", Pk_vec[gaussian],gaussian);
 
 			//temp2 is the log of the cluster weight for the current gaussian
 			double temp2 = log(temp1);
@@ -488,6 +486,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	Matrix Pk_hat(1,k);
 	int successflag = 0;
 
+	// Update Pk_vec and mu_matrix
 	int gaussian = 0;
 	#ifdef _OPENMP
 	# pragma omp parallel for
@@ -503,13 +502,12 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		#endif
 
 		//initialize the mean and covariance matrices that hold the mstep approximations
-		Matrix sigma_hat(m,m);
 		Matrix mu_hat(1,m);
 
 		//initialize the normalization factor - this will be the sum of the densities for each data point for the current gaussian
 		double norm_factor = 0;
 
-		//initialize the array of doubles of length m that represents the data
+		//initialize the array of doubles of length m that represents the data with some modification
 		double x[m];
 		
 		if (successflag == 0)
@@ -541,6 +539,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			    norm_factor += exp_p_nk;
 			    if (debug) cout << "norm factor is " << norm_factor << endl;
 			  }
+			Pk_vec[gaussian] = norm_factor;
 #ifdef UseMPI
 		MPI_Barrier(MPI_COMM_WORLD);
 #endif
@@ -551,9 +550,9 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			  if (debug) cout << "norm_factor is "<<norm_factor<<", myNode: "<<myNode<<endl;
 #ifdef UseMPI
 			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
-			  if (norm_factor == 0)
-			    mu_hat.update(0,0,dim);
-			  else
+			  // if (norm_factor == 0)
+			  //   mu_hat.update(0,0,dim);
+			  // else
 			    mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 #else
 			  if (norm_factor == 0)
@@ -563,36 +562,82 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
 #endif
 			}
-	
+		} // Success flag
+	} // for loop over gaussians
+
+	// Reduce PK and mu
+
+	// Temporary space for reduced Pk_vec - also used in calculation of sigma
+	double unscaled_Pk_vec[k];
+
+	{
+		MPI_Allreduce(&(Pk_vec[0]),unscaled_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+		double local_scale=0.0, global_scale=0.0;
+		for (int i=0; i<k; i++)
+		{
+			local_scale += Pk_vec[i];
+			global_scale += unscaled_Pk_vec[i];
+		}
+		for (int i=0; i<k; i++)
+			Pk_vec[i] = unscaled_Pk_vec[i]/global_scale;
+		// MPI workspace
+		double global_work[k*m*m];
+		double local_work[k*m*m];
+
+		// Need the total number of samples
+		int totalSamples;
+		MPI_Allreduce(&n,&totalSamples,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+
+		// Mu
+		for (int gaussian=0; gaussian<k; gaussian++)
+		{
+			// extract, already denormalized
+			for (int dim = 0; dim < m; dim++)
+			{
+				local_work[gaussian*m+dim] = mu_matrix.getValue(gaussian,dim);
+			}
+		}
+		// Reduce
+		MPI_Allreduce(local_work,global_work,k*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+		// Restore reduced Mu
+		for (int gaussian=0; gaussian<k; gaussian++)
+		{
+			// replace and normalize
+			for (int dim = 0; dim < m; dim++)
+			{
+				mu_matrix.update(global_work[gaussian*m+dim] / unscaled_Pk_vec[gaussian],gaussian,dim);
+			}
+		}
+	}
+	// Using new Pk_vec and mu_matrix, calculate updated sigma
+	for (gaussian = 0; gaussian < k; gaussian++)
+	{
+		// Check success flag
+		if (successflag == 0)
+		{
+			Matrix sigma_hat(m,m);
+
 			//calculate the new covariances, sigma_hat
 			for (int data_point = 0; data_point < n; data_point++)
 			{
-				//fill in x vector for this data_point
-				for (int dim = 0; dim < m; dim++)
-				{
-					x[dim] = X[m*data_point + dim];
-				}
-
-				//initialize the x_m matrix
-				Matrix x_m(1,m);
-
-				//fill it
-				x_m.add(x,m,0);
-
-				//row representation of x - mu for matrix multiplication
-				Matrix & difference_row = x_m.subtract(mu_hat);
+				const double *x = &(X[m*data_point]);
 
 				//magical kronecker tensor product calculation
+				double pk = exp(p_nk_matrix.getValue(data_point,gaussian));
+				
 				for (int i = 0; i < m; i++)
 				{
 					for (int j = 0; j < m; j++)
 					{
-						double temp1 = difference_row.getValue(0,i) * difference_row.getValue(0,j)*exp(p_nk_matrix.getValue(data_point,gaussian));
+						double temp1 = (x[i]-mu_matrix.getValue(gaussian,i)) *
+							(x[j]-mu_matrix.getValue(gaussian,j)) *
+							pk;
+						//double temp1 = difference_row.getValue(0,i) * difference_row.getValue(0,j)*exp(p_nk_matrix.getValue(data_point,gaussian));
 						sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
 					}
 				}
 
-				delete &difference_row;
+				//delete &difference_row;
 
 			}//end data point
 
@@ -601,10 +646,13 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-				  if (norm_factor == 0)
-				    sigma_hat.update(0,i,j);
-				  else
-				    sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
+				  // if (norm_factor == 0)
+				  //   sigma_hat.update(0,i,j);
+				  // else
+				  //   sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
+					if (debug) cout << "Scaling sigma_hat by "<<
+							   Pk_vec[gaussian]<<endl;
+					sigma_hat.update(sigma_hat.getValue(i,j)/(2*Pk_vec[gaussian]),i,j);
 				}
 			}
 			
@@ -621,10 +669,10 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				successflag = 1;
 
 			}
-			//adjust the Pk_hat calculations by the normalization factor (this particular func is threadsafe)
-			Pk_hat.update(norm_factor/n,0,gaussian);
-			if (debug) cout << "pk hat matrix after updating for gaussian "<<gaussian<<" on node " << myNode << endl;
-			if (debug) Pk_hat.print();
+			// //adjust the Pk_hat calculations by the normalization factor (this particular func is threadsafe)
+			// Pk_hat.update(norm_factor/n,0,gaussian);
+			// if (debug) cout << "pk hat matrix after updating for gaussian "<<gaussian<<" on node " << myNode << endl;
+			// if (debug) Pk_hat.print();
 
 			//assign sigma_hat to sigma_matrix[gaussian]
 			for (int i = 0; i < m; i++)
@@ -636,9 +684,9 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			}
 
 
-			//assign Pk_hat to Pk_matrix
-			if (debug) cout << "Filling Pk_vec with value from Pk_hat: "<<Pk_hat.getValue(0,gaussian)<<endl;
-			Pk_vec[gaussian] = Pk_hat.getValue(0,gaussian);
+			// //assign Pk_hat to Pk_matrix
+			// if (debug) cout << "Filling Pk_vec with value from Pk_hat: "<<Pk_hat.getValue(0,gaussian)<<endl;
+			// Pk_vec[gaussian] = Pk_hat.getValue(0,gaussian);
 
 		} // end if successflag == true
 #ifdef UseMPI
@@ -669,90 +717,23 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #ifdef UseMPI
 	// TODO MPI reduction
 	{
-	  // Space for temporary reduced Pk_vec
-	  double global_Pk_vec[k];
-	  MPI_Allreduce(&(Pk_vec[0]),global_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-	  double local_scale=0.0, global_scale=0.0;
-	  for (int i=0; i<k; i++)
-	    {
-	      local_scale += Pk_vec[i];
-	      global_scale += global_Pk_vec[i];
-	    }
-	  for (int i=0; i<k; i++)
-	    Pk_vec[i] = global_Pk_vec[i]/global_scale;
-	  // Since it's replicated, not distributed across the nodes, scale to number of nodes
-	  global_scale /= totalNodes;
-	  if (debug)
-	    {
-	      cout << "local_scale("<<myNode<<"): "<<local_scale<<", global_scale: "<<global_scale<<endl;
-	      cout << "global_pk_vec("<<myNode<<"):" << endl;
-	      for (int i=0; i<k; i++)
-		{
-		  cout << global_Pk_vec[i] << ", ";
-		}
-	      cout << endl;
-	      cout << "local_pk_vec("<<myNode<<"):" << endl;
-	      for (int i=0; i<k; i++)
-		{
-		  cout << Pk_vec[i] << ", ";
-		}
-	      cout << endl;
-	    }
+		// MPI workspace
+		double global_work[k*m*m];
+		double local_work[k*m*m];
 
-	  // MPI workspace
-	  double global_work[k*m*m];
-	  double local_work[k*m*m];
-	if (debug)
-	  {
-	    MPI_Barrier(MPI_COMM_WORLD);
-	    for (int node=0; node<totalNodes; node++)
-	      for (int gaussian=0; gaussian<k; gaussian++)
-		for (int dim=0; dim<m ; dim++)
-		  {
-		    double tmp=mu_matrix.getValue(gaussian,dim);
-		    if (myNode == node) cout << "mu_matrix before reduce:  Node: "<<node<<", Gaussian: "<<gaussian<<", dim: "<<dim<<", Value: "<<tmp<<endl;
-#ifdef UseMPI
-		    MPI_Barrier(MPI_COMM_WORLD);
-#endif
-		  }
-	  }
+		// Sigma
+		for (int gaussian=0; gaussian<k; gaussian++)
+		{
+			for (int i = 0; i < m; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					local_work[gaussian*m*m+i*m+j] = sigma_matrix[gaussian]->getValue(i,j);
+					if (debug) cout << "Node: "<< myNode<< " Unreduced sigma (m,i,j): "<<local_work[gaussian*m*m+i*m+j]<<" ("<<m<<", "<<i<<", "<<j<<")"<<endl;
+				}
+			}
 
-	// Need the total number of samples
-	int totalSamples;
-	MPI_Allreduce(&n,&totalSamples,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-	  // Mu
-	  for (int gaussian=0; gaussian<k; gaussian++)
-	    {
-	      // extract, already denormalized
-	      for (int dim = 0; dim < m; dim++)
-		{
-		  local_work[gaussian*m+dim] = mu_matrix.getValue(gaussian,dim);
 		}
-	    }
-	  // Reduce
-	  MPI_Allreduce(local_work,global_work,k*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-	  // Restore reduced Mu
-	  for (int gaussian=0; gaussian<k; gaussian++)
-	    {
-	      // replace and normalize
-	      for (int dim = 0; dim < m; dim++)
-		{
-		  mu_matrix.update(2 * global_work[gaussian*m+dim] / global_scale / totalSamples,gaussian,dim);
-		}
-	    }
-	  // Sigma
-	  for (int gaussian=0; gaussian<k; gaussian++)
-	    {
-	      for (int i = 0; i < m; i++)
-		{
-		  for (int j = 0; j < m; j++)
-		    {
-		      local_work[gaussian*m*m+i*m+j] = sigma_matrix[gaussian]->getValue(i,j);
-		      if (debug) cout << "Node: "<< myNode<< " Unreduced sigma (m,i,j): "<<local_work[gaussian*m*m+i*m+j]<<" ("<<m<<", "<<i<<", "<<j<<")"<<endl;
-		    }
-		}
-
-	    }
 	  // Reduce
 	  MPI_Allreduce(local_work,global_work,k*m*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 	  // Restore reduced sigma
@@ -762,7 +743,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		{
 		  for (int j = 0; j < m; j++)
 		    {
-		      sigma_matrix[gaussian]->update(global_work[gaussian*m*m+i*m+j] / global_scale, i, j);
+		      sigma_matrix[gaussian]->update(global_work[gaussian*m*m+i*m+j] / unscaled_Pk_vec[gaussian], i, j);
 		    }
 		}
 
@@ -1246,7 +1227,7 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	//get a new likelihood from estep to have something to start with
 	try
 	{
-		if (debug) printf("about to call e-step, Pks has size %d", Pks.size());
+		if (debug) printf("about to call e-step, Pks has size %d\n", Pks.size());
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
 
 	}

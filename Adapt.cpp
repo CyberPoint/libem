@@ -128,9 +128,28 @@ int compute_expected_squares(Matrix & X,const Matrix & posteriors,const vector<d
 			for (int m  = 0; m < num_dimensions; m++)
 			{
 				pm->update(pm->getValue(m,m)/norm_constants[k],m,m);
-
 			}
 		}
+#ifdef UseMPI
+		for (int k=0; k<num_clusters; k++)
+		{
+			// Reduce each matrix
+			double dim0,dim1;
+			double *mat;
+			int serialSize = num_clusters*num_clusters+2;
+			double global_mat[serialSize];
+			
+			mat = expected_squares[k]->Serialize();
+			// Save dimensions
+			dim0 = mat[0];
+			dim1 = mat[1];
+			MPI_Allreduce(mat, global_mat, serialSize, MPI_DOUBLE, MPI_SUM, AdaptNodes);
+			// Restore dimensions after summation
+			global_mat[0] = dim0;
+			global_mat[1] = dim1;
+			expected_squares[k]->deSerialize(global_mat);
+		}
+#endif
 		retcode = 1;
 	}
 	catch (exception e)
@@ -517,15 +536,23 @@ int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<dou
 		  {
 		    double global_temp_vec[num_dimensions*num_clusters+2];
 		    double *temp_vec = weighted_means.Serialize();
+		    double dim0,dim1;
+		    dim0 = temp_vec[0];
+		    dim1 = temp_vec[1];
 		    if (debug) 
 		    {
 			    cout<<"Matrix Size from dims*clusters: "<<num_dimensions*num_clusters<<", from tem_vec: "<<temp_vec[0]*temp_vec[1]<<endl;
+			    cout<<"Matrix dims: "<<dim0<<" by "<<dim1<<endl;
 		    }
 		    MPI_Allreduce(temp_vec, global_temp_vec, num_dimensions*num_clusters+2, MPI_DOUBLE, MPI_SUM, AdaptNodes);
 		    if (debug) cout<<"Constructing matrix of size "<<num_dimensions<<" by "<<num_clusters<<endl;
 		    //weighted_means = Matrix(temp_vec);
-		    weighted_means.deSerialize(temp_vec);
-		    if (debug) cout<<"Matrix Constructed"<<endl;
+		    // Dimensions were summed in reduction.  Fix this.
+		    global_temp_vec[0] = dim0;
+		    global_temp_vec[1] = dim1;
+		    weighted_means.deSerialize(global_temp_vec);
+		    if (debug) cout<<"Matrix Constructed:"<<endl;
+		    if (debug) weighted_means.print();
 		  }
 #endif
 #endif
@@ -551,8 +578,10 @@ int compute_weighted_means(Matrix & X,const Matrix & posteriors,const vector<dou
 
 
 int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
-		Matrix &mu_matrix, std::vector<double> &Pks,
-		vector<Matrix*> &adapted_sigma_matrix, Matrix &adapted_mu_matrix, std::vector<double> &adapted_Pks)
+		    Matrix &mu_matrix, std::vector<double> &Pks,
+		    vector<Matrix*> &adapted_sigma_matrix,
+		    Matrix &adapted_mu_matrix,
+		    std::vector<double> &adapted_Pks)
 {
 	int num_clusters = mu_matrix.rowCount();		// number of gaussians in mix
 	int num_dimensions = mu_matrix.colCount();		// number of data dimensions
@@ -598,7 +627,10 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		}
 		if (debug)
 		{
-			cout << "Computed normalization constants" << endl;
+			cout << "Computed normalization constants: ";
+			for (int i=0; i<num_clusters; i++)
+				cout << norm_constants[i] << " ";
+			cout << endl;
 		}
 
 		/*
@@ -616,7 +648,10 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		}
 		if (debug)
 		{
-			cout << "Computed alpha constants" << endl;
+			cout << "Computed alpha constants: ";
+			for (int i=0; i < num_clusters; i++)
+				cout << norm_constants[i] + relevance_factor << " ";
+			cout << endl;
 		}
 
 		/*
@@ -633,6 +668,7 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		if (debug)
 		{
 			cout << "Computed cluster mean" << endl;
+			weighted_means.print();
 		}
 
 		/*
@@ -655,7 +691,9 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 		}
 		if (debug)
 		{
-			cout << "Computed expected squares" << endl;
+			cout << "Computed expected squares:";
+			for (int i=0; i<num_clusters; i++)
+				expected_squares[i]->print();
 		}
 
 		/*
