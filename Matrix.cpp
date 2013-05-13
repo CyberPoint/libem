@@ -40,7 +40,7 @@
 
 #include "Matrix.h"
 
-#define matrix_debug 1
+#define matrix_debug 0
 
 
 using namespace std;

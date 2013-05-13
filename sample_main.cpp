@@ -190,14 +190,14 @@ int main(int argc, char *argv[])
 #endif
 
 		// now let's restrict to the -1 subpopulation, if we have labels
-		cout << "labels[0] = "<<labels[0]<<" on node "<<myNode<<endl;
 		if (labels[0] != 0)  // assume 0 indicates absence of labels
 		{
 			int num_subpop = 0;
 
 			// isolate subpopulation
 			Matrix S;
-			double temp[n];
+			double temp[m];
+
 			for (int i = 0; i < n; i++)
 			{
 				if (labels[i] == -1)
@@ -207,10 +207,12 @@ int main(int argc, char *argv[])
 						temp[j] = data.getValue(i,j);
 					}
 					//******************* should the n be m?
-					S.insertRow(&temp[0],m,i);
+					S.insertRow(&temp[0],m,num_subpop);
 					num_subpop++;
 				}
 			}
+
+
 			// create vectors that hold pointers to the adapted result covariance matrices
 			vector<Matrix *> adapted_sigma_vector;
 			for (int i = 0; i < k; i++)

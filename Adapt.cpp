@@ -53,7 +53,7 @@ static 	MPI_Comm AdaptNodes;
 
 using namespace std;
 
-#define debug 1
+#define debug 0
 
 /********************************************************************************************************
  * 						PRIVATE FUNCTION PROTOTYPES
@@ -745,6 +745,86 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 
 	}
 #ifdef UseMPI
+	// Distribute results to nodes where n == 0
+	// Find a node with the results, and distribute from there.
+	int masterNode;
+	{
+		int local_temp=-1;
+		if (0<n)
+			// We have data locally
+			local_temp = myNode;
+		MPI_Allreduce(&local_temp, &masterNode, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+	}
+	if (masterNode < 0)
+	{
+		cout <<"WARNING:  No node had data in this subgroup"<<endl;
+	}
+	
+	// Results: ,
+	// vector<Matrix*> &adapted_sigma_matrix
+	for (int i=0; i<adapted_sigma_matrix.size(); i++)
+	{
+		int matrixSize = 2+num_clusters*num_clusters;
+		if (myNode == masterNode)
+		{
+			double *local_temp;
+			local_temp = adapted_sigma_matrix[i]->Serialize();
+			MPI_Bcast(local_temp, matrixSize, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+		}
+		else
+		{
+			double local_temp[matrixSize];
+			MPI_Bcast(local_temp, matrixSize, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+			adapted_sigma_matrix[i]->deSerialize(local_temp);
+		}
+		
+	}
+	// Matrix &adapted_mu_matrix
+	{
+		int matrixSize = 2 + num_clusters*num_dimensions;
+		if (myNode == masterNode)
+		{
+			double *local_temp;
+			if (debug)
+			{
+				cout << "On masterNode "<<masterNode<<", n: "<<n<<", adapted_mu_matrix:"<<endl;
+				adapted_mu_matrix.print();
+			}
+			local_temp = adapted_mu_matrix.Serialize();
+			MPI_Bcast(local_temp, matrixSize, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+		}
+		else
+		{
+			double local_temp[matrixSize];
+			MPI_Bcast(local_temp, matrixSize, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+			adapted_mu_matrix.deSerialize(local_temp);
+		}
+
+	}
+	// std::vector<double> &adapted_Pks
+	{
+		double local_temp[num_clusters];
+		if (myNode == masterNode)
+		{
+			for (int i=0; i<num_clusters; i++)
+				local_temp[i] = adapted_Pks[i];
+			if (debug) cout << "PK size is "<<adapted_Pks.size()<<endl;
+			MPI_Bcast(local_temp, num_clusters, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+		}
+		else
+		{
+			MPI_Bcast(local_temp, num_clusters, MPI_DOUBLE, masterNode, MPI_COMM_WORLD);
+			adapted_Pks.resize(num_clusters);
+			for (int i=0; i<num_clusters; i++)
+				adapted_Pks[i] = local_temp[i];
+		}
+	}
+	if (debug)
+	{
+		int myGroupSize;
+		cout << "MasterNode: "<<masterNode<<endl;
+	}
+	
 	if (debug) cout << "Node "<<myNode<<" finished adapt."<<endl;
 	//MPI_Barrier(MPI_COMM_WORLD);
 #endif
