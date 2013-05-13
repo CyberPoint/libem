@@ -253,11 +253,6 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	//for each data point in n
 	for (int data_point = 0; data_point < n; data_point++)
 	{
-		if (debug)
-		{
-			cout << "1:beginning iteration " << data_point << " of " << n << endl << flush;
-		}
-
 
 		//initialize the x matrix, which holds the data passed in from double*X
 		Matrix x(1,m);
@@ -268,8 +263,6 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		//for each dimension
 		for (int dim = 0; dim < m; dim++)
 		{	
-		  if (debug) cout << "trying to assign data " << X[m*dim + data_point] << " to location " << dim << " by " << data_point << " on node "<< myNode << endl;
-
 			//put the data stored in the double* in the x matrix you just created
 			x.update(X[m*data_point + dim],0,dim);
 		}
@@ -287,13 +280,6 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		#endif
 		for (gaussian = 0; gaussian < k; gaussian++)
 		{
-
-			#ifdef _OPENMP
-			if (debug)
-			{
-				cout << "estep: in thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-			}
-			#endif
 
 			//initialize the row representation of the mu matrix
 			Matrix mu_matrix_row(1,m);
@@ -356,30 +342,15 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			//log density is the log of the density function for the kth gaussian evaluated on the nth data point
 			double log_density = log_unnorm_density - log_norm_factor;
 
-
-			if (debug)
-			{
-				cout << "Pk_vec is: " << endl;
-				for (int i = 0; i < k; i++)
-				{
-					cout << Pk_vec[i]<<" ";
-				}
-				cout << endl;
-
-			}
-
 			//temp1 is the cluster weight for the current gaussian
 			double temp1 = Pk_vec[gaussian];
-			if (debug) printf("temp 1 is %lf. gaussian is %d \n", Pk_vec[gaussian],gaussian);
 
 			//temp2 is the log of the cluster weight for the current gaussian
 			double temp2 = log(temp1);
-			if (debug) printf("temp2 is %lf \n", log(temp1));
 
 			//current z is the log of the density function times the cluster weight
 			double current_z = temp2 + log_density;
 
-			if (debug) cout << "current_z: "<<current_z<<", Node: "<<myNode<<", Dp: "<<data_point<<", Gaussian: "<<gaussian<<endl;
 			//assign current_z
 			#ifdef _OPENMP
 			# pragma omp critical(z_max)
@@ -412,13 +383,10 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			//calculate the P_xn's
 			P_xn += exp(p_nk_matrix.getValue(data_point, gaussian) - z_max);
 		}
-		if (debug) cout << "P_xn is " << P_xn << endl;
 
 		//log of total density for data point
 		double tempa = log(P_xn);
-		if (debug) cout << "log Pxn is " << log(P_xn) << endl;
 		double log_P_xn = tempa + z_max;
-		if (debug) cout << "log Pxn plus z_max is " << log_P_xn << endl;
 
 		for (int gaussian = 0; gaussian < k; gaussian++)
 		{
@@ -440,17 +408,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	likelihood = totalLikelihood;
 #endif
 	if (debug) 
-	  {
-	    cout << "Likelihood after E-Step: " << likelihood << endl;
-	    cout << "myNode: " << myNode << ", totalNodes: " << totalNodes << endl;
-	    for (int i=0; i<totalNodes; i++)
-	      for (int j=0; j<n; j++)
-		for (int l=0; l<k ; l++)
-		  {
-		    double tmp=p_nk_matrix.getValue(j,l);
-		    if (myNode == i) cout << "P_NK:  Node: "<<i<<", Sample: "<<j<<", gaussian: "<<l<<", Value: "<<tmp<<endl;
-		  }
-	  }
+		cout << "Likelihood after E-Step: " << likelihood << endl;
 
 	//return the likelihood of this model
 	return likelihood;
@@ -482,15 +440,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	# pragma omp parallel for
 	#endif
 	for (gaussian = 0; gaussian < k; gaussian++)
-	{	
-
-		#ifdef _OPENMP
-		if (debug)
-		{
-			cout << "mstep: in thread " << omp_get_thread_num() << " of " << omp_get_num_threads() << endl << flush;
-		}
-		#endif
-
+	{
 		//initialize the mean and covariance matrices that hold the mstep approximations
 		Matrix mu_hat(1,m);
 
@@ -508,40 +458,23 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			    // No need to calculate this multiple times
 			    double p_nk_local = p_nk_matrix.getValue(data_point,gaussian);
 			    double exp_p_nk = exp(p_nk_local);
-			    if (debug) cout << "exp_p_nk: "<< exp_p_nk<<", from "<<p_nk_local<<endl;
 			    for (int dim = 0; dim < m; dim++)
 			      {
 				x[dim] = X[m*data_point + dim]* exp_p_nk;
 			      }
 
 			    //sum up all the individual mu calculations
-			    if (debug) 
-			      {
-				cout << "summing into mu_hat: "<<endl;
-				for (int i=0; i<m; i++)
-				  cout << x[i] << ", ";
-				cout << endl;
-			      }
 			    mu_hat.add(x, m, 0);
 
 			    //calculate the normalization factor
-			    if (debug) cout << "pnk value for norm factor calc is " << p_nk_matrix.getValue(data_point,gaussian) << ", node: "<<myNode<<", point: "<<data_point<<endl;
 			    norm_factor += exp_p_nk;
-			    if (debug) cout << "norm factor is " << norm_factor << endl;
 			  }
 			Pk_vec[gaussian] = norm_factor;
 			//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
-		// Update mu_hat and mu_matrix.  Scal mu_matrix if and only if not using MPI.
+		// Update mu_hat and mu_matrix.  Scale mu_matrix if and only if not using MPI.
 			for (int dim = 0; dim < m; dim++)
 			{
-			  if (debug) cout << "norm_factor is "<<norm_factor<<", myNode: "<<myNode<<endl;
-#ifdef UseMPI
 			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
-			  //mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
-#else
-			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
-			  //mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
-#endif
 			}
 		} // Success flag
 	} // for loop over gaussians
@@ -557,9 +490,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #ifdef UseMPI
 		MPI_Allreduce(&(Pk_vec[0]),unscaled_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 		for (int i=0; i<k; i++)
-		{
 			global_scale += unscaled_Pk_vec[i];
-		}
 		for (int i=0; i<k; i++)
 			Pk_vec[i] = unscaled_Pk_vec[i]/global_scale;
 #else
@@ -567,6 +498,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			global_scale += Pk_vec[i];
 		for (int i=0; i<k; i++)
 		{
+			// Fill in unscaled vector, because we didn't reduce into it.
 			unscaled_Pk_vec[i] = Pk_vec[i];
 			Pk_vec[i] = Pk_vec[i]/global_scale;
 		}
@@ -617,7 +549,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 				//magical kronecker tensor product calculation
 				double pk = exp(p_nk_matrix.getValue(data_point,gaussian));
-				
 				for (int i = 0; i < m; i++)
 				{
 					for (int j = 0; j < m; j++)
@@ -625,13 +556,9 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 						double temp1 = (x[i]-mu_matrix.getValue(gaussian,i)) *
 							(x[j]-mu_matrix.getValue(gaussian,j)) *
 							pk;
-						//double temp1 = difference_row.getValue(0,i) * difference_row.getValue(0,j)*exp(p_nk_matrix.getValue(data_point,gaussian));
 						sigma_hat.update(sigma_hat.getValue(i,j) + temp1, i, j);
 					}
 				}
-
-				//delete &difference_row;
-
 			}//end data point
 
 			//rest of the sigma calculation, adjusted by the normalization factor
@@ -639,12 +566,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			{
 				for (int j = 0; j < m; j++)
 				{
-				  // if (norm_factor == 0)
-				  //   sigma_hat.update(0,i,j);
-				  // else
-				  //   sigma_hat.update(sigma_hat.getValue(i,j)/norm_factor,i,j);
-					if (debug) cout << "Scaling sigma_hat by "<<
-							   Pk_vec[gaussian]<<endl;
 					sigma_hat.update(sigma_hat.getValue(i,j)/(2*Pk_vec[gaussian]),i,j);
 				}
 			}
@@ -662,10 +583,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				successflag = 1;
 
 			}
-			// //adjust the Pk_hat calculations by the normalization factor (this particular func is threadsafe)
-			// Pk_hat.update(norm_factor/n,0,gaussian);
-			// if (debug) cout << "pk hat matrix after updating for gaussian "<<gaussian<<" on node " << myNode << endl;
-			// if (debug) Pk_hat.print();
 
 			//assign sigma_hat to sigma_matrix[gaussian]
 			for (int i = 0; i < m; i++)
@@ -675,11 +592,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 					sigma_matrix[gaussian]->update(sigma_hat.getValue(i,j), i, j);
 				}
 			}
-
-
-			// //assign Pk_hat to Pk_matrix
-			// if (debug) cout << "Filling Pk_vec with value from Pk_hat: "<<Pk_hat.getValue(0,gaussian)<<endl;
-			// Pk_vec[gaussian] = Pk_hat.getValue(0,gaussian);
 
 		} // end if successflag == true
 #ifdef UseMPI
@@ -698,15 +610,8 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #endif
 
 	} //end gaussian
-#ifdef UseMPI
-	if (debug)
-	  {
-	    MPI_Barrier(MPI_COMM_WORLD);
-	    cout << "About to reduce at end of M-Step"<<endl;
-	    MPI_Barrier(MPI_COMM_WORLD);
-	  }
-#endif
 
+	// Reduce  and scale sigma
 #ifdef UseMPI
 	{
 		// MPI workspace
@@ -721,7 +626,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				for (int j = 0; j < m; j++)
 				{
 					local_work[gaussian*m*m+i*m+j] = sigma_matrix[gaussian]->getValue(i,j);
-					if (debug) cout << "Node: "<< myNode<< " Unreduced sigma (m,i,j): "<<local_work[gaussian*m*m+i*m+j]<<" ("<<m<<", "<<i<<", "<<j<<")"<<endl;
 				}
 			}
 
@@ -756,17 +660,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 	}
 
-	// Normalize Pk
-	double sum = 0;
-	for (int i = 0; i < k; i++)
-	{	
-		sum += Pk_vec[i];
-	}
-
-	for (int i = 0; i < k; i++)
-	{	
-		Pk_vec[i] = Pk_vec[i]/sum;
-	}
 #endif
 	if (debug)
 	  {
@@ -774,9 +667,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	    MPI_Barrier(MPI_COMM_WORLD);
 #endif
 	    cout << "Finished M-Step - printing"<<endl;
-#ifdef UseMPI
-	    MPI_Barrier(MPI_COMM_WORLD);
-#endif
 	  }
 
 	if (debug)
@@ -814,9 +704,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	    MPI_Barrier(MPI_COMM_WORLD);
 #endif
 	    cout << "Finished Printing M-Step"<<endl;
-#ifdef UseMPI
-	    MPI_Barrier(MPI_COMM_WORLD);
-#endif
 	  }
 
 	return !successflag;
@@ -1063,7 +950,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & lo
       if (debug) cout << "Received" << endl;
     }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  //MPI_Barrier(MPI_COMM_WORLD);
 
   if (debug)
     {MPI_Barrier(MPI_COMM_WORLD);
@@ -1166,28 +1053,13 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	//initialize the p_nk matrix
 	Matrix p_nk_matrix(n,k);
 
-	if (debug) cout << "n is " << n;
-	if (debug) cout << "\nm is: " << m << endl;
-	if (debug) cout << "created matrix data ... " << endl;
-	
 	//initialize likelihoods to zero
 	double new_likelihood = 0;	
 	double old_likelihood = 0;
 	
 	//take the cluster centroids from kmeans as initial mus 
-	if (debug)
-	{
-		printf("i will call kmeans \n");
-	 	fflush(stdout);
-	}
 	double *kmeans_mu = gaussmix::kmeans(m, X, n, k);
 	
-	if (debug)
-	{
-		printf("i called kmeans \n");
-		fflush(stdout);
-	}
-
 	//if you don't have anything in kmeans_mu, the rest of this will be really hard
 	if (kmeans_mu == 0)
 	{
@@ -1211,7 +1083,6 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 		for (int j = 0; j < m; j++)
 		{
 			mu_matrix.update(kmeans_mu[i*m + j],i,j);
-			if (debug) cout << "assigning, k is " << k << ", kmeans_mu[i] is " << kmeans_mu[i] << " at dimensions i (" << i << ") and j (" << j << ")\n";
 		}
 	}
 
@@ -1223,16 +1094,9 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 		Pks[gaussian]=term1;
 	}
 
-	if (debug)
-	{
-		printf("i initialized matrices successfully \n");
-		fflush (stdout);
-	}
-
 	//get a new likelihood from estep to have something to start with
 	try
 	{
-		if (debug) printf("about to call e-step, Pks has size %d\n", Pks.size());
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
 
 	}
@@ -1303,32 +1167,6 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 		//run estep again to get a new likelihood
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
 		
-		
-		//brick of sanity checks
-		if (debug) cout << " " << counter << " iteration's pnk matrix is " << endl;
-		if (debug) p_nk_matrix.print();
-		if (debug) cout << " " << counter << " iteration's mu matrix is " << endl;
-		if (debug) mu_matrix.print();
-		if (debug) cout << " " << counter << " iteration's sigma matrix is " << endl;
-		for (int gaussian = 0; gaussian < k; gaussian++)
-		{
-			for (int j = 0; j < m; j++)
-			{
-				if (debug) sigma_matrix[gaussian]->print();
-			}
-		}
-
-		if (debug)
-		{
-			cout << " " << counter << " iteration's Pk matrix is " << endl;
-			std::string s;
-			for (int i = 0; i < k; i++)
-			{
-				s += Pks[i];
-				s += " ";
-			}
-			cout << s << endl;
-		}
 		//increment the counter
 		counter++;
 	}
@@ -1355,7 +1193,6 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 void gaussmix::init(int *argc, char ***argv)
 {
 #ifdef UseMPI
-  //MPI_Status status; 
   MPI_Init(argc, argv);
 
   MPI_Comm_size(MPI_COMM_WORLD, &totalNodes); 
@@ -1368,7 +1205,6 @@ void gaussmix::init(int *argc, char ***argv)
 void gaussmix::fini()
 {
 #ifdef UseMPI
-  MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
 #endif
 }

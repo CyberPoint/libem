@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		else
-		  cout << "Training succeeded on node "<<myNode<<" of "<<totalNodes<<" MPI nodes"<<endl;
+		  cout << "Training succeeded on node "<<myNode<<" of "<<totalNodes<<" nodes"<<endl;
 
 		// print results
 		if (myNode == 0)
