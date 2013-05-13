@@ -416,26 +416,25 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 		return NULL;
 	}
 
-  // MPI parallel stuff
-  int nodes=1, myNode=0;
-  // Total data points across all nodes
-  int totalDataPoints = n;
-  // Data points on and before this node
-  int scanDataPoints = n;
+	// MPI parallel stuff
+	int nodes=1, myNode=0;
+	// Total data points across all nodes
+	int totalDataPoints = n;
+	// Data points on and before this node
+	int scanDataPoints = n;
 
 #ifdef UseMPI
-  MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
-  MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
+	MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
+	MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
 
-  MPI_Allreduce(&n, &totalDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Scan(&n, &scanDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&n, &totalDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Scan(&n, &scanDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 #endif
 
 	// give the initial cluster centroids some values randomly drawn from your data set
-	// Make it fixed for debugging
-	//srand( time(NULL) );
-	srand(5);
-    std::set<int> choices;
+	srand( time(NULL) );
+	//srand(5);
+	std::set<int> choices;
     for (int i = 0; i < k; i++)
 	{
 
@@ -473,8 +472,6 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 	}
       //Share this centroid across the nodes
       MPI_Bcast(&(cluster_centroid[i*m]), m, MPI_DOUBLE, globalNodeWithRow, MPI_COMM_WORLD);
-      MPI_Barrier(MPI_COMM_WORLD);
-      sleep(2);
 #endif
 
 	}
@@ -488,10 +485,6 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 	      cout << cluster_centroid[i]<<", ";
 	    cout << endl;
 	  }
-	sleep(1);
-#ifdef UseMPI
-	MPI_Barrier(MPI_COMM_WORLD);
-#endif
       }
 
 	//calculate distances

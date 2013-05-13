@@ -435,11 +435,9 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 #ifdef UseMPI
 	// Now reduce the likelihood over all data points:
 	double totalLikelihood;
-	MPI_Barrier(MPI_COMM_WORLD);
 	if (debug) cout << "Reducing likelihood: " << likelihood << " on node "<< myNode << endl;
 	MPI_Allreduce(&likelihood, &totalLikelihood, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	likelihood = totalLikelihood;
-	MPI_Barrier(MPI_COMM_WORLD);
 #endif
 	if (debug) 
 	  {
@@ -451,15 +449,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		  {
 		    double tmp=p_nk_matrix.getValue(j,l);
 		    if (myNode == i) cout << "P_NK:  Node: "<<i<<", Sample: "<<j<<", gaussian: "<<l<<", Value: "<<tmp<<endl;
-#ifdef UseMPI
-		    MPI_Barrier(MPI_COMM_WORLD);
-#endif
 		  }
-	    cout<<"node "<<myNode<<" at barrier"<<endl;
-	    sleep(2);
-#ifdef UseMPI
-	    MPI_Barrier(MPI_COMM_WORLD);
-#endif
 	  }
 
 	//return the likelihood of this model
@@ -540,9 +530,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			    if (debug) cout << "norm factor is " << norm_factor << endl;
 			  }
 			Pk_vec[gaussian] = norm_factor;
-#ifdef UseMPI
-		MPI_Barrier(MPI_COMM_WORLD);
-#endif
 			//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
 		// Update mu_hat and mu_matrix.  Scal mu_matrix if and only if not using MPI.
 			for (int dim = 0; dim < m; dim++)
@@ -550,45 +537,46 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			  if (debug) cout << "norm_factor is "<<norm_factor<<", myNode: "<<myNode<<endl;
 #ifdef UseMPI
 			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
-			  // if (norm_factor == 0)
-			  //   mu_hat.update(0,0,dim);
-			  // else
-			    mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
+			  //mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 #else
-			  if (norm_factor == 0)
-			    mu_hat.update(0,0,dim);
-			  else
-			    mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+			  //mu_hat.update(mu_hat.getValue(0,dim)/norm_factor,0,dim);
 #endif
 			}
 		} // Success flag
 	} // for loop over gaussians
 
-	// Reduce PK and mu
+	// Reduce and scale PK and mu
 
 	// Temporary space for reduced Pk_vec - also used in calculation of sigma
 	double unscaled_Pk_vec[k];
+	double global_scale=0.0;
 
 	{
+		// Pk
+#ifdef UseMPI
 		MPI_Allreduce(&(Pk_vec[0]),unscaled_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-		double local_scale=0.0, global_scale=0.0;
 		for (int i=0; i<k; i++)
 		{
-			local_scale += Pk_vec[i];
 			global_scale += unscaled_Pk_vec[i];
 		}
 		for (int i=0; i<k; i++)
 			Pk_vec[i] = unscaled_Pk_vec[i]/global_scale;
-		// MPI workspace
-		double global_work[k*m*m];
-		double local_work[k*m*m];
-
-		// Need the total number of samples
-		int totalSamples;
-		MPI_Allreduce(&n,&totalSamples,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-
+#else
+		for (int i=0; i<k; i++)
+			global_scale += Pk_vec[i];
+		for (int i=0; i<k; i++)
+		{
+			unscaled_Pk_vec[i] = Pk_vec[i];
+			Pk_vec[i] = Pk_vec[i]/global_scale;
+		}
+#endif
 		// Mu
+#ifdef UseMPI
+		// MPI workspace
+		double global_work[k*m];
+		double local_work[k*m];
+
 		for (int gaussian=0; gaussian<k; gaussian++)
 		{
 			// extract, already denormalized
@@ -599,7 +587,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 		// Reduce
 		MPI_Allreduce(local_work,global_work,k*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-		// Restore reduced Mu
+		// Scale and restore reduced Mu
 		for (int gaussian=0; gaussian<k; gaussian++)
 		{
 			// replace and normalize
@@ -608,6 +596,11 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 				mu_matrix.update(global_work[gaussian*m+dim] / unscaled_Pk_vec[gaussian],gaussian,dim);
 			}
 		}
+#else
+		for (int gaussian=0; gaussian<k; gaussian++)
+			for (int dim = 0; dim < m; dim++)
+				mu_matrix.update(mu_matrix.getValue(gaussian,dim) / unscaled_Pk_vec[gaussian],gaussian,dim);
+#endif
 	}
 	// Using new Pk_vec and mu_matrix, calculate updated sigma
 	for (gaussian = 0; gaussian < k; gaussian++)
@@ -715,7 +708,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #endif
 
 #ifdef UseMPI
-	// TODO MPI reduction
 	{
 		// MPI workspace
 		double global_work[k*m*m];
@@ -736,7 +728,7 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 		}
 	  // Reduce
 	  MPI_Allreduce(local_work,global_work,k*m*m,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-	  // Restore reduced sigma
+	  // Restore and normalize reduced sigma
 	  for (int gaussian=0; gaussian<k; gaussian++)
 	    {
 	      for (int i = 0; i < m; i++)
@@ -750,6 +742,20 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	    }
 	}
 #else
+	// Restore and normalize reduced sigma
+	for (int gaussian=0; gaussian<k; gaussian++)
+	{
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				sigma_matrix[gaussian]->update(
+					sigma_matrix[gaussian]->getValue(i,j)/ 
+					unscaled_Pk_vec[gaussian], i, j);
+			}
+		}
+	}
+
 	// Normalize Pk
 	double sum = 0;
 	for (int i = 0; i < k; i++)
@@ -809,7 +815,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #endif
 	    cout << "Finished Printing M-Step"<<endl;
 #ifdef UseMPI
-	    sleep(1);
 	    MPI_Barrier(MPI_COMM_WORLD);
 #endif
 	  }
@@ -1061,7 +1066,7 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & lo
   MPI_Barrier(MPI_COMM_WORLD);
 
   if (debug)
-    {MPI_Barrier(MPI_COMM_WORLD);sleep(2);
+    {MPI_Barrier(MPI_COMM_WORLD);
       for (int node=0; node<totalNodes; node++)
 	{
 	  MPI_Barrier(MPI_COMM_WORLD);
