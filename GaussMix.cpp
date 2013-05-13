@@ -196,7 +196,7 @@ static int myNode=0, totalNodes=1;
 // for error handling in C libraries
 #include <errno.h>
 
-//#define statements - change #debug to 1 if you want to see EM's calculations as it goes
+// constants and such
 #define sqr(x) ((x)*(x))
 
 #define MAX_CLUSTERS 50
@@ -432,7 +432,6 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 	//initialize the Pk_hat matrix
 	//note: "hat" denotes an approximation in the literature
 	Matrix Pk_hat(1,k);
-	int successflag = 0;
 
 	// Update Pk_vec and mu_matrix
 	int gaussian = 0;
@@ -449,35 +448,31 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 		//initialize the array of doubles of length m that represents the data with some modification
 		double x[m];
-		
-		if (successflag == 0)
+		//do the mu calculation point by point
+		for (int data_point = 0; data_point < n; data_point++)
 		{
-			//do the mu calculation point by point
-			for (int data_point = 0; data_point < n; data_point++)
-			  {
-			    // No need to calculate this multiple times
-			    double p_nk_local = p_nk_matrix.getValue(data_point,gaussian);
-			    double exp_p_nk = exp(p_nk_local);
-			    for (int dim = 0; dim < m; dim++)
-			      {
-				x[dim] = X[m*data_point + dim]* exp_p_nk;
-			      }
-
-			    //sum up all the individual mu calculations
-			    mu_hat.add(x, m, 0);
-
-			    //calculate the normalization factor
-			    norm_factor += exp_p_nk;
-			  }
-			Pk_vec[gaussian] = norm_factor;
-			//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
-		// Update mu_hat and mu_matrix.  Scale mu_matrix if and only if not using MPI.
+			// No need to calculate this multiple times
+			double p_nk_local = p_nk_matrix.getValue(data_point,gaussian);
+			double exp_p_nk = exp(p_nk_local);
 			for (int dim = 0; dim < m; dim++)
 			{
-			  mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+				x[dim] = X[m*data_point + dim]* exp_p_nk;
 			}
-		} // Success flag
-	} // for loop over gaussians
+
+			//sum up all the individual mu calculations
+			mu_hat.add(x, m, 0);
+
+			//calculate the normalization factor
+			norm_factor += exp_p_nk;
+		}
+		Pk_vec[gaussian] = norm_factor;
+		//fill in the mu hat matrix with your new mu calculations, adjusted by the normalization factor
+		// Update mu_hat and mu_matrix.  Scale mu_matrix if and only if not using MPI.
+		for (int dim = 0; dim < m; dim++)
+		{
+			mu_matrix.update(mu_hat.getValue(0,dim),gaussian,dim);
+		}
+	} // parallel for loop over gaussians
 
 	// Reduce and scale PK and mu
 
@@ -535,9 +530,16 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 #endif
 	}
 	// Using new Pk_vec and mu_matrix, calculate updated sigma
+	int successflag = 0;
+	#ifdef _OPENMP
+	# pragma omp parallel for
+	#endif
 	for (gaussian = 0; gaussian < k; gaussian++)
 	{
 		// Check success flag
+#ifdef __OPENMP
+#pragma omp flush(successflag)
+#endif
 		if (successflag == 0)
 		{
 			Matrix sigma_hat(m,m);
@@ -573,15 +575,14 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 			//you can't have a negative determinant - if somehow you do, mstep throws up its hands and EM will terminate
 			double determinant;
 			{
-				determinant = sigma_matrix[gaussian]->det();
+				determinant = sigma_hat.det();
 			}
 			if (determinant < 0)
 			{
-				#ifdef __OPENMP
-				#pragma omp critical(success_flag)
-				#endif
 				successflag = 1;
-
+#ifdef __OPENMP
+#pragma omp flush(successflag)
+#endif
 			}
 
 			//assign sigma_hat to sigma_matrix[gaussian]
@@ -595,21 +596,32 @@ bool mstep(int n, int m, int k, double *X, Matrix &p_nk_matrix, vector<Matrix *>
 
 		} // end if successflag == true
 #ifdef UseMPI
-		// Yes, this is inside a parallel loop, so it's behavior is not completely
-		// determinate.  However, the point is to stop if *any* of the loops has
-		// successflag set to false.  This will do that.
-		int global_successflag;
-#ifdef __OPENMP
-#pragma omp critical(global_success_flag)
-#endif
+#ifndef __OPENMP
+		// MPI Collectives don't work well inside OpenMP parallel regions.
+		// Move this outside the loop.
 		{
-		  MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_LOR, MPI_COMM_WORLD);
-		  if (debug) cout << "global_successflag: "<<global_successflag<<endl;
-		  successflag = global_successflag;
-		}
+			int global_successflag;
+			
+			MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_LOR, MPI_COMM_WORLD);
+			if (debug) cout << "global_successflag: "<<global_successflag<<endl;
+			successflag = global_successflag;
+		}		
+#endif
 #endif
 
 	} //end gaussian
+#ifdef UseMPI
+#ifdef __OPENMP
+	// Moved outside the parallel loop if using OpenMP and MPI both
+	{
+		int global_successflag;
+
+		MPI_Allreduce(&successflag,&global_successflag,1,MPI_INT, MPI_LOR, MPI_COMM_WORLD);
+		if (debug) cout << "global_successflag: "<<global_successflag<<endl;
+		successflag = global_successflag;
+	}		
+#endif
+#endif
 
 	// Reduce  and scale sigma
 #ifdef UseMPI
