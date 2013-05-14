@@ -338,7 +338,8 @@ Matrix & Matrix::insertRow(double * row, int rowSize, int rowNum) throw (SizeErr
 	}
 	numRows++;
 	changed = true;
-	
+
+	return *this;
 }
 	
 /**
@@ -370,6 +371,7 @@ Matrix & Matrix::insertColumn(double * col, int colSize, int colNum) throw (Size
 	numCols++;
 	changed = true;
 
+	return *this;
 }
 
 
