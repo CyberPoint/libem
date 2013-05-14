@@ -417,14 +417,15 @@ double * gaussmix::kmeans(int m, double *X, int n, int k)
 	}
 
 	// MPI parallel stuff
-	int nodes=1, myNode=0;
+	//int nodes=1; // not actually used
+	int myNode=0;
 	// Total data points across all nodes
 	int totalDataPoints = n;
-	// Data points on and before this node
-	int scanDataPoints = n;
 
 #ifdef UseMPI
-	MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
+	// Data points on and before this node
+	int scanDataPoints = n;
+	//MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
 
 	MPI_Allreduce(&n, &totalDataPoints, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);

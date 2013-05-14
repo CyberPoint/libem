@@ -271,9 +271,6 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		double z_max = 0;
 		bool z_max_assigned = false;
 
-		//log_densities is the k dimensional array that stores the density in log space
-		double log_densities[k];
-		
 		int gaussian = 0;
 		#ifdef _OPENMP
 		# pragma omp parallel for
@@ -759,7 +756,7 @@ int * serializeIntVector(std::vector<int> vec)
   int *array = new int[1+vec.size()];
   
   array[0] = vec.size();
-  for (int i=1; i<= vec.size(); i++)
+  for (unsigned int i=1; i<= vec.size(); i++)
     array[i] = vec[i-1];
   return array;
 }
@@ -833,6 +830,7 @@ int gaussmix::parse_line(char * buffer, Matrix & X, std::vector<int> & labels, i
 	  X.update(temp,row,cols);
 	}
     }
+  return 0;
 }
 
 int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & localSamples, std::vector<int> & labels )
@@ -851,9 +849,6 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & lo
   if (myNode == 0)
     {
       // Read in data on node 0
-
-	char buffer[MAX_LINE_SIZE];
-	double temp;
 
 	FILE *f = fopen(file_name, "r");
 	if (f == NULL)
@@ -905,9 +900,6 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & lo
 	    cout << "Read " << row << " rows : " << " of " << rowsToRead << " for node " << currentNode << endl;
 	  if (currentNode != 0)
 	    {
-	      int matrixSize = rowsToRead*m+2;
-	      int vectorSize = rowsToRead+1;
-
 	      double *tmp;
 	      int *itmp;
 	      if (debug) cout << "Sending " << row*m << " doubles from node " << myNode << " to " << currentNode << endl;
@@ -1035,7 +1027,7 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Ma
 
 	for (int i = 0; i < k; i++)
 	{
-		std:vector<double> mean_vec;
+		std::vector<double> mean_vec;
 		mu_matrix.getCopyOfRow(i,mean_vec);
 		sum_probs += Pks[i]*
 				exp(gaussmix::gaussmix_pdf(m,X,*(sigma_matrix[i]),mean_vec));
@@ -1049,9 +1041,6 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 {
 
 	double * X = gaussmix::gaussmix_matrixToRaw(Y);
-
-	//create an iteration variable
-	int iterations;
 
 	//epsilon is the convergence criteria - the smaller epsilon, the narrower the convergence
 	double epsilon = .001;

@@ -281,7 +281,6 @@ int main(int argc, char *argv[])
 	// {
 	// 	delete sigma_vector[i];
 	// }
- fini:
 	gaussmix::fini();
 
     return 0;

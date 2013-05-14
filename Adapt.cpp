@@ -588,10 +588,10 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 
 	int retcode = 1;
 	int myNode = 0;
-	int nodes = 1;
+	//int nodes = 1;  // Not actually used
 
 #ifdef UseMPI
-	MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
+	//MPI_Comm_size(MPI_COMM_WORLD, &nodes); 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
 
 	int haveData = (n>0);
@@ -762,7 +762,7 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 	
 	// Results: ,
 	// vector<Matrix*> &adapted_sigma_matrix
-	for (int i=0; i<adapted_sigma_matrix.size(); i++)
+	for (unsigned int i=0; i<adapted_sigma_matrix.size(); i++)
 	{
 		int matrixSize = 2+num_clusters*num_clusters;
 		if (myNode == masterNode)
@@ -821,7 +821,6 @@ int gaussmix::adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
 	}
 	if (debug)
 	{
-		int myGroupSize;
 		cout << "MasterNode: "<<masterNode<<endl;
 	}
 	

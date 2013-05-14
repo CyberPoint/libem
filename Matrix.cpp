@@ -369,6 +369,7 @@ Matrix & Matrix::insertColumn(double * col, int colSize, int colNum) throw (Size
 	
 	numCols++;
 	changed = true;
+
 }
 
 
@@ -478,7 +479,6 @@ Matrix & Matrix::dot(Matrix& B) const
 	
 	if (numCols!=B.rowCount()) throw SizeError((char*)"Error: Attempted to multiply matrices with mismatched sizes");
 	int cols1 = numCols;
-	int rows2 = cols1;
 	int rows1 = numRows;
 	int cols2 = B.colCount();
 	double* result = new double[rows1*cols2];
@@ -779,7 +779,7 @@ void Matrix::print()
 {
 	printf("\n-----------MATRIX---------------------\n");
 	printf("%d rows, %d columns\n", numRows, numCols);
-	printf("%d columns \n", columns.size());
+	printf("%ld columns \n", columns.size());
 	fflush(stdout);
 	for (int i=0; i<numRows; i++)
 	{
