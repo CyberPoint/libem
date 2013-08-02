@@ -171,7 +171,7 @@
 #include <set>
 #include <exception>
 #include <syslog.h>
-
+//#include <cuda.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -250,6 +250,18 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 	//initialize variables
 	const int pi = 3.141592653;
 
+	vector<Matrix*> sigma_inverses;
+	vector <double> determinants;
+	for (int gauss = 0; gauss < k; gauss++) {
+		Matrix * sigma_inv;
+		sigma_inv = &sigma_matrix[gauss]->inv();
+		sigma_inverses.push_back(sigma_inv);
+
+		double determinant;
+		determinant = sigma_matrix[gauss]->det();
+		determinants.push_back(determinant);
+	}
+
 	//for each data point in n
 	for (int data_point = 0; data_point < n; data_point++)
 	{
@@ -261,6 +273,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		double P_xn = 0;
 
 		//for each dimension
+
 		for (int dim = 0; dim < m; dim++)
 		{	
 			//put the data stored in the double* in the x matrix you just created
@@ -295,14 +308,14 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug) difference_row.print();
 
 			//sigma^ inverse
-			Matrix * sigma_inv;
-			sigma_inv = &(sigma_matrix[gaussian]->inv());
+			//Matrix * sigma_inv;
+			//sigma_inv = &(sigma_matrix[gaussian]->inv());
 			if (debug) cout << "sigma_inv" << endl << flush;
-			if (debug) sigma_inv->print();
+			//if (debug) sigma_inv->print();
 
 			//det(sigma)
-			double determinant;
-			determinant = sigma_matrix[gaussian]->det();
+			//double determinant;
+			//determinant = sigma_matrix[gaussian]->det();
 
 
 			//make a column representation of the difference in preparation for matrix multiplication
@@ -315,7 +328,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			}
 
 			//(x - mu) * sigma^-1
-			Matrix &term1 = sigma_inv->dot(difference_column);
+			Matrix &term1 = sigma_inverses[gaussian]->dot(difference_column);
 			if (debug) printf("sigma_inv dot difference_column \n");
 			if (debug) term1.print();
 			
@@ -327,11 +340,11 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			//create a double to represent term2, since it's a scalar
 			double term2_d = 1;
 			term2_d = term2.getValue(0,0);
-		
+			printf("Datapoint: %d  Gauss: %d  Term2: %f\n", data_point, gaussian, term2_d);
 			//bringing all the pieces together
 			double log_unnorm_density = (-.5 * term2_d);
 			double term3 = pow(2*pi, 0.5 * m);
-			double term4 = pow(determinant, .5);
+			double term4 = pow(determinants[gaussian], .5);
 
 			// log norm factor is the normalization constant for the density functions
 			double log_norm_factor = log(term3 * term4);
@@ -1039,7 +1052,7 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Ma
 int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vector<Matrix*> &sigma_matrix,
 									Matrix &mu_matrix, std::vector<double> &Pks, double * op_likelihood)
 {
-
+	clock_t start = clock();
 	double * X = gaussmix::gaussmix_matrixToRaw(Y);
 
 	//epsilon is the convergence criteria - the smaller epsilon, the narrower the convergence
@@ -1098,8 +1111,10 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	//get a new likelihood from estep to have something to start with
 	try
 	{
+		//printf("test pnk value: %f\n", p_nk_matrix.getValue(0,0));
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
-
+		//printf("new likelihood: %f\n", new_likelihood);
+		
 	}
 	catch (std::exception e)
 	{
@@ -1188,6 +1203,8 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 		// no convergence or convergence?
 		condition = (counter == max_iters ? GAUSSMIX_MAX_ITERS_REACHED : GAUSSMIX_SUCCESS);
 	}
+	clock_t end = clock();
+	printf("Elapsed time: %.2f seconds\n", (double)(end - start)/CLOCKS_PER_SEC);
 	return condition;
 }
 
