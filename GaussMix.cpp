@@ -245,10 +245,9 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		            Matrix &mu_matrix, std::vector<double> & Pk_vec)
 {
 	//initialize likelihood
-	double likelihood = 0;
+	double likelihood = 0.0;
 	
 	//initialize variables
-	const int pi = 3.141592653;
 
 	vector<Matrix*> sigma_inverses;
 	vector <double> determinants;
@@ -270,7 +269,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		Matrix x(1,m);
 		
 		//initialize the P_xn to zero to start
-		double P_xn = 0;
+		double P_xn = 0.0;
 
 		//for each dimension
 
@@ -281,7 +280,7 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 		}
 
 		//z max is the maximum cluster weighted density for the data point under any gaussian
-		double z_max = 0;
+		double z_max = 0.0;
 		bool z_max_assigned = false;
 
 		int gaussian = 0;
@@ -338,12 +337,12 @@ double estep(int n, int m, int k, double *X,  Matrix &p_nk_matrix, vector<Matrix
 			if (debug) term2.print();
 
 			//create a double to represent term2, since it's a scalar
-			double term2_d = 1;
+			double term2_d = 1.0;
 			term2_d = term2.getValue(0,0);
 			printf("Datapoint: %d  Gauss: %d  Term2: %f\n", data_point, gaussian, term2_d);
 			//bringing all the pieces together
 			double log_unnorm_density = (-.5 * term2_d);
-			double term3 = pow(2*pi, 0.5 * m);
+			double term3 = pow(2*PI, 0.5 * m);
 			double term4 = pow(determinants[gaussian], .5);
 
 			// log norm factor is the normalization constant for the density functions
@@ -999,8 +998,9 @@ int gaussmix::gaussmix_parse(char *file_name, int n, int m, Matrix & X, int & lo
 double gaussmix::gaussmix_pdf(int m, std::vector<double> X, Matrix &sigma_matrix,std::vector<double> &mu_vector)
 {
 
-	const double pi = 2*acos(0.0);
-	const double pi_fac = pow(2 * pi, m * 0.5);
+  //@fixme pi is defined in math.h
+  //const double pi = 2*acos(0.0);
+	const double pi_fac = pow(2 * PI, m * 0.5);
 
 	// set up our normalizing factor
 	double det = sigma_matrix.det();
@@ -1049,8 +1049,15 @@ double gaussmix::gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Ma
 
 }
 
-int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vector<Matrix*> &sigma_matrix,
-									Matrix &mu_matrix, std::vector<double> &Pks, double * op_likelihood)
+int gaussmix::gaussmix_train(int n, 
+			     int m, 
+			     int k, 
+			     int max_iters, 
+			     Matrix & Y, 
+			     vector<Matrix*> &sigma_matrix,
+			     Matrix &mu_matrix, 
+			     std::vector<double> &Pks, 
+			     double * op_likelihood)
 {
 	clock_t start = clock();
 	double * X = gaussmix::gaussmix_matrixToRaw(Y);
@@ -1068,14 +1075,14 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	Matrix p_nk_matrix(n,k);
 
 	//initialize likelihoods to zero
-	double new_likelihood = 0;	
-	double old_likelihood = 0;
+	double new_likelihood = 0.;	
+	double old_likelihood = 0.;
 	
 	//take the cluster centroids from kmeans as initial mus 
 	double *kmeans_mu = gaussmix::kmeans(m, X, n, k);
 	
 	//if you don't have anything in kmeans_mu, the rest of this will be really hard
-	if (kmeans_mu == 0)
+	if (kmeans_mu == NULL)
 	{
 		delete[] X;
 		return std::numeric_limits<double>::infinity();
@@ -1112,6 +1119,9 @@ int gaussmix::gaussmix_train(int n, int m, int k, int max_iters, Matrix & Y, vec
 	try
 	{
 		//printf("test pnk value: %f\n", p_nk_matrix.getValue(0,0));
+
+	  //TODO: Need to have the ability to not change sigma, or enforce diagonal sigma
+
 		new_likelihood = estep(n, m, k, X, p_nk_matrix, sigma_matrix, mu_matrix, Pks);
 		//printf("new likelihood: %f\n", new_likelihood);
 		

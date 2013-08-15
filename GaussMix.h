@@ -153,8 +153,15 @@ double gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Matrix*> &si
 @param[out] likelihood the log likelihood (density) of the data (or std::numeric_limits::infinity() on fatal error)
 @return one of the GAUSSMIX_ condition codes (see above)
 */
-int gaussmix_train(int n, int m, int k, int max_iters, Matrix & X, vector<Matrix*> &sigma_matrix,
-								Matrix &mu_matrix, std::vector<double>& Pks, double * likelihood);
+int gaussmix_train(int n, 
+		   int m, 
+		   int k, 
+		   int max_iters, 
+		   Matrix & X, 
+		   vector<Matrix*> &sigma_matrix,
+		   Matrix &mu_matrix, 
+		   std::vector<double>& Pks, 
+		   double * likelihood);
 
  void init(int *argc, char ***argv);
 
@@ -163,6 +170,8 @@ int gaussmix_train(int n, int m, int k, int max_iters, Matrix & X, vector<Matrix
 
  int parse_line(char * buffer, Matrix & X, std::vector<int> & labels, int row, int m);
 
+
 #endif //EM_ALGORITHM_HEADER
 
 };
+
