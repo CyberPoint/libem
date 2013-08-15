@@ -87,8 +87,8 @@ const int GAUSSMIX_GENERAL_ERROR = -2;
 @returns a GAUSSMIX_ condition code (see above)
 */
 int gaussmix_adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
-		Matrix &mu_matrix, std::vector<double> &Pks, vector<Matrix*> &adapted_sigma_matrix,
-		Matrix &adapted_mu_matrix, std::vector<double>& adapted_Pks);
+        Matrix &mu_matrix, std::vector<double> &Pks, vector<Matrix*> &adapted_sigma_matrix,
+        Matrix &adapted_mu_matrix, std::vector<double>& adapted_Pks);
 
 /*! \brief convert the matrix representation of the data to a flat array (caller must delete[]).
  * @param M the matrix (m rows X n cols)
@@ -134,7 +134,7 @@ double gaussmix_pdf(int m, std::vector<double> X,Matrix &sigma_matrix,std::vecto
 @return log likelihood
 */
 double gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Matrix*> &sigma_matrix,
-						Matrix &mu_matrix, std::vector<double> &Pks);
+                        Matrix &mu_matrix, std::vector<double> &Pks);
 
 
 
@@ -153,8 +153,15 @@ double gaussmix_pdf_mix(int m, int k, std::vector<double> X, vector<Matrix*> &si
 @param[out] likelihood the log likelihood (density) of the data (or std::numeric_limits::infinity() on fatal error)
 @return one of the GAUSSMIX_ condition codes (see above)
 */
-int gaussmix_train(int n, int m, int k, int max_iters, Matrix & X, vector<Matrix*> &sigma_matrix,
-								Matrix &mu_matrix, std::vector<double>& Pks, double * likelihood);
+int gaussmix_train(int n, 
+           int m, 
+           int k, 
+           int max_iters, 
+           Matrix & X, 
+           vector<Matrix*> &sigma_matrix,
+           Matrix &mu_matrix, 
+           std::vector<double>& Pks, 
+           double * likelihood);
 
  void init(int *argc, char ***argv);
 
@@ -163,6 +170,14 @@ int gaussmix_train(int n, int m, int k, int max_iters, Matrix & X, vector<Matrix
 
  int parse_line(char * buffer, Matrix & X, std::vector<int> & labels, int row, int m);
 
+<<<<<<< HEAD
 #endif //EM_ALGORITHM_HEADER
 
 };
+=======
+
+#endif //EM_ALGORITHM_HEADER
+
+};
+
+>>>>>>> remotes/c_wrapper/c_wrapper
