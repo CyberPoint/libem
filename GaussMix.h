@@ -170,14 +170,6 @@ int gaussmix_train(int n,
 
  int parse_line(char * buffer, Matrix & X, std::vector<int> & labels, int row, int m);
 
-<<<<<<< HEAD
 #endif //EM_ALGORITHM_HEADER
 
 };
-=======
-
-#endif //EM_ALGORITHM_HEADER
-
-};
-
->>>>>>> remotes/c_wrapper/c_wrapper

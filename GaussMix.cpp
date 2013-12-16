@@ -628,7 +628,6 @@ double estep(int n, int m, int k, const double *X,  Matrix &p_nk_matrix, const s
         std::cout<<"P_nk for itr is";
         p_nk_matrix.print();
     }
->>>>>>> internal/master
 
     //return the likelihood of this model
     return likelihood;
@@ -698,7 +697,6 @@ bool mstep(int n, int m, int k, const double *X, Matrix &p_nk_matrix, std::vecto
 
     {
         // Pk
->>>>>>> internal/master
 #ifdef UseMPI
         MPI_Allreduce(&(Pk_vec[0]),unscaled_Pk_vec,k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
         for (int i=0; i<k; i++)
