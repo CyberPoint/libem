@@ -42,9 +42,7 @@
 class SizeError: public std::runtime_error
 {
 	public:
-	SizeError(char* error="Matrix operation could not be performed due to a size mismatch."):std::runtime_error(error){}
-	
-	
+	SizeError(const char* error="Matrix operation could not be performed due to a size mismatch."):std::runtime_error(error){}
 };
 
 
@@ -52,8 +50,7 @@ class SizeError: public std::runtime_error
 class LapackError: public std::runtime_error
 {
 	public:
-	LapackError(char* error="Operation could not be performed--error in call to lapacke"):std::runtime_error(error){}
-	
+	LapackError(const char* error="Operation could not be performed--error in call to lapacke"):std::runtime_error(error){}
 };
 
 
@@ -141,20 +138,16 @@ class Matrix
 
 	/**Invert the matrix
 	@return the inverse of this matrix*/
-	Matrix & inv() throw (SizeError, LapackError);
+	Matrix * inv() throw (SizeError, LapackError);
 
 	/**Matrix multiplication -- this*B
 	@param B matrix to multiply by
 	@return product of matrix multiplication: this*B  */
-	Matrix & dot(Matrix& m) const;
+	Matrix * dot(const Matrix& m) const;
 
 	/**@return the determinant. Note: only works for square matrices*/
 	double det() throw (LapackError, SizeError);
 
-	/** Compute the covariance of a positive, definite matrix (numpy.covar)
-	@return the covariance matrix  */
-	Matrix & covar();
-	
 	/**return a copy of rowOffset'th row of the matrix
 	@param rowOffset number of the row to retrieve (indexed from 0)
 	@param vec empty  vector in whuch to return row data
@@ -167,12 +160,6 @@ class Matrix
 	@return ref to vector representation of the specified column*/
 	std::vector<double> & getCopyOfColumn(int colOffset, std::vector<double> & vec) throw (SizeError);
 
-	/**compute the weighted average value of each row or column
-	@param axis row by row (0) or column by column (1)
-	@param  weights optional array of weights for weighted average (if NULL, will be taken as all 1's).  
-		(should be length numCols() for row-by-row, and length numRows() for col-by-col)*/
-	double* average(int axis, double *weights);
-
 	/**  Add vector to matrix row by row or column by column (in place)
 	@param vector array to add
 	@param m length of vector
@@ -181,7 +168,7 @@ class Matrix
 
 	/** Subtract Matrix B from this Matrix 
 	@param B Matrix to subtract from this*/
-	Matrix& subtract(Matrix& B);
+	Matrix* subtract(const Matrix& B) const;
 
 	/**  Subtract vector from matrix row by row or column by column (in place)
 	@param vector array to subtract
@@ -214,7 +201,5 @@ class Matrix
 	/// matrix mult A*B, where A and B are matrices represented in column-major form, with dimensions
 	/// rows1xcols1 and cols1xcols2 respectively.
 	void dot(double A[], double B[], int rows1, int cols1, int cols2, double result[]);
-	
-	
 };
 #endif //MATRIX_HEADER

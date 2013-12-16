@@ -1,0 +1,9 @@
+*~
+*.swp
+*.o
+gaussmix.inc
+./*.a
+./*.so
+./*.so.*
+gaussmix
+build/

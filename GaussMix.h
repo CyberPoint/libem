@@ -95,7 +95,7 @@ int gaussmix_adapt(Matrix & X, int n, vector<Matrix*> &sigma_matrix,
  * @return a ptr to an array A of doubles - first row is A[0] thru A[n-1], second is A[n] thru A[2n -1] etc
  * note: caller is responsible for freeing the memory!
  */
-double * gaussmix_matrixToRaw(Matrix & X);
+double * gaussmix_matrixToRaw(const Matrix & X);
 
 /*! \brief gaussmix_parse: converts csv or svm-format data and converts it to a double array.
 *
@@ -107,7 +107,7 @@ double * gaussmix_matrixToRaw(Matrix & X);
 @param[out] labels pointer to array, for svm format, or null, for csv format. we allocate and return labels here.
 @returns  a GASSMIX_ condition code (see above).
 */
- int gaussmix_parse(char *file_name,  int n, int m, Matrix & data, int & localSamples, std::vector<int> & labels);
+int gaussmix_parse(char *file_name,  int n, int m, Matrix & data, int & localSamples, std::vector<int> & labels);
 
 
 /*! \brief gaussmix_pdf: compute the log of the  probability of the given data point

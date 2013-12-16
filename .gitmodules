@@ -1,0 +1,3 @@
+[submodule "cmake/findopencl"]
+	path = cmake/findopencl
+	url = https://git.gitorious.org/findopencl/findopencl.git

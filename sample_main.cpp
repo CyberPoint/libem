@@ -35,10 +35,11 @@
 #include <vector>
 #include <iostream>
 #include "GaussMix.h"
+#include <unistd.h>
 
 #ifdef UseMPI
 #include <mpi.h>
-#endif
+#endif /* UseMPI */
 
 using namespace std;
 
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
   // Check to see how many processes we actually have
   MPI_Comm_size(MPI_COMM_WORLD, &totalNodes); 
   MPI_Comm_rank(MPI_COMM_WORLD, &myNode);
-#endif
+#endif /* UseMPI */
 
 	// initialize variables
 	int i, k, m, n;
@@ -156,7 +157,7 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		else
-		  cout << "Training succeeded on node "<<myNode<<" of "<<totalNodes<<" nodes"<<endl;
+		  cout << "Training succeeded on node "<<myNode+1<<" of "<<totalNodes<<" nodes"<<endl;
 
 		// print results
 		if (myNode == 0)
@@ -187,7 +188,7 @@ int main(int argc, char *argv[])
 		// For Debugging
 		MPI_Barrier(MPI_COMM_WORLD);
 		sleep(1);
-#endif
+#endif /* UseMPI */
 
 		// now let's restrict to the -1 subpopulation, if we have labels
 		if (labels[0] != 0)  // assume 0 indicates absence of labels
@@ -226,7 +227,7 @@ int main(int argc, char *argv[])
 			int global_subpop=num_subpop;
 #ifdef UseMPI
 			MPI_Allreduce(&num_subpop,&global_subpop,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-#endif
+#endif /* UseMPI */
 			cout << "Number of subpopulations: "<<num_subpop<<endl;
 			if ((global_subpop > 2) &&
 				(gaussmix::gaussmix_adapt(S,num_subpop,sigma_vector,mu_local,Pk_matrix,
@@ -265,10 +266,8 @@ int main(int argc, char *argv[])
 
 			//adapted_mu_local.clear();
 			//adapted_Pk_matrix.clear();
-			// for (int i = 0; i < k; i++)
-			// {
-			// 	delete adapted_sigma_vector[i];
-			// }
+			for (int i = 0; i < k; i++)
+			    delete adapted_sigma_vector[i];
 		}
 	}
 	catch (...)
@@ -277,10 +276,8 @@ int main(int argc, char *argv[])
 	}
 
 
-	// for (int i = 0; i < k; i++)
-	// {
-	// 	delete sigma_vector[i];
-	// }
+	for (int i = 0; i < k; i++)
+	 	delete sigma_vector[i];
 	gaussmix::fini();
 
     return 0;
