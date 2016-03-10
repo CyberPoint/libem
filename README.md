@@ -23,11 +23,12 @@ cmake libatlas-dev libblas-dev gfortran liblapack-dev liblapacke-dev
 
 LibEM OpenCL support is experimental.  These instructions assume OpenCL and CUDA are installed:
 
+```
 $mkdir -p build
 $cd ./build
 $LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/nvidia:/usr/lib/nvidia
 $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH:string="/usr/local/lapack" -DCMAKE_CXX_FLAGS:string="-I/usr/include/lapacke -I/usr/local/lapack/include -L/usr/local/lapack/lib" -DCMAKE_MODULE_PATH:string="`pwd`/../cmake/Modules" ..
 $make all
 $cp ../oclEstep.cl .
-
+```
 
